@@ -1,0 +1,21 @@
+id,name,keywords,data_type,library_recommendation,accessibility_note
+ch01,line-chart,trend time-series over-time change,Continuous values over time,"Recharts, Chart.js, D3, Observable Plot",Provide a data-table toggle; avoid relying on color alone for series
+ch02,area-chart,trend volume cumulative filled,Magnitude of trend over time,"Recharts, Chart.js",Use pattern fills or labels in addition to color for stacked areas
+ch03,bar-chart,comparison categorical ranking discrete,Comparing discrete categories,"Recharts, Chart.js, D3",Sort bars meaningfully; label values directly for screen readers
+ch04,horizontal-bar-chart,comparison ranking long-labels,Category comparison with long labels,"Recharts, Chart.js",Preferred over vertical bars when category names are long
+ch05,grouped-bar-chart,comparison multi-series subcategory,Comparing subcategories across groups,"Recharts, D3",Limit to 3-4 series max; add legend with sufficient contrast
+ch06,stacked-bar-chart,composition part-to-whole over-time,Part-to-whole composition across categories,"Recharts, Chart.js",Order segments consistently; provide totals as text alternative
+ch07,pie-chart,proportion percentage part-to-whole simple,Simple part-to-whole with few segments,"Recharts, Chart.js",Limit to 5-6 slices max; always label percentages directly
+ch08,donut-chart,proportion percentage kpi center-label,Part-to-whole with a central KPI label,"Recharts, Chart.js",Use center label for the key metric; avoid for >6 categories
+ch09,scatter-plot,correlation relationship distribution two-variable,Relationship between two numeric variables,"D3, Observable Plot, Recharts",Use shape + color redundantly to distinguish groups
+ch10,bubble-chart,correlation three-variable size distribution,Relationship across three numeric dimensions,"D3, Observable Plot",Cap bubble count; provide a legend for size scale
+ch11,heatmap,density matrix intensity correlation-grid,Intensity across two categorical dimensions,"D3, Observable Plot, Nivo","Use a colorblind-safe sequential palette, not red-green"
+ch12,funnel-chart,conversion drop-off stages pipeline,Sequential stage-based conversion/drop-off,"Recharts, D3, Nivo",Always show absolute numbers alongside percentages
+ch13,gauge-chart,single-metric progress-to-goal kpi,Single metric progress toward a target,"Chart.js, ECharts",Pair with a numeric label; don't rely on needle position alone
+ch14,radar-chart,multi-dimensional comparison profile,Comparing multiple dimensions for one/few entities,"Recharts, Chart.js",Limit to 2-3 overlapping entities to stay legible
+ch15,treemap,hierarchy proportion nested part-to-whole,Hierarchical part-to-whole with size encoding,"D3, Nivo, ECharts",Provide a table alternative; nested labels can be inaccessible
+ch16,sankey-diagram,flow allocation pipeline movement,Flow/allocation between stages or categories,"D3, Nivo",Complex for screen readers; always ship a data table fallback
+ch17,candlestick-chart,financial ohlc price-movement trading,OHLC financial price movement over time,"TradingView Lightweight Charts, D3",Pair up/down colors with shape (filled/hollow) for colorblind users
+ch18,sparkline,micro-trend inline compact single-value,Compact inline trend next to a KPI,"Recharts, tiny D3, custom SVG","Provide the numeric trend value in adjacent text, not chart-only"
+ch19,calendar-heatmap,activity streak daily contribution-graph,Daily activity/streak intensity over a year,"D3, react-calendar-heatmap",Include a text summary of streaks for screen-reader users
+ch20,waterfall-chart,cumulative-effect sequential increments-decrements,Sequential positive/negative contributions to a total,"D3, ECharts, Highcharts",Use consistent color coding for increase vs decrease with icons

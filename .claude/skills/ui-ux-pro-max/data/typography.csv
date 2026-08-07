@@ -1,0 +1,51 @@
+id,heading_font,body_font,keywords,personality,best_for,google_fonts_import
+ty01,Inter,Inter,modern clean neutral saas,"Neutral, versatile, highly legible","SaaS, dashboards, general UI",Inter:wght@400;500;600;700
+ty02,Manrope,Inter,modern geometric friendly saas,Friendly-modern with a geometric edge,"Startup landing pages, product sites",Manrope:wght@600;800|Inter:wght@400;500
+ty03,Space Grotesk,Inter,tech futuristic geometric mono-adjacent,"Distinct, techy, slightly quirky","AI/dev tools, tech startups",Space+Grotesk:wght@500;700|Inter:wght@400;500
+ty04,Sora,Work Sans,modern rounded friendly approachable,Approachable and rounded-modern,"Consumer apps, onboarding flows",Sora:wght@600;800|Work+Sans:wght@400;500
+ty05,Playfair Display,Lato,elegant luxury serif editorial,"Elegant, high-contrast, editorial luxury","Luxury retail, fashion, hospitality",Playfair+Display:wght@600;700|Lato:wght@400;500
+ty06,Cormorant Garamond,Karla,elegant refined classic luxury,"Refined, classic, softly elegant","Luxury editorial, weddings, boutique brands",Cormorant+Garamond:wght@500;600|Karla:wght@400;500
+ty07,Fraunces,Inter,warm editorial expressive serif,"Warm, expressive serif with character","Editorial blogs, lifestyle brands",Fraunces:wght@500;600|Inter:wght@400;500
+ty08,Libre Baskerville,Source Sans 3,classic editorial readable serif,"Classic, trustworthy, highly readable","Long-form editorial, news, blogs",Libre+Baskerville:wght@400;700|Source+Sans+3:wght@400;500
+ty09,DM Serif Display,DM Sans,elegant modern serif display,Elegant modern serif with clean body pairing,"Boutique product sites, portfolios",DM+Serif+Display|DM+Sans:wght@400;500
+ty10,Poppins,Nunito Sans,playful geometric rounded friendly,"Playful, rounded, energetic","Consumer apps, education, kids products",Poppins:wght@600;700|Nunito+Sans:wght@400;600
+ty11,Fredoka,Nunito,playful bubbly rounded kids,Bubbly and youthful,"Kids apps, games, playful brands",Fredoka:wght@500;600|Nunito:wght@400;600
+ty12,Baloo 2,Mulish,playful rounded warm approachable,"Warm, rounded, welcoming","Education platforms, community apps",Baloo+2:wght@600;700|Mulish:wght@400;500
+ty13,Archivo Black,Archivo,bold brutalist strong impact,"Bold, high-impact, brutalist-friendly","Brutalist/neubrutalist sites, agencies",Archivo+Black|Archivo:wght@400;500;700
+ty14,Anton,Work Sans,bold condensed impact headline,Extreme condensed impact for headlines,"Sports, entertainment, event brands",Anton|Work+Sans:wght@400;500
+ty15,Bebas Neue,Roboto,bold condensed sporty energetic,Tall condensed sans for energy,"Sports, fitness, entertainment",Bebas+Neue|Roboto:wght@400;500
+ty16,Clash Display,General Sans,modern bold tech premium,"Bold, premium-modern tech feel","Tech product launches, AI brands",Clash+Display:wght@600;700|General+Sans:wght@400;500
+ty17,Syne,Inter,modern experimental geometric creative,"Experimental, creative-forward geometric","Creative agencies, portfolios",Syne:wght@600;800|Inter:wght@400;500
+ty18,Unbounded,Inter,modern rounded geometric bold,Bold rounded-geometric with presence,"Web3, gaming, bold consumer brands",Unbounded:wght@600;700|Inter:wght@400;500
+ty19,IBM Plex Sans,IBM Plex Sans,technical neutral engineering precise,"Precise, technical, engineering-grade","Dev tools, infrastructure, enterprise",IBM+Plex+Sans:wght@400;500;600
+ty20,IBM Plex Mono,IBM Plex Sans,monospace technical code developer,Technical and code-forward,"Developer tools, API docs, terminals",IBM+Plex+Mono:wght@400;500|IBM+Plex+Sans:wght@400
+ty21,JetBrains Mono,Inter,monospace developer code precise,Distinct monospace for code-heavy UI,"Dev tools, code editors, API dashboards",JetBrains+Mono:wght@400;500|Inter:wght@400;500
+ty22,Outfit,Inter,modern geometric clean minimal,Clean geometric minimal-modern,"SaaS, portfolios, minimal sites",Outfit:wght@500;600;700|Inter:wght@400;500
+ty23,Plus Jakarta Sans,Plus Jakarta Sans,modern warm friendly versatile,"Warm, versatile, contemporary","Startup sites, product marketing",Plus+Jakarta+Sans:wght@400;500;600;700
+ty24,Lexend,Lexend,readable accessible clear modern,Optimized for reading proficiency/clarity,"Accessibility-first products, education",Lexend:wght@400;500;600;700
+ty25,Public Sans,Public Sans,government civic neutral accessible,"Neutral, highly accessible, civic-grade","Government, civic tech, public services",Public+Sans:wght@400;500;600;700
+ty26,Source Serif 4,Source Sans 3,professional readable serif trustworthy,Professional and highly readable serif,"Legal, professional services, reports",Source+Serif+4:wght@400;600|Source+Sans+3:wght@400;500
+ty27,Merriweather,Karla,readable trustworthy editorial classic,"Sturdy, trustworthy, screen-optimized serif","Blogs, news, long-form content",Merriweather:wght@400;700|Karla:wght@400;500
+ty28,Newsreader,Inter,editorial literary refined serif,"Literary, refined, quietly elegant","Essays, publications, thought leadership",Newsreader:wght@400;500;600|Inter:wght@400;500
+ty29,Bricolage Grotesque,Inter,modern quirky expressive versatile,Expressive grotesque with character,"Creative studios, modern portfolios",Bricolage+Grotesque:wght@500;700|Inter:wght@400;500
+ty30,Instrument Serif,Inter,elegant editorial expressive modern-serif,Expressive modern serif for display type,"Fashion, editorial landing pages",Instrument+Serif|Inter:wght@400;500
+ty31,Cabinet Grotesk,Satoshi,modern clean premium minimal,Clean premium grotesque pairing,"Premium product sites, portfolios",Cabinet+Grotesk:wght@600;700|Satoshi:wght@400;500
+ty32,General Sans,General Sans,neutral modern versatile clean,Neutral modern workhorse sans,"General UI, SaaS, product sites",General+Sans:wght@400;500;600;700
+ty33,Red Hat Display,Red Hat Text,modern enterprise approachable,Approachable enterprise-modern,"Enterprise SaaS, dev platforms",Red+Hat+Display:wght@600;700|Red+Hat+Text:wght@400;500
+ty34,Urbanist,Urbanist,modern minimal geometric urban,"Minimal, urban, geometric-light","Real estate, urban lifestyle brands",Urbanist:wght@400;600;700
+ty35,Epilogue,Epilogue,modern versatile clean neutral,Versatile modern neutral sans,"Startups, general marketing sites",Epilogue:wght@400;600;700
+ty36,Sen,Nunito Sans,warm rounded friendly modern,"Warm, rounded, approachable","Wellness, lifestyle, community apps",Sen:wght@500;700|Nunito+Sans:wght@400;500
+ty37,Grandstander,Mulish,playful bouncy expressive fun,"Bouncy, expressive, high-energy","Kids products, casual games",Grandstander:wght@600;700|Mulish:wght@400;500
+ty38,Righteous,Inter,bold retro display playful,Retro-futuristic bold display,"Retro brands, entertainment, novelty",Righteous|Inter:wght@400;500
+ty39,Monoton,Inter,retro neon vaporwave display,Neon retro display for vaporwave/y2k,"Music, nightlife, retro entertainment",Monoton|Inter:wght@400;500
+ty40,Orbitron,Rajdhani,futuristic sci-fi tech display,"Sci-fi, futuristic, tech-forward display","Gaming, crypto, futuristic products",Orbitron:wght@600;700|Rajdhani:wght@400;500
+ty41,Chakra Petch,Chakra Petch,tech futuristic angular sci-fi,Angular tech aesthetic,"Cyberpunk/tech brands, gaming HUDs",Chakra+Petch:wght@400;500;600
+ty42,Prata,Jost,elegant classic serif refined,Refined classic serif with modern body,"Luxury hospitality, real estate",Prata|Jost:wght@400;500
+ty43,Marcellus,Jost,elegant timeless serif luxury,Timeless elegant display serif,"Luxury fashion, jewelry, fine dining",Marcellus|Jost:wght@400;500
+ty44,Abril Fatface,Lato,bold editorial display fashion,High-contrast bold display serif,"Fashion editorials, magazine sites",Abril+Fatface|Lato:wght@400;500
+ty45,Big Shoulders Display,Inter,industrial condensed bold urban,Industrial condensed for strong headlines,"Real estate, industrial/B2B brands",Big+Shoulders+Display:wght@600;700|Inter:wght@400;500
+ty46,Karla,Karla,clean neutral warm humanist,Warm humanist neutral sans,"General product UI, blogs",Karla:wght@400;500;700
+ty47,Nunito,Nunito,rounded soft friendly approachable,"Soft rounded, gentle and friendly","Wellness, health, family apps",Nunito:wght@400;600;700
+ty48,Zilla Slab,Zilla Slab,technical readable slab serif,"Technical slab serif, developer-friendly","Dev blogs, technical documentation",Zilla+Slab:wght@400;500;600
+ty49,Bitter,Karla,readable warm slab editorial,"Warm, readable slab serif","Editorial, food/lifestyle blogs",Bitter:wght@400;600|Karla:wght@400;500
+ty50,Michroma,Inter,futuristic wide tech display,Wide futuristic display face,"AI/tech launches, sci-fi themed products",Michroma|Inter:wght@400;500

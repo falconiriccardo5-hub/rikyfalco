@@ -1,0 +1,25 @@
+id,trigger_keywords,product_id,style_id,color_id,typography_id,pattern_id,reasoning
+rs01,saas b2b software platform subscription,pr01,st16,cl01,ty01,ld01,B2B buyers need trust and clarity; clean corporate style with a neutral blue builds credibility fast
+rs02,fintech finance bank payments money,pr03,st46,cl03,ty19,ld03,"Financial products need conservative, precise styling that signals security over playfulness"
+rs03,fintech crypto web3 defi trading,pr03,st12,cl03,ty40,ld03,Crypto-native audiences respond to high-contrast dark UI with a futuristic technical typeface
+rs04,healthcare medical clinic patient wellness-service,pr04,st27,cl05,ty24,ld05,Calm soft-ui with a highly readable typeface reduces anxiety for health-related tasks
+rs05,beauty spa wellness service skincare salon,pr12,st22,cl09,ty07,ld05,Organic shapes and blush tones evoke care and softness appropriate for beauty/wellness
+rs06,education learning course school edtech,pr05,st19,cl11,ty10,ld04,Playful rounded shapes and a warm palette keep learners engaged without feeling childish for adults
+rs07,ecommerce shop retail store product,pr02,st48,cl07,ty04,ld02,Bold saturated colors and a friendly sans draw attention to products and drive urgency
+rs08,ecommerce luxury fashion premium retail,pr02,st20,cl08,ty05,ld02,Luxury retail needs restraint and elegance; serif display type signals premium quality
+rs09,dashboard analytics admin internal-tool data,pr06,st43,cl17,ty01,ld13,"Power users scanning dense data need a compact, neutral system with strong hierarchy, not decoration"
+rs10,portfolio personal creative freelancer resume,pr08,st04,cl15,ty22,ld08,Minimalism keeps focus on the creative work itself rather than the chrome around it
+rs11,agency studio creative branding design-firm,pr15,st05,cl15,ty17,ld08,"A bold, opinionated studio should look distinct; brutalist type signals creative confidence"
+rs12,landing page marketing product-launch startup,pr09,st18,cl02,ty02,ld01,"Startups benefit from an approachable, modern look that feels current without being niche"
+rs13,ai artificial-intelligence deep-tech developer-platform,pr21,st50,cl02,ty03,ld11,AI products benefit from a sleek dark aesthetic with glowing accents that reads as frontier tech
+rs14,developer tool api sdk cli infrastructure,pr22,st19,cl17,ty20,ld12,"Developer audiences trust technical, code-forward design with a monospace accent typeface"
+rs15,gaming esports game platform entertainment,pr17,st28,cl13,ty40,ld10,High-energy neon-on-dark aesthetics match gaming audience expectations and build hype
+rs16,nonprofit charity donation cause ngo,pr16,st49,cl19,ty07,ld09,"Warm earth tones and organic imagery support an emotionally resonant, trustworthy cause narrative"
+rs17,real-estate property listing housing rental,pr13,st20,cl21,ty42,ld06,Elegant serif type and restrained luxury tones elevate perceived property value
+rs18,restaurant food dining menu cafe,pr14,st22,cl20,ty49,ld07,Warm reds and organic texture stimulate appetite while staying legible for menus
+rs19,legal law firm consulting professional-services,pr19,st16,cl17,ty26,ld14,"Legal/professional services need conservative, high-trust design with a readable serif accent"
+rs20,travel hospitality hotel booking tourism,pr20,st20,cl21,ty05,ld01,Travel/hospitality brands sell aspiration; large imagery and elegant type support that fantasy
+rs21,fitness gym sports training wellness-app,pr18,st48,cl20,ty15,ld04,Fitness products benefit from bold energetic color and a condensed sporty display font
+rs22,mobile app ios android native consumer,pr11,st04,cl01,ty01,ld01,Mobile-first consumer apps favor minimal chrome and neutral system-friendly typography
+rs23,blog content publication editorial writing,pr10,st14,cl15,ty27,ld01,Editorial content prioritizes long-form readability with classic serif/sans pairing
+rs24,admin panel back-office crud internal,pr07,st17,cl18,ty01,ld13,Internal tools prioritize density and speed of scanning over visual flourish

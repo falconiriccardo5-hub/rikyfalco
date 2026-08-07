@@ -1,0 +1,8 @@
+id,keyword,title,guideline,category
+rn01,flatlist virtualization long-list,Use FlatList/SectionList for long lists,Never map() a large array directly into ScrollView; use virtualized list components,performance
+rn02,safe-area-view notch-handling,Respect safe areas on notched devices,Wrap screens in SafeAreaView or use safe-area-context insets for status bar/notch/home indicator,layout
+rn03,touchable-feedback press-state,Give touchables clear pressed feedback,Use Pressable with a visible pressed style rather than TouchableOpacity with no feedback,touch
+rn04,image-caching remote-images,Cache and size remote images deliberately,Set explicit width/height and use a caching image component for remote images,performance
+rn05,navigation stack-tab structure,Structure navigation with stack + tab navigators,Combine React Navigation stack and tab navigators to match common mobile IA patterns,architecture
+rn06,platform-specific ios-android-parity,Account for platform differences deliberately,"Use Platform.select/OS checks for intentional iOS/Android differences, not accidental ones",cross-platform
+rn07,keyboard-avoiding form-inputs,Handle the keyboard covering form inputs,Wrap forms in KeyboardAvoidingView so inputs aren't hidden behind the keyboard,forms

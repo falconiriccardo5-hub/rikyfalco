@@ -1,0 +1,7 @@
+id,keyword,title,guideline,category
+sc01,theming css-variables tokens,"Theme via CSS variables, not hardcoded colors","Use the generated CSS variable tokens (--primary, --background) so theming/dark-mode stays consistent",theming
+sc02,composition primitive-based,Compose shadcn primitives rather than rebuilding them,"Build higher-level components by composing existing primitives (Dialog, Popover, Command) instead of reinventing them",architecture
+sc03,form react-hook-form zod,Pair Form components with react-hook-form + zod,"Use the shadcn Form wrapper with a zod schema for typed, accessible validation",forms
+sc04,variant class-variance-authority,Define component variants with cva,Use class-variance-authority for variant/size props instead of ad-hoc conditional className strings,maintainability
+sc05,accessibility radix-primitives,Rely on Radix primitives for accessible behavior,Don't strip away the built-in keyboard/focus handling that Radix-based primitives provide,accessibility
+sc06,dark-mode next-themes toggle,Use next-themes (or equivalent) for theme switching,"Drive the dark-mode class toggle through a dedicated theme provider, not manual class manipulation",theming

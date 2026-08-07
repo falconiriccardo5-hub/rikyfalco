@@ -1,0 +1,8 @@
+id,keyword,title,guideline,category
+vu01,composition-api setup script,Prefer the Composition API with <script setup>,Use <script setup> for new components; it's terser and better for TypeScript inference,architecture
+vu02,reactivity ref-vs-reactive,Be consistent about ref vs reactive,"Use ref for primitives, reactive for objects, and don't mix patterns arbitrarily in one file",consistency
+vu03,pinia store-scoping,"Scope Pinia stores by domain, not globally","Create focused stores (useAuthStore, useCartStore) instead of one giant app store",architecture
+vu04,vue-router lazy-routes,Lazy-load route components,Use dynamic import() for route components to keep the initial bundle small,performance
+vu05,computed derived-state,Prefer computed over watch for derived state,Use computed() when a value is purely derived; reserve watch for real side effects,architecture
+vu06,v-for key stable,Always key v-for with a stable id,Provide a stable :key (not index) for reorderable/filterable v-for lists,correctness
+vu07,slots composition reuse,Use slots for flexible component composition,Prefer scoped slots over prop-explosion for components with variable content,architecture

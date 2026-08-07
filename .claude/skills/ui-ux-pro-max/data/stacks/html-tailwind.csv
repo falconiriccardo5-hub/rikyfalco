@@ -1,0 +1,11 @@
+id,keyword,title,guideline,category
+hw01,utility responsive breakpoint,Use Tailwind's responsive prefixes deliberately,Design mobile-first; add sm:/md:/lg: overrides only where the layout truly changes,layout
+hw02,spacing scale consistent,Stick to Tailwind's spacing scale,Use the default spacing scale (4px increments) instead of arbitrary values like [17px],consistency
+hw03,a11y focus-visible ring,Style focus states explicitly,Use focus-visible:ring-2 focus-visible:ring-offset-2 on interactive elements,accessibility
+hw04,dark-mode class strategy,Use the class-based dark mode strategy for user toggles,Set darkMode: 'class' in config and toggle a class on <html> for a user-controlled switch,theming
+hw05,purge unused-css build-size,Keep the generated CSS small,Ensure content globs cover all template files so unused utilities are purged in production,performance
+hw06,component-extraction repeated-classes,Extract repeated utility clusters into components,"When the same long className string repeats 3+ times, extract a component/partial, not @apply everywhere",maintainability
+hw07,semantic-html tailwind,Don't let utility classes replace semantic tags,"Apply utilities to semantic elements (button, nav, main), not generic divs",accessibility
+hw08,form-styling native-inputs,Reset and restyle native form controls consistently,"Use @tailwindcss/forms as a base, then layer custom focus/border styles",forms
+hw09,container max-width consistent,Keep a consistent content container width,"Use one max-w-6xl/7xl container class across pages, not mixed widths",layout
+hw10,arbitrary-values overuse,Avoid excessive arbitrary value usage,"Prefer scale tokens (text-lg, p-4) over arbitrary values like text-[17.3px] unless truly necessary",maintainability

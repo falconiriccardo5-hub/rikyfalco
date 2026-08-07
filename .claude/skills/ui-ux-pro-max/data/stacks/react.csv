@@ -1,0 +1,9 @@
+id,keyword,title,guideline,category
+rc01,state-lifting prop-drilling,Avoid excessive prop drilling,Use composition or context for state needed 3+ levels deep instead of drilling props,architecture
+rc02,controlled-uncontrolled input,Be deliberate about controlled vs uncontrolled inputs,Pick one pattern per form field and stay consistent; don't flip-flop with value/defaultValue,forms
+rc03,key stable-identity,Use stable keys for dynamic lists,"Key list items by a stable unique id, never array index for reorderable/filterable lists",correctness
+rc04,effect side-effect minimal,Minimize useEffect usage,Prefer event handlers and derived state over useEffect for logic that isn't a true side effect,architecture
+rc05,custom-hook reusable-logic,Extract reusable logic into custom hooks,Move repeated stateful logic into a named useXyz hook rather than duplicating it,maintainability
+rc06,memo profiling premature-optimization,Don't memoize prematurely,Reach for React.memo/useMemo only after profiling shows a real re-render cost,performance
+rc07,error-boundary resilience,Add error boundaries around risky subtrees,Wrap components that fetch external data in an ErrorBoundary with a graceful fallback,resilience
+rc08,accessibility-aria interactive,Keep custom interactive components accessible,"When building custom dropdowns/tabs, follow WAI-ARIA authoring patterns for roles and keyboard support",accessibility

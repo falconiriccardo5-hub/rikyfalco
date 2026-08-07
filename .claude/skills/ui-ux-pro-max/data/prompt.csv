@@ -1,0 +1,51 @@
+id,style_id,style_name,ai_prompt_keywords,css_keywords
+pm01,st01,glassmorphism,"Frosted-glass panels with backdrop blur over vivid backgrounds, SaaS dashboards",backdrop-blur-lg;bg-white/10-30;border border-white/20;soft shadow
+pm02,st02,claymorphism,"Soft, puffy 3D shapes with inset/outset shadows resembling clay, Kids apps",double box-shadow (light+dark);large border-radius;pastel fills
+pm03,st03,neumorphism,"Extruded, monochrome surfaces using subtle dual shadows, Settings panels",subtle dual-shadow;low contrast fills;rounded corners
+pm04,st04,minimalism,"Generous whitespace, restrained palette, single accent color, Portfolios",large whitespace;1-2 accent colors;thin dividers
+pm05,st05,brutalism,"Raw, unpolished layouts with stark typography and visible structure, Design studios",harsh borders;system fonts;no rounded corners
+pm06,st06,neubrutalism,"Bold flat colors with thick black outlines and offset hard shadows, Startup landing pages",thick 2-4px borders;offset box-shadow no blur;bold flat colors
+pm07,st07,flat-design,"Simple 2D shapes, no gradients/shadows, bold solid colors, Mobile apps",solid fills;no shadows;geometric icons
+pm08,st08,material-design,"Google's elevation-based system with ripple feedback and grid, Android apps",elevation shadows;ripple on tap;8px grid
+pm09,st09,skeuomorphism,"Mimics real-world textures and objects (leather, paper, metal), Music/audio apps",realistic textures;drop shadows;gradients
+pm10,st10,bento-grid,"Modular grid of rounded boxes of varying sizes, Apple-style, Product feature pages",rounded-2xl cards;CSS grid;varied cell spans
+pm11,st11,dark-mode,"Dark background UI with light text and muted accent surfaces, Developer tools",bg-gray-900/950;desaturated accents;elevated surface tones
+pm12,st12,high-contrast-dark,"Dark UI tuned for AA/AAA contrast with punchy accent colors, Accessibility-first apps",bg-#0B0F19;text >=7:1 contrast;saturated single accent
+pm13,st13,swiss-design,"Grid-driven, typographic, objective layout (International Style), Editorial",strict column grid;Helvetica-like sans;red/black accents
+pm14,st14,editorial,"Magazine-inspired layout emphasizing long-form reading, Blogs",serif headlines;drop caps;pull quotes
+pm15,st15,magazine-layout,"Multi-column print-like layout with mastheads and bylines, Content publishers",multi-column text;masthead header;image captions
+pm16,st16,corporate-clean,"Structured, conservative layout conveying trust for B2B, Enterprise SaaS",blue/navy palette;clear hierarchy;stock-free photography
+pm17,st17,enterprise-serious,"Dense, information-rich UI optimized for power users, Admin panels",compact spacing;data tables;muted neutral palette
+pm18,st18,startup-friendly,"Approachable modern look with soft gradients and rounded UI, Early-stage SaaS",soft gradient hero;rounded-xl buttons;friendly illustrations
+pm19,st19,playful-rounded,"Bubbly, rounded shapes with bright saturated colors, Kids/education apps",rounded-full elements;bright palette;bouncy micro-animations
+pm20,st20,luxury-editorial,"High-end, elegant layout with serif type and restrained gold accents, Luxury retail",serif display type;generous negative space;gold/black accents
+pm21,st21,dark-luxury,"Moody dark palette with metallic accents for premium branding, Automotive",near-black bg;metallic gold/bronze accent;cinematic imagery
+pm22,st22,organic-shapes,"Fluid, hand-crafted blob shapes breaking up rigid grids, Wellness",blob SVG backgrounds;soft color washes;rounded imagery
+pm23,st23,gradient-mesh,"Multi-color mesh gradients as vibrant section backgrounds, AI/tech product launches",mesh-gradient bg;vibrant multi-stop gradients;glass cards on top
+pm24,st24,aurora-gradient,"Soft glowing aurora-like gradient blur behind content, AI products",blurred radial gradients;dark bg;glow accents
+pm25,st25,monochrome,"Single hue across all tints/shades for a cohesive tonal look, Portfolios","one hue, multiple tints;black/white photography"
+pm26,st26,duotone,"Two-color image treatment for photography-heavy sections, Creative portfolios",duotone photo filters;bold two-color palette
+pm27,st27,soft-ui,"Gentle pastel surfaces with soft shadows, softer than neumorphism, Wellness apps",pastel fills;soft 8-16px shadow blur;rounded-xl
+pm28,st28,cyberpunk,"Neon-on-black aesthetic with glitch accents and scanlines, Gaming",neon pink/cyan accents;glitch hover effects;monospace type
+pm29,st29,vaporwave,"Retro-futuristic pastel/neon palette with 80s grid motifs, Music platforms",pink/purple gradient;grid horizon backgrounds;retro serif logo
+pm30,st30,y2k,"Chrome, bubble text and metallic gradients evoking early-2000s web, Gen-Z fashion",chrome gradient text;bubble buttons;sparkle accents
+pm31,st31,retro-futurism,"Atomic-age, space-race inspired shapes and warm retro palette, Entertainment",starburst motifs;warm orange/teal palette;rounded geometric type
+pm32,st32,memphis,"Bold geometric shapes and squiggles in the 1980s Memphis style, Creative agencies",squiggle/confetti shapes;primary color blocks;playful type
+pm33,st33,art-deco,"Symmetrical geometric ornamentation with gold/black luxury tones, Hospitality",fan/sunburst motifs;gold foil accents;symmetric layout
+pm34,st34,kinetic-typography,"Typography as the primary visual element, often animated, Agency portfolios",animated headline reveals;huge type scale;tight tracking
+pm35,st35,brutalist-typography,"Oversized, stacked, sometimes overlapping raw typography, Design portfolios",huge type-scale;overlapping text blocks;monospace accents
+pm36,st36,3d-depth,"Layered elements with strong shadows and parallax depth cues, Product launch pages",multi-layer drop-shadow;parallax on scroll;3D render assets
+pm37,st37,isometric,"Isometric illustrations conveying technical/product concepts, Dev tools",isometric SVG illustration;consistent 30deg angles
+pm38,st38,hand-drawn,"Hand-sketched icon/illustration style for a human, approachable feel, Education",sketch-style SVGs;imperfect hand-drawn borders
+pm39,st39,collage,"Cut-paper, mixed-media layered compositions, Music",layered image cutouts;mixed typography;paper-texture bg
+pm40,st40,grain-texture,"Subtle film-grain/noise texture overlay for warmth and depth, Photography",SVG noise overlay at low opacity;warm color grading
+pm41,st41,split-screen,"Two-panel layout contrasting content, image, or before/after, Landing pages",50/50 or 60/40 grid split;contrasting bg colors
+pm42,st42,asymmetric-grid,"Off-balance grid creating dynamic tension and visual interest, Creative portfolios",uneven column spans;overlapping grid items
+pm43,st43,data-dense,"Compact, information-dense layout optimized for scanning data, Analytics dashboards",8px base spacing;monospace numerals;sticky table headers
+pm44,st44,dashboard-minimal,"Clean card-based dashboard with generous spacing around KPIs, Executive dashboards",KPI stat cards;soft dividers;single accent for alerts
+pm45,st45,warm-neutral,"Warm beige/terracotta neutral palette for an approachable feel, Wellness",warm off-white bg;terracotta/olive accents;serif body option
+pm46,st46,cool-neutral,"Cool slate/gray neutral palette for a calm, professional feel, B2B SaaS",cool gray scale;single blue/teal accent;crisp sans-serif
+pm47,st47,pastel-soft,"Muted pastel palette across the whole UI for a gentle tone, Wellness",desaturated pastel fills;soft rounded corners
+pm48,st48,bold-primary,"Saturated primary-color blocks for high energy and clarity, Sports",fully saturated color blocks;strong color contrast;bold sans
+pm49,st49,nature-organic,"Green, earth-toned palette with organic textures and imagery, Sustainability",forest/moss green palette;organic photography;leaf motifs
+pm50,st50,tech-futuristic,"Sleek dark UI with glowing gradient accents evoking AI/frontier tech, AI products",dark bg with glow accents;gradient text;monospace code UI

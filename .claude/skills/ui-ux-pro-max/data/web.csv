@@ -1,0 +1,16 @@
+id,keyword,title,guideline,category
+wd01,aria role landmark semantic,"Use ARIA to supplement, not replace, semantics",Prefer native semantic elements first; use ARIA roles only when no native element fits,accessibility
+wd02,focus trap modal dialog,Trap and restore focus for modals,Trap focus within an open modal and return it to the trigger element on close,accessibility
+wd03,keyboard shortcut conflict,Avoid clobbering browser/OS shortcuts,"Don't override common shortcuts (Cmd/Ctrl+F, Tab, Esc) without a clear, documented reason",accessibility
+wd04,semantic landmark structure,Use landmark regions for page structure,Wrap the page in header/nav/main/footer so assistive tech can jump between regions,accessibility
+wd05,virtualize scroll-performance long-page,Virtualize offscreen content on long pages,Use content-visibility: auto or windowing for very long scrollable pages,performance
+wd06,meta description title seo,Every page needs a unique title and description,Set a descriptive <title> and meta description per route for SEO/sharing,seo
+wd07,responsive images picture srcset,Serve appropriately sized images per device,Use srcset/sizes or <picture> so mobile doesn't download desktop-resolution images,performance
+wd08,form autocomplete input-type,Use correct input types and autocomplete,Use type='email'/'tel' and autocomplete attributes to speed up form filling,ux
+wd09,link vs button semantics,"Use links for navigation, buttons for actions",<a> changes the URL/navigates; <button> triggers an action — don't mix them up,accessibility
+wd10,prefers-color-scheme dark-mode-detection,Respect the OS color scheme preference,Use prefers-color-scheme as the default theme unless the user overrides it,ux
+wd11,offline-state network-error handling,Handle offline/network-failure states gracefully,Detect and communicate offline/failed-request states instead of a silent hang,resilience
+wd12,print-stylesheet printable-page,Provide sensible print styles where relevant,"Hide nav/chrome and ensure readable print layout for content-heavy pages (invoices, articles)",ux
+wd13,favicon manifest pwa-basics,Ship basic PWA/browser metadata,"Include a favicon, apple-touch-icon, and web manifest for a polished browser presence",polish
+wd14,language-attribute lang-tag,Declare the page's language,Set <html lang='en'> (or the correct locale) so assistive tech and translators work correctly,accessibility
+wd15,external-link-indication new-tab,Indicate links that open in a new tab,Add a visual cue and rel='noopener noreferrer' for target='_blank' links,accessibility

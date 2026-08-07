@@ -1,0 +1,16 @@
+id,keyword,title,guideline,category
+rd01,waterfall sequential fetch blocking,Avoid request waterfalls,Fetch independent data in parallel (Promise.all / parallel server fetches) instead of sequential awaits,performance
+rd02,bundle size code-splitting lazy,Keep bundles small,"Use dynamic import()/React.lazy for heavy, non-critical components (charts, editors, modals)",performance
+rd03,suspense streaming loading-boundary,Use Suspense boundaries deliberately,"Wrap slow subtrees in <Suspense> with a meaningful fallback, not the whole page",performance
+rd04,memo rerender unnecessary-render,Prevent unnecessary re-renders,Use React.memo/useMemo/useCallback only where profiling shows real re-render cost,performance
+rd05,rerender state-colocation lifting,Colocate state close to where it's used,Avoid lifting state higher than necessary; it causes broad re-render trees,architecture
+rd06,cache stale-data revalidate,Cache and revalidate server data deliberately,"Use a data-fetching layer (React Query, SWR, Next cache) with explicit revalidation, not ad-hoc useEffect fetches",performance
+rd07,key list-rendering index-key,Use stable keys for list items,"Use a stable unique id as the key prop, never the array index for reorderable lists",correctness
+rd08,hydration mismatch ssr client,Avoid hydration mismatches,Ensure server-rendered and first client render output match exactly (no Date.now()/Math.random in render),correctness
+rd09,image next-image optimization,Use optimized image components,"Use next/image (or equivalent) for automatic sizing, lazy loading, and format negotiation",performance
+rd10,context re-render provider-scope,Scope context providers narrowly,Split large contexts so unrelated consumers don't re-render on every change,performance
+rd11,server-components client-boundary,Push interactivity to the leaves,Keep 'use client' boundaries as small/deep as possible in the tree to minimize client JS,performance
+rd12,effect dependency-array stale-closure,Keep effect dependencies accurate,List all reactive values used inside useEffect in its dependency array,correctness
+rd13,virtualize long-list windowing,Virtualize very long lists,Use windowing (react-window/virtualized) for lists with hundreds+ of rows,performance
+rd14,route-prefetch navigation-speed,Prefetch likely next routes,Use built-in Link prefetching for perceived-instant navigation,performance
+rd15,error-boundary fallback resilience,Wrap risky subtrees in error boundaries,Add an ErrorBoundary around widgets that fetch external/unreliable data,resilience

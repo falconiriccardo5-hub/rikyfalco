@@ -1,0 +1,61 @@
+id,category,priority,title,guideline,do,dont
+ux001,accessibility,1,color-contrast,Text must meet WCAG contrast minimums,"Use 4.5:1 for normal text, 3:1 for large text (18px+ bold or 24px+)",Placing gray-400 text on a white background
+ux002,accessibility,1,focus-states,Interactive elements need a visible focus ring,Use a 2px visible outline/ring with sufficient contrast on :focus-visible,Removing outline:none without a replacement focus style
+ux003,accessibility,1,alt-text,Meaningful images need descriptive alt text,Describe the image's purpose/content in alt='',Leaving alt empty on informative images or stuffing keywords
+ux004,accessibility,1,aria-labels,Icon-only buttons need an accessible name,"Add aria-label describing the action, e.g. aria-label='Close menu'",Shipping an icon button with no discernible text for screen readers
+ux005,accessibility,1,keyboard-nav,All interactive elements must be keyboard reachable,Ensure logical tab order matching visual order; support Enter/Space,"Trapping focus in a modal with no escape, or skipping tabindex order"
+ux006,accessibility,1,form-labels,Every input needs an associated label,"Use <label for='id'> or aria-labelledby, not placeholder-only",Using placeholder text as the only label (disappears on input)
+ux007,accessibility,1,semantic-html,Use semantic elements over generic divs,"Use nav, main, header, button, etc. for their intended purpose",Using <div onClick> instead of <button> for actions
+ux008,accessibility,1,skip-links,Provide a skip-to-content link,Add a visually-hidden-until-focused 'Skip to main content' link,Forcing keyboard users to tab through the entire nav every page
+ux009,accessibility,1,error-identification,Form errors must be programmatically associated,Use aria-describedby to link error text to its input,Showing error text visually with no association for screen readers
+ux010,accessibility,1,heading-hierarchy,"Headings must follow a logical, non-skipping order",Use h1 > h2 > h3 in document order for structure,Skipping heading levels purely for font-size convenience
+ux011,touch,2,touch-target-size,Touch targets must be large enough to hit reliably,Minimum 44x44px (iOS) / 48x48dp (Android) tappable area,Small icon buttons packed tightly with no spacing
+ux012,touch,2,hover-vs-tap,Primary actions must not depend on hover,Use click/tap as the primary trigger; hover is progressive enhancement,Hiding a critical action behind hover-only reveal on touch devices
+ux013,touch,2,loading-buttons,Disable buttons during async operations,Show a spinner and disable the button while the request is in flight,Allowing repeat clicks that fire duplicate form submissions
+ux014,touch,2,error-feedback,Errors must appear near the point of failure,Show inline error messages next to the offending field,Showing only a generic top-of-page banner for a specific field error
+ux015,touch,2,cursor-pointer,Clickable elements need a pointer cursor,Add cursor-pointer/cursor: pointer to all clickable elements,Leaving the default cursor on a clickable card or row
+ux016,touch,2,tap-feedback,Taps need immediate visual feedback,Use an active/pressed state (opacity/scale) on tap,No visual acknowledgment that a tap registered
+ux017,touch,2,swipe-affordance,Swipeable content needs a visible affordance,Peek the next item or add dots/arrows to hint swipeability,A fully swipeable carousel with no visual hint it's swipeable
+ux018,touch,2,destructive-confirmation,Destructive actions need confirmation,Require a confirm step (dialog) for delete/irreversible actions,One-tap delete with no undo or confirmation
+ux019,performance,3,image-optimization,Images should be optimized and responsive,"Use WebP/AVIF, srcset, and lazy loading below the fold",Shipping full-resolution PNGs with no lazy loading
+ux020,performance,3,reduced-motion,Respect the user's reduced-motion preference,Wrap non-essential animation in @media (prefers-reduced-motion: reduce),Forcing parallax/auto-play animation regardless of OS setting
+ux021,performance,3,content-jumping,Reserve space for async content,Set explicit width/height or aspect-ratio before content loads,Letting images/ads load in and shift layout (high CLS)
+ux022,performance,3,font-loading,Fonts shouldn't cause invisible text or big shifts,Use font-display: swap and preload critical fonts,Blocking render on web font load with no fallback
+ux023,performance,3,code-splitting,Ship only what the current view needs,"Lazy-load routes/heavy components (charts, editors, modals)",Bundling every page's JS into a single blocking initial payload
+ux024,performance,3,debounce-input,Expensive input handlers should be debounced,Debounce search/filter inputs that trigger network/heavy compute,Firing an API call on every keystroke with no debounce
+ux025,layout,4,viewport-meta,Pages need a correct viewport meta tag,"<meta name='viewport' content='width=device-width, initial-scale=1'>","Omitting the viewport tag, causing mobile browsers to zoom out"
+ux026,layout,4,readable-font-size,Body text should be readable without zooming,Minimum 16px body text on mobile,Using 12-13px body copy that forces users to pinch-zoom
+ux027,layout,4,horizontal-scroll,Content must fit the viewport width,"Use max-width: 100%, overflow-x: auto only on intentional scroll areas",Fixed-width elements causing unintended horizontal page scroll
+ux028,layout,4,z-index-management,Define a consistent z-index scale,Use a scale like 10/20/30/50 for dropdown/modal/toast/tooltip layers,Ad-hoc z-index: 9999 sprinkled wherever something doesn't show
+ux029,layout,4,responsive-breakpoints,Test at standard breakpoints,"Verify layout at 375, 768, 1024, 1440px widths",Designing only for one desktop width and hoping it reflows
+ux030,layout,4,safe-area-insets,Respect device safe areas on mobile,Use env(safe-area-inset-*) for notches/home indicators,Content hidden behind the iPhone notch or home indicator bar
+ux031,layout,4,empty-states,Every list/table needs a designed empty state,Show a helpful message + primary action when there's no data,Rendering a blank white area when a list has zero items
+ux032,layout,4,floating-nav-spacing,Floating navbars need edge spacing,Add top-4/left-4/right-4 spacing instead of sticking to viewport edges,Sticking a floating-style navbar flush to top-0 left-0 right-0
+ux033,layout,4,content-under-fixed-nav,Content must not hide behind fixed headers,Add top padding/margin to main content equal to navbar height,Fixed navbar overlapping the first block of page content
+ux034,typography,5,line-height,Body text needs comfortable line-height,Use 1.5-1.75 line-height for paragraph text,Tight 1.1-1.2 line-height on multi-line body copy
+ux035,typography,5,line-length,Limit line length for readability,Keep body text to 65-75 characters per line (max-w-prose),Full-bleed paragraph text stretching 150+ characters wide
+ux036,typography,5,font-pairing,Pair fonts with complementary personalities,"Match a distinct heading font with a neutral, legible body font",Using two competing display fonts for both heading and body
+ux037,typography,5,type-scale,Use a consistent modular type scale,Define a fixed scale (e.g. 12/14/16/20/24/32/48px),Ad-hoc font sizes chosen per-component with no system
+ux038,color,5,color-not-only-indicator,Don't rely on color alone to convey meaning,Pair color with icons/text for status (success/error/warning),Red/green-only indicators that are invisible to colorblind users
+ux039,color,5,dark-mode-glass-contrast,Glass/transparent surfaces need enough opacity in light mode,Use bg-white/80+ (not bg-white/10) for glass cards in light mode,Using near-transparent white panels that vanish on light backgrounds
+ux040,color,5,border-visibility,Borders must be visible in both themes,"Use border-gray-200 in light mode, border-white/10 only in dark mode",Using border-white/10 in light mode where it's effectively invisible
+ux041,animation,6,duration-timing,"Micro-interactions should be fast, not sluggish",Use 150-300ms for hover/tap/toggle transitions,500ms+ transitions on simple hover states feel laggy
+ux042,animation,6,transform-performance,"Animate cheap properties, not layout-triggering ones",Animate transform and opacity for smooth 60fps motion,"Animating width/height/top/left, forcing layout recalculation"
+ux043,animation,6,loading-states,Async content needs a loading state,Use skeleton screens or spinners while data loads,Blank screen with no feedback while a request is pending
+ux044,animation,6,easing-curves,"Use natural easing, not linear","Use ease-out for entrances, ease-in for exits","Linear easing on every transition, which feels robotic"
+ux045,animation,6,purposeful-motion,"Animation should communicate, not decorate",Use motion to show relationship/continuity (e.g. shared element transitions),Adding animation to every element with no functional purpose
+ux046,style,7,style-match,Match visual style to product type and audience,Pick a style whose personality matches the product's context (e.g. corporate-clean for B2B finance),Applying a playful/brutalist style to a serious medical or legal product
+ux047,style,7,consistency,Keep style consistent across all pages,"Reuse the same spacing scale, radius, and color tokens sitewide",Mixing glassmorphism on the homepage with flat design on the dashboard
+ux048,style,7,no-emoji-icons,"Use real icons, not emoji, for UI iconography","Use an SVG icon set (Heroicons, Lucide) sized consistently",Using emoji like ⚙️ 🚀 🎨 as functional UI icons
+ux049,style,7,icon-consistency,Icons should share one visual system,Use one icon library with a fixed viewBox (e.g. 24x24) throughout,Mixing icon sets with different stroke widths and grids
+ux050,style,7,brand-logo-accuracy,Third-party brand logos must be accurate,Source official SVGs (e.g. from Simple Icons) for brand marks,Guessing or hand-drawing an approximation of a brand's logo
+ux051,chart,8,chart-type-match,Choose chart type based on the data relationship,"Match trend->line, comparison->bar, composition->stacked/pie",Using a pie chart for a time-series trend
+ux052,chart,8,chart-color-guidance,"Use accessible, distinguishable chart colors",Use a colorblind-safe categorical palette with sufficient contrast,Red/green as the only distinguishing colors between two series
+ux053,chart,8,chart-data-table,Provide a non-visual alternative to charts,Offer a toggle to a data table for screen-reader/keyboard users,Charts with no way to access the underlying data non-visually
+ux054,interaction,2,disabled-state-clarity,Disabled controls need a visibly distinct state,"Reduce opacity and remove pointer affordance, add a tooltip if useful",A disabled button that looks identical to an enabled one
+ux055,interaction,2,undo-over-confirm,Prefer undo for low-risk reversible actions,Use a toast with 'Undo' instead of a blocking confirm dialog,Interrupting every minor action with a confirmation modal
+ux056,forms,1,inline-validation-timing,"Validate on blur/submit, not on every keystroke",Show validation errors after the user leaves the field or submits,Flashing 'required' errors while the user is still typing
+ux057,forms,4,input-grouping,Group related fields visually,Use fieldset/legend or spacing to cluster related inputs,A flat list of 20 unlabeled-grouped inputs in one long form
+ux058,navigation,4,active-state-indication,Current page/section must be visually indicated,Highlight the active nav item with color/underline + aria-current,Navigation with no indication of which page is currently active
+ux059,navigation,2,breadcrumb-for-depth,Deep hierarchies need breadcrumbs,Show breadcrumbs for content nested 3+ levels deep,No wayfinding in a deeply nested admin/docs hierarchy
+ux060,feedback,2,toast-timing,Toasts should stay long enough to read,"Keep toasts visible 4-6s, longer for multi-line messages",Toasts that auto-dismiss in under 2 seconds

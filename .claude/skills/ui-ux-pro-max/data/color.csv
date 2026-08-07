@@ -1,0 +1,22 @@
+id,name,category,keywords,primary,secondary,accent,background,text,contrast_note
+cl01,saas-blue,saas,saas b2b trust blue professional,#2563EB,#1E3A8A,#22D3EE,#F8FAFC,#0F172A,Blue-600 on white passes 4.5:1 for body text
+cl02,saas-indigo,saas,saas modern indigo tech,#4F46E5,#312E81,#A78BFA,#FFFFFF,#111827,"Use indigo-700+ for text-on-white, not indigo-400"
+cl03,fintech-navy,fintech,fintech finance trust navy gold,#0B1E3F,#13294B,#D4AF37,#F5F7FA,#0B1E3F,"Gold accent only for highlights, never body text"
+cl04,fintech-emerald,fintech,fintech growth money emerald,#047857,#064E3B,#34D399,#F0FDF4,#052E1B,Emerald-700 minimum for text on light backgrounds
+cl05,healthcare-teal,healthcare,healthcare medical calm teal,#0D9488,#134E4A,#5EEAD4,#F0FDFA,#082F2C,Avoid teal-300 for critical alert text; use red-600 instead
+cl06,healthcare-soft-blue,healthcare,healthcare calm trust soft-blue,#3B82F6,#1D4ED8,#93C5FD,#F8FAFC,#0F172A,Pair soft blue bg with slate-900 text for AA compliance
+cl07,ecommerce-coral,ecommerce,ecommerce retail energetic coral,#F97316,#C2410C,#FDE047,#FFFFFF,#1C1917,Coral CTA on white passes contrast; verify yellow accent separately
+cl08,ecommerce-black-gold,ecommerce,ecommerce luxury retail black gold,#111111,#D4AF37,#F5F5F5,#0A0A0A,#F5F5F5,Gold-on-black decorative only; body copy stays white/gray
+cl09,beauty-blush,beauty,beauty spa wellness blush pink,#DB2777,#831843,#FBCFE8,#FFF1F2,#3F1220,"Blush pink backgrounds need slate-900-level text, not gray-400"
+cl10,beauty-lavender,beauty,beauty spa calm lavender purple,#7C3AED,#4C1D95,#DDD6FE,#FAF5FF,#2E1065,Lavender bg + purple-900 text meets AA for body copy
+cl11,education-sunny,education,education learning friendly yellow,#F59E0B,#B45309,#3B82F6,#FFFBEB,#1C1917,"Yellow reserved for accents/badges, never small text"
+cl12,education-forest,education,education growth calm forest-green,#15803D,#14532D,#FACC15,#F0FDF4,#052E16,Forest green passes AA on white; avoid green-400 for text
+cl13,gaming-neon,gaming,gaming esports neon dark energetic,#A855F7,#6B21A8,#22D3EE,#0A0A12,#F5F3FF,High-saturation neon needs dark bg to keep contrast usable
+cl14,gaming-purple,gaming,gaming entertainment purple dark,#8B5CF6,#5B21B6,#F472B6,#0F0A1E,#EDE9FE,"Keep body copy at violet-100/white, not mid-tone purple"
+cl15,portfolio-mono,portfolio,portfolio creative minimal monochrome,#111111,#404040,#EF4444,#FFFFFF,#111111,Single red accent used sparingly for links/CTAs only
+cl16,portfolio-warm,portfolio,portfolio creative warm editorial,#B45309,#78350F,#F97316,#FFFBEB,#1C1917,Warm neutrals with one orange accent for interactive elements
+cl17,dashboard-slate,dashboard,dashboard admin analytics slate,#334155,#1E293B,#3B82F6,#F8FAFC,#0F172A,Reserve blue for interactive/primary actions only
+cl18,dashboard-charcoal,dashboard,dashboard dark admin charcoal,#1E293B,#0F172A,#38BDF8,#0B1120,#E2E8F0,Charcoal-900 bg with slate-200 text meets AA
+cl19,nonprofit-earth,nonprofit,nonprofit charity warm earth-tones,#B45309,#78350F,#15803D,#FFFBEB,#1C1917,Earth tones convey warmth; keep CTA color distinct from body
+cl20,food-warm-red,food,restaurant food warm appetite red,#DC2626,#7F1D1D,#F59E0B,#FFFBEB,#1C1917,Warm red drives appetite cues; ensure 4.5:1 for menu text
+cl21,luxury-black-gold,luxury,luxury premium hospitality black gold,#0A0A0A,#1A1A1A,#C9A227,#F5F5F0,#0A0A0A,Gold on black decorative only; use off-white for long text

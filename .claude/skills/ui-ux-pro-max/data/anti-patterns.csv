@@ -1,0 +1,11 @@
+id,context_keywords,avoid,why
+ap01,fintech finance banking,Playful rounded/bubbly style with saturated primary colors,Undermines the trust and seriousness financial products need to convey
+ap02,healthcare medical,Brutalist or neubrutalist raw aesthetic,Feels alarming/unpolished in a context where users are often anxious
+ap03,legal professional-services,"Neon, gaming, or vaporwave aesthetics",Signals a lack of seriousness for high-stakes professional decisions
+ap04,dashboard admin data-dense,Large whitespace-heavy minimalism with sparse cards,Wastes screen space power users need for scanning dense data
+ap05,ecommerce checkout,Multi-step animated transitions on the checkout flow,Adds friction and perceived slowness right when users want to complete a purchase
+ap06,kids-education children,Small touch targets and low-contrast pastel-on-pastel text,"Children and low-vision users can't reliably interact with tiny, low-contrast controls"
+ap07,enterprise-saas b2b,Emoji used as functional icons in the product UI,Reads as unprofessional and inconsistent across platforms/fonts
+ap08,luxury fashion retail,Default system fonts (Arial/system-ui) for display headlines,Fails to convey the premium positioning the brand is paying for
+ap09,gaming entertainment,Low-saturation corporate-clean palette,Fails to create the energy/excitement gaming audiences expect
+ap10,portfolio creative,Templated hero-centric SaaS pattern with generic gradient blob,Makes a personal portfolio indistinguishable from a generic SaaS landing page

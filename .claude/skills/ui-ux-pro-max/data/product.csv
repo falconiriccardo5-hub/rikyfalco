@@ -1,0 +1,23 @@
+id,type,name,keywords,recommended_styles,recommended_colors,recommended_pattern,notes
+pr01,saas,SaaS Product,saas b2b software subscription platform,st16;st01;st10,cl01;cl02;cl17,hero-centric,"Lead with a clear value prop hero, feature bento-grid, and pricing table"
+pr02,ecommerce,E-commerce Store,ecommerce shop retail store product-catalog,st07;st48;st20,cl07;cl08,product-grid,"Prioritize product imagery, fast filtering, and a frictionless checkout"
+pr03,fintech,Fintech / Finance App,fintech banking payments money crypto,st16;st46;st12,cl03;cl04,trust-centric,"Emphasize security signaling, data clarity, and conservative color use"
+pr04,healthcare,Healthcare / Medical,healthcare medical clinic patient wellness-service,st04;st46;st27,cl05;cl06,reassurance-centric,"Calm palettes, large legible type, and clear appointment/contact CTAs"
+pr05,education,Education Platform,education learning course school edtech,st19;st10;st38,cl11;cl12,course-centric,"Friendly, encouraging tone with clear progress indicators"
+pr06,dashboard,Analytics Dashboard,dashboard analytics admin data internal-tool,st43;st44;st11,cl17;cl18,data-dense,"Prioritize scanability: sticky headers, compact rows, strong hierarchy"
+pr07,admin-panel,Admin Panel,admin panel back-office crud internal,st16;st43,cl17;cl18,table-centric,Consistent table/detail patterns; bulk actions and filters up top
+pr08,portfolio,Portfolio / Personal Site,portfolio personal creative freelancer resume,st04;st42;st35,cl15;cl16,work-showcase,Let the work be the hero; minimal chrome around case studies
+pr09,landing-page,Marketing Landing Page,landing page marketing product-launch campaign,st18;st23;st01,cl01;cl02,hero-centric,Single clear CTA above the fold with social proof below
+pr10,blog,Blog / Publication,blog content publication editorial writing,st14;st15;st25,cl15;cl19,content-centric,"Optimize for reading: serif option, generous line-height, clear TOC"
+pr11,mobile-app,Mobile App,mobile app ios android native,st04;st19;st48,cl01;cl13,tab-centric,Design for thumb reach; bottom nav for primary actions
+pr12,beauty,Beauty / Spa / Wellness Service,beauty spa wellness service skincare salon,st22;st27;st20,cl09;cl10,booking-centric,Soft imagery-led hero with a prominent booking CTA
+pr13,real-estate,Real Estate,real-estate property listing housing rental,st20;st33;st45,cl16;cl21,listing-grid,High-quality imagery grid with map integration and inquiry forms
+pr14,restaurant,Restaurant / Food Service,restaurant food dining menu cafe,st22;st40;st45,cl20;cl16,menu-centric,"Appetite-driving imagery, clear menu structure, reservation CTA"
+pr15,agency,Creative Agency / Studio,agency studio creative branding design-firm,st05;st42;st34,cl15;cl16,portfolio-showcase,Bold typographic statements; let case studies carry the narrative
+pr16,nonprofit,Nonprofit / Charity,nonprofit charity donation cause ngo,st04;st49,cl19;cl12,cause-centric,"Emotional storytelling hero with a clear, low-friction donate CTA"
+pr17,gaming,Gaming / Esports,gaming esports game platform entertainment,st28;st50;st36,cl13;cl14,hype-centric,High-energy dark UI with bold accent color and motion
+pr18,fitness,Fitness / Sports,fitness gym sports training wellness-app,st48;st19;st46,cl20;cl12,program-centric,Energetic imagery and clear progress/streak tracking
+pr19,legal,Legal / Professional Services,legal law firm consulting professional-services,st16;st17;st26,cl17;cl03,credibility-centric,"Conservative palette, clear credentials, straightforward contact path"
+pr20,travel,Travel / Hospitality,travel hospitality hotel booking tourism,st20;st22;st33,cl16;cl21,inspiration-centric,Large destination imagery with a simple search/booking widget
+pr21,ai-product,AI / Deep Tech Product,ai artificial-intelligence deep-tech developer-platform,st50;st24;st23,cl02;cl18,demo-centric,Sleek dark UI with a live demo/interactive proof of capability up top
+pr22,developer-tool,Developer Tool / API,developer tool api sdk cli infrastructure,st19;st37;st43,cl17;cl18,docs-centric,"Code-first hero, copyable snippets, and a clear docs entry point"

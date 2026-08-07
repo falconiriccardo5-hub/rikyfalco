@@ -1,0 +1,8 @@
+id,keyword,title,guideline,category
+sw01,state-ownership source-of-truth,Keep a single source of truth per piece of state,"Use @State for local view state, @Observable/@StateObject for shared model state owned by one view",architecture
+sw02,view-decomposition small-views,"Break large views into small, composable views",Extract subviews when a body closure grows large; SwiftUI diffs and re-renders more efficiently,performance
+sw03,navigation-stack programmatic,Use NavigationStack with a typed path for navigation,Drive navigation via a path array/enum for deep-linking and programmatic control,architecture
+sw04,list identifiable id,Conform list data to Identifiable with a stable id,Avoid using array index as id for List/ForEach over mutable/reorderable data,correctness
+sw05,animation implicit-explicit,Prefer implicit animation modifiers for simple cases,Use .animation(value:) tied to specific state changes rather than blanket global animation,animation
+sw06,accessibility-label voiceover,Provide accessibility labels for custom controls,Set .accessibilityLabel/.accessibilityHint on icon-only or custom-drawn controls,accessibility
+sw07,dynamic-type text-scaling,Support Dynamic Type for text scaling,"Use built-in text styles (.body, .headline) so text scales with the user's accessibility settings",accessibility

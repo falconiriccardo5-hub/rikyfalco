@@ -1,0 +1,8 @@
+id,keyword,title,guideline,category
+fl01,widget-composition small-widgets,Break large build methods into small widgets,Extract StatelessWidget/StatelessWidget classes instead of deeply nested inline builder trees,architecture
+fl02,state-management scoped,Scope state management to what actually needs it,Use local setState for simple widget state; reach for Provider/Riverpod/Bloc only for shared state,architecture
+fl03,listview-builder long-list,Use ListView.builder for long/lazy lists,Avoid building a full Column of children for large lists; use builder constructors for lazy rendering,performance
+fl04,theme-data consistent-theming,Centralize styling in ThemeData,Define colors/typography once in ThemeData/TextTheme instead of hardcoding styles per widget,theming
+fl05,key stable-identity widgets,Use Keys for widgets that need identity across rebuilds,Provide ValueKey/ObjectKey for list items so Flutter can correctly diff reordered widgets,correctness
+fl06,semantics accessibility-labels,Add Semantics labels for custom-drawn widgets,Wrap icon-only or custom-painted controls in Semantics(label: ...) for screen readers,accessibility
+fl07,mediaquery responsive-layout,Use MediaQuery/LayoutBuilder for responsive layout,Adapt layout to available width instead of hardcoding sizes for a single device class,layout

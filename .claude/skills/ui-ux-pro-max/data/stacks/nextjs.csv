@@ -1,0 +1,8 @@
+id,keyword,title,guideline,category
+nx01,ssr-csr rendering-strategy,Choose rendering strategy per route intentionally,"Use server components/SSR for content-heavy or SEO-critical routes, client components for interactivity",architecture
+nx02,image next-image responsive,Always use next/image for images,"Get automatic responsive sizing, lazy loading, and format negotiation for free",performance
+nx03,api-route validation,Validate input in API routes/route handlers,Never trust client input in a route handler; validate and sanitize server-side,security
+nx04,metadata seo per-route,Set metadata per route for SEO/sharing,Use the metadata API (or next/head) for unique title/description per page,seo
+nx05,caching revalidate isr,Use ISR/revalidation deliberately,Choose revalidate intervals or on-demand revalidation based on how fresh the data must be,performance
+nx06,client-boundary use-client-minimal,Keep 'use client' boundaries small,Push 'use client' as deep in the tree as possible to minimize shipped client JS,performance
+nx07,env-vars secrets server-only,Never expose secrets to the client bundle,Only prefix env vars with NEXT_PUBLIC_ when they're safe to ship to the browser,security

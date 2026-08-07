@@ -1,0 +1,7 @@
+id,keyword,title,guideline,category
+sv01,runes state reactivity,Use Svelte 5 runes for explicit reactivity,Use $state/$derived/$effect deliberately rather than relying on implicit reactivity everywhere,architecture
+sv02,stores shared-state scope,Scope stores to the feature that owns them,Avoid one giant global store; colocate stores with the feature/module they belong to,architecture
+sv03,sveltekit load-function data,Fetch page data in load functions,Use +page.ts/+page.server.ts load functions instead of fetching in onMount for initial data,performance
+sv04,transition animation built-in,Use built-in transitions for simple animation,Reach for Svelte's transition:/animate: directives before pulling in an animation library,performance
+sv05,each key stable-identity,Key #each blocks with a stable id,"Use {#each items as item (item.id)} for reorderable lists, not bare index-based iteration",correctness
+sv06,form-actions progressive-enhancement,Use SvelteKit form actions for forms,Prefer server-side form actions with progressive enhancement over pure client-side fetch submits,architecture
