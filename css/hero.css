@@ -1,0 +1,359 @@
+/* ==========================================================================
+   hero.css — layout, piani di profondita e stati della hero.
+   Zero valori letterali: ogni proprieta legge un token.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------- reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-body);
+  line-height: var(--lh-body);
+  letter-spacing: var(--tracking-body);
+  font-optical-sizing: auto;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Evita lo scroll orizzontale generato dai piani in overshoot. */
+  overflow-x: hidden;
+}
+
+/* ================================================================== HERO === */
+.hero {
+  position: relative;
+  isolation: isolate;
+  /* svh, non vh: la barra mobile che si ritrae non deve produrre CLS. */
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: var(--space-15);
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .hero {
+    padding-block: var(--space-10);
+  }
+}
+
+.hero__inner {
+  position: relative;
+  z-index: var(--depth-content-z);
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+
+/* --------------------------------------------------- piano 1 — sfondo ----- */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: var(--depth-back-z);
+  transform: translate3d(0, var(--py, 0px), 0) scale(var(--depth-back-scale));
+  transform-origin: 70% 30%;
+  background:
+    radial-gradient(
+      62% 62% at 72% 28%,
+      var(--bg-glow) 0%,
+      transparent 68%
+    ),
+    linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 62%);
+  pointer-events: none;
+}
+
+/* Grana: texture leggera, non rumore visibile. */
+.hero__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: var(--bg-grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* --------------------------------------- piano 2.5 — personaggio (vuoto) -- */
+/*
+  SLOT PERSONAGGIO — deliberatamente vuoto in questa sessione.
+
+  Formato atteso : SVG a livelli (gruppi <g> nominati), inline nel markup.
+  Livelli richiesti : testa, sguardo, braccio, torso — separabili per poterli
+                      animare in modo indipendente (emersione all'apertura,
+                      un singolo saluto al primo scroll, poi posa neutra).
+  Ingombro atteso : 1440px -> ~460x680px, ancorato a destra, baseline
+                    allineata al bordo inferiore del pannello.
+                     768px -> ~300x440px.
+                     375px -> nascosto (display:none), per non sovrapporsi
+                              mai a testo o CTA.
+  Punto di innesto : figlio diretto di .hero__figure, che e gia sul proprio
+                     piano di profondita (dietro l'overlay tecnico, davanti
+                     allo sfondo) e gia sottoposto a parallasse.
+  Vincolo : il pannello in vetro resta alle sue spalle; la figura non deve
+            mai entrare nelle colonne occupate da .hero__panel.
+*/
+.hero__figure {
+  position: absolute;
+  z-index: var(--depth-figure-z);
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 42%;
+  transform: translate3d(0, var(--py, 0px), 0) scale(var(--depth-figure-scale));
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .hero__figure {
+    display: none;
+  }
+}
+
+/* -------------------------------------- piano 3 — overlay tecnico --------- */
+.hero__overlay {
+  position: absolute;
+  z-index: var(--depth-front-z);
+  inset-block-start: 50%;
+  inset-inline-end: 0;
+  width: 46%;
+  max-width: 40rem;
+  transform: translate3d(0, calc(-50% + var(--py, 0px)), 0)
+    scale(var(--depth-front-scale));
+  color: var(--color-accent);
+  pointer-events: none;
+}
+
+.hero__overlay svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 1023px) {
+  .hero__overlay {
+    inset-block-start: auto;
+    inset-block-end: 0;
+    width: 72%;
+    transform: translate3d(0, calc(28% + var(--py, 0px)), 0)
+      scale(var(--depth-front-scale));
+    opacity: 0.6;
+  }
+}
+
+/* ------------------------------------------- piano 2 — pannello vetro ----- */
+.hero__panel {
+  grid-column: 1 / -1;
+  padding: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .hero__panel {
+    padding: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero__panel {
+    padding: var(--space-8);
+  }
+}
+
+/* ------------------------------------------------------------ contenuti --- */
+.hero__eyebrow {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-label);
+  letter-spacing: var(--tracking-label);
+  line-height: var(--lh-body);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.hero__headline {
+  margin: 0;
+  font-size: var(--fs-display);
+  font-weight: var(--fw-display);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--lh-display);
+  text-wrap: balance;
+}
+
+/* Doppio wrapper: .line maschera la traslazione, .line__inner porta la
+   rivelazione a clip-path. Il padding compensa i discendenti. */
+.hero__headline .line {
+  display: block;
+  overflow: hidden;
+  padding-block-end: 0.12em;
+  margin-block-end: -0.12em;
+}
+
+.hero__headline .line__inner {
+  display: block;
+  will-change: transform, clip-path;
+}
+
+.hero__sub {
+  margin: var(--space-3) 0 0;
+  max-width: var(--measure);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-body);
+  line-height: var(--lh-body);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-6);
+}
+
+/* ------------------------------------------------------------------ CTA --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  border: var(--glass-border-width) solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-label);
+  line-height: var(--lh-body);
+  letter-spacing: var(--tracking-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform var(--dur-micro) var(--ease-state),
+    opacity var(--dur-micro) var(--ease-state);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Primaria: fill solido opaco, nessuna trasparenza.
+   Elemento a contrasto piu alto della pagina. */
+.btn--primary {
+  background: var(--color-cta);
+  color: var(--color-on-cta);
+  box-shadow: var(--shadow-cta);
+}
+
+.btn--primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+}
+
+/* Secondaria: seconda (e ultima) superficie in vetro della hero. */
+.btn--ghost {
+  color: var(--color-text);
+}
+
+.btn--ghost:hover {
+  transform: translateY(-2px);
+}
+
+.btn--ghost:active {
+  transform: translateY(0);
+}
+
+/* ==================================================== STATI DI PARTENZA ====
+   Applicati solo quando motion.js ha armato la sequenza. Senza JS, o con
+   prefers-reduced-motion, il contenuto e gia nello stato finale.
+   ========================================================================== */
+[data-motion="armed"] .hero__bg {
+  opacity: 0;
+  transform: scale(var(--depth-back-scale-in));
+}
+
+[data-motion="armed"] .hero__panel {
+  opacity: 0;
+  transform: translateY(var(--shift-panel));
+}
+
+[data-motion="armed"] .hero__eyebrow {
+  opacity: 0;
+  transform: translateY(var(--shift-sm));
+}
+
+/* Rivelazione via overflow:hidden statico su .line + transform sul figlio:
+   nessun clip-path animato qui. Un clip-path animato dentro un antenato con
+   backdrop-filter produce un artefatto di compositing in Chromium (il
+   contenuto mascherato torna visibile "a fantasma" attraverso il vetro
+   sfocato) — verificato rimuovendo il backdrop-filter e osservando la
+   sparizione dell'artefatto. overflow:hidden statico non ha lo stesso
+   problema perche non e una proprieta animata. */
+[data-motion="armed"] .hero__headline .line__inner {
+  transform: translateY(var(--shift-line));
+}
+
+[data-motion="armed"] .hero__sub,
+[data-motion="armed"] .hero__actions {
+  opacity: 0;
+  transform: translateY(var(--shift-md));
+}
+
+[data-motion="armed"] .hero__overlay {
+  clip-path: inset(0 100% 0 0);
+}
+
+/* ============================================ prefers-reduced-motion ======= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+
+  /* Stato finale esplicito: layout identico, zero movimento. */
+  .hero__bg,
+  .hero__panel,
+  .hero__eyebrow,
+  .hero__sub,
+  .hero__actions {
+    opacity: 1 !important;
+  }
+
+  .hero__panel,
+  .hero__eyebrow,
+  .hero__sub,
+  .hero__actions {
+    transform: none !important;
+  }
+
+  .hero__bg {
+    transform: scale(var(--depth-back-scale)) !important;
+  }
+
+  .hero__headline .line__inner {
+    transform: none !important;
+    clip-path: inset(0) !important;
+  }
+
+  .hero__overlay {
+    clip-path: inset(0) !important;
+  }
+}

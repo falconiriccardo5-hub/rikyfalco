@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Analisi del movimento</title>
+    <meta
+      name="description"
+      content="Se bacino, appoggio del piede e torace non collaborano, lo stesso esercizio può produrre uno stimolo completamente diverso."
+    />
+    <meta name="theme-color" content="#07111F" />
+
+    <!-- Un solo file variabile, subset latino. L'LCP della hero e l'headline:
+         il preload del font e il lavoro sull'LCP. -->
+    <link
+      rel="preload"
+      href="assets/fonts/InterVariable-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/glass.css" />
+    <link rel="stylesheet" href="css/hero.css" />
+
+    <!-- Arma gli stati di partenza prima del primo paint, per non mostrare
+         un fotogramma di contenuto gia composto. Senza JS, o con
+         prefers-reduced-motion, la hero resta completa e statica. -->
+    <script>
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.setAttribute("data-motion", "armed");
+      }
+    </script>
+  </head>
+
+  <body>
+    <main>
+      <section class="hero">
+        <!-- piano 1 — sfondo -->
+        <div class="hero__bg" data-depth="back" aria-hidden="true"></div>
+
+        <!-- piano 2.5 — slot personaggio, vuoto in questa sessione.
+             Specifiche di innesto documentate in css/hero.css. -->
+        <div class="hero__figure" data-depth="figure" aria-hidden="true"></div>
+
+        <!-- piano 3 — overlay tecnico -->
+        <div class="hero__overlay" data-depth="front" aria-hidden="true">
+          <svg viewBox="0 0 640 640" fill="none" role="presentation">
+            <!-- assi -->
+            <path
+              d="M320 64V576"
+              stroke="currentColor"
+              stroke-opacity="0.28"
+              stroke-width="1"
+              stroke-dasharray="6 8"
+            />
+            <path
+              d="M72 560H600"
+              stroke="currentColor"
+              stroke-opacity="0.42"
+              stroke-width="1"
+            />
+            <!-- tacche -->
+            <g stroke="currentColor" stroke-opacity="0.3" stroke-width="1">
+              <path d="M152 560v-12" />
+              <path d="M236 560v-12" />
+              <path d="M404 560v-12" />
+              <path d="M488 560v-12" />
+            </g>
+            <!-- angolo quotato -->
+            <path
+              d="M320 440A120 120 0 0 1 418 498"
+              stroke="currentColor"
+              stroke-opacity="0.55"
+              stroke-width="1.5"
+            />
+            <path
+              d="M320 560L432 512"
+              stroke="currentColor"
+              stroke-opacity="0.55"
+              stroke-width="1.5"
+            />
+            <!-- traiettoria -->
+            <path
+              d="M132 508C236 468 300 372 356 292 412 212 470 168 548 148"
+              stroke="currentColor"
+              stroke-opacity="0.5"
+              stroke-width="1.5"
+              stroke-dasharray="4 10"
+              stroke-linecap="round"
+            />
+            <!-- punti articolari -->
+            <g fill="currentColor">
+              <circle cx="320" cy="560" r="4" />
+              <circle cx="356" cy="292" r="4" fill-opacity="0.85" />
+              <circle cx="548" cy="148" r="4" fill-opacity="0.7" />
+            </g>
+            <g
+              fill="none"
+              stroke="currentColor"
+              stroke-opacity="0.35"
+              stroke-width="1"
+            >
+              <circle cx="320" cy="560" r="11" />
+              <circle cx="356" cy="292" r="11" />
+            </g>
+          </svg>
+        </div>
+
+        <!-- piano 2 — contenuto -->
+        <div class="hero__inner">
+          <div class="hero__panel glass">
+            <p class="hero__eyebrow">Analisi del movimento</p>
+
+            <h1 class="hero__headline">
+              <span class="line"
+                ><span class="line__inner">Non ti manca la costanza.</span></span
+              >
+              <span class="line"
+                ><span class="line__inner"
+                  >Potrebbe mancare una strategia costruita</span
+                ></span
+              >
+              <span class="line"
+                ><span class="line__inner"
+                  >sul modo in cui il tuo corpo si muove.</span
+                ></span
+              >
+            </h1>
+
+            <p class="hero__sub">
+              Se bacino, appoggio del piede e torace non collaborano, lo stesso
+              esercizio può produrre uno stimolo completamente diverso.
+            </p>
+
+            <div class="hero__actions">
+              <a class="btn btn--primary" href="#analisi"
+                >Richiedi la tua analisi</a
+              >
+              <a class="btn btn--ghost glass glass--pill" href="#metodo"
+                >Come funziona il metodo</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/motion.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,180 @@
+/* ==========================================================================
+   tokens.css — unica fonte di verita del design system.
+   Nessun componente puo dichiarare un valore letterale: tutto passa da qui.
+   Colori estratti dal documento di brand "stile brand" (Google Drive).
+   ========================================================================== */
+
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/InterVariable-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  /* Subset latino: copre integralmente l'italiano (accentate incluse). */
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+    U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  /* ---------------------------------------------------------------- COLORE
+     Valori esatti dal documento di brand. Non modificare.               */
+  --color-bg: #07111f; /* background pagina   */
+  --color-surface: #102334; /* sezioni             */
+  --color-card: #173247; /* card                */
+  --color-cta: #d8f238; /* lime — CTA primaria */
+  --color-accent: #39a7ff; /* link, icone, linee  */
+  --color-text: #f5f8fb; /* testo               */
+
+  /* Canali RGB: servono a comporre le trasparenze senza riscrivere l'HEX. */
+  --rgb-bg: 7 17 31;
+  --rgb-accent: 57 167 255;
+  --rgb-text: 245 248 251;
+  --rgb-black: 0 0 0;
+
+  /* Ruoli derivati */
+  --color-text-muted: rgb(var(--rgb-text) / 0.72);
+  --color-on-cta: var(--color-bg); /* testo sulla CTA lime: mai bianco */
+
+  /* ------------------------------------------------------------ TIPOGRAFIA
+     Una sola famiglia su tutta la pagina.                              */
+  --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* Scala: clamp ancorato tra 375px e 1440px di viewport, vw al centro.
+     Sopra 1440px la scala si blocca sul valore massimo.
+     375px -> 1440px : display 39->52 · h1 32->42 · h2 28->33 · h3 23->27
+                       body 16->17 · small 14 · caption 12               */
+  --fs-display: clamp(2.4375rem, 2.1514rem + 1.2207vw, 3.25rem);
+  --fs-h1: clamp(2rem, 1.7799rem + 0.939vw, 2.625rem);
+  --fs-h2: clamp(1.75rem, 1.64rem + 0.4695vw, 2.0625rem);
+  --fs-h3: clamp(1.4375rem, 1.3495rem + 0.3756vw, 1.6875rem);
+  --fs-body: clamp(1rem, 0.978rem + 0.0939vw, 1.0625rem);
+  --fs-small: 0.875rem;
+  --fs-caption: 0.75rem;
+
+  --fw-display: 700;
+  --fw-h1: 700;
+  --fw-h2: 600;
+  --fw-h3: 600;
+  --fw-label: 500;
+  --fw-body: 400;
+
+  --tracking-display: -0.045em;
+  --tracking-h1: -0.04em;
+  --tracking-h2: -0.03em;
+  --tracking-h3: -0.02em;
+  --tracking-body: 0;
+  --tracking-label: 0.12em; /* solo per etichette maiuscole */
+
+  --lh-display: 1.05;
+  --lh-h3: 1.15;
+  --lh-body: 1.55;
+
+  --measure: 68ch; /* riga 60-75 caratteri */
+
+  /* ------------------------------------------------------------ SPAZIATURA
+     Scala verticale a 8px.                                             */
+  --space-1: 0.5rem; /*   8px */
+  --space-2: 1rem; /*  16px */
+  --space-3: 1.5rem; /*  24px */
+  --space-4: 2rem; /*  32px */
+  --space-5: 2.5rem; /*  40px */
+  --space-6: 3rem; /*  48px */
+  --space-8: 4rem; /*  64px */
+  --space-10: 5rem; /*  80px */
+  --space-15: 7.5rem; /* 120px — respiro minimo di sezione su desktop */
+
+  /* Griglia */
+  --grid-columns: 12;
+  --grid-gap: var(--space-3);
+  --container-max: 78rem; /* 1248px */
+  --container-pad: var(--space-3);
+
+  /* ------------------------------------------------------------------ RAGGI */
+  --radius-sm: 16px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* ------------------------------------------------------------------ VETRO
+     Vetro SCURO tinto accent. Il lime non entra mai qui.
+     Massimo due superfici sovrapposte.                                 */
+  --glass-bg: rgb(var(--rgb-accent) / 0.07);
+  --glass-blur: 20px;
+  --glass-saturate: 140%;
+  --glass-border-color: rgb(var(--rgb-accent) / 0.18);
+  --glass-border-width: 1px;
+  --glass-highlight: rgb(var(--rgb-text) / 0.22);
+  --glass-fallback: var(--color-card); /* @supports not (backdrop-filter) */
+
+  /* ------------------------------------------------------------------ OMBRE
+     Una sola ombra per elemento. Mai ombre multiple, mai glow saturi.  */
+  --shadow-glass: 0 12px 40px rgb(var(--rgb-black) / 0.45);
+  --shadow-cta: 0 8px 24px rgb(var(--rgb-black) / 0.35);
+
+  /* --------------------------------------------------------------- MOVIMENTO */
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-state: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-micro: 250ms; /* micro-interazioni  */
+  --dur-enter: 600ms; /* entrate            */
+  --dur-narrative: 900ms; /* sequenze narrative */
+  --dur-reveal: 800ms; /* rivelazione riga   */
+  --dur-short: 500ms;
+  --dur-panel: 700ms;
+
+  --stagger: 100ms;
+
+  /* Ritmo della sequenza di apertura (vedi js/motion.js) */
+  --delay-bg: 0ms;
+  --delay-panel: 200ms;
+  --delay-eyebrow: 500ms;
+  --delay-line: 640ms;
+  --delay-sub: 980ms;
+  --delay-cta: 1100ms;
+  --delay-overlay: 1250ms;
+
+  /* Ampiezze di entrata */
+  --shift-panel: 24px;
+  --shift-sm: 12px;
+  --shift-md: 16px;
+  /* Rivelazione riga: translateY(100%) = esattamente un'altezza di riga,
+     percentuale relativa al box stesso, indipendente da font-size/line-height. */
+  --shift-line: 100%;
+
+  /* ------------------------------------------------------------- PROFONDITA
+     Tre piani distinti per blur, scala e velocita di parallasse,
+     non per solo z-index.                                              */
+  --depth-back-z: 0;
+  --depth-back-scale: 1.06;
+  --depth-back-scale-in: 1.1;
+  --depth-back-speed: 0.02;
+
+  --depth-figure-z: 1;
+  --depth-figure-scale: 1;
+  --depth-figure-speed: 0.04;
+
+  --depth-content-z: 2;
+  --depth-content-scale: 1;
+  --depth-content-speed: 0;
+
+  --depth-front-z: 1;
+  --depth-front-scale: 0.98;
+  --depth-front-speed: 0.07;
+
+  /* Gradiente di sfondo: picco limitato per non compromettere il
+     contrasto del testo sopra il vetro. */
+  --bg-glow: rgb(var(--rgb-accent) / 0.08);
+  --bg-grain-opacity: 0.03;
+}
+
+/* Sotto 768px: blur ridotto, parallasse disattivata (vedi hero.css/motion.js) */
+@media (max-width: 767px) {
+  :root {
+    --glass-blur: 10px;
+    --depth-back-speed: 0;
+    --depth-figure-speed: 0;
+    --depth-front-speed: 0;
+  }
+}
