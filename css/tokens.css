@@ -167,6 +167,24 @@
      contrasto del testo sopra il vetro. */
   --bg-glow: rgb(var(--rgb-accent) / 0.08);
   --bg-grain-opacity: 0.03;
+
+  /* ------------------------------------------------------- SCENE NARRATIVE
+     Sezioni sticky con scroll-choreography (sessione 2).                */
+  --scene-height: 240svh; /* altezza del wrapper: spazio di scroll per la scena pinnata */
+  --scene-panel-max: 46rem;
+
+  /* Parallasse stratificata: somma dei due layer <= 60px su desktop. */
+  --scene-parallax-bg: 36px;
+  --scene-parallax-diagram: 20px;
+
+  /* Tag/etichette dentro il pannello: NON vetro (il pannello e' gia'
+     una superficie in vetro; un secondo blur qui supererebbe il tetto
+     di due superfici sovrapposte). Riempimento piatto tinto accent. */
+  --scene-tag-bg: rgb(var(--rgb-accent) / 0.14);
+  --scene-tag-border: rgb(var(--rgb-accent) / 0.32);
+
+  --scene-reveal-shift: 20px;
+  --scene-stagger: 90ms;
 }
 
 /* Sotto 768px: blur ridotto, parallasse disattivata (vedi hero.css/motion.js) */
@@ -176,5 +194,10 @@
     --depth-back-speed: 0;
     --depth-figure-speed: 0;
     --depth-front-speed: 0;
+
+    /* Sotto 768px le scene degradano a fade-up: niente sticky, niente
+       scroll-scrubbing, parallasse a zero. */
+    --scene-parallax-bg: 0px;
+    --scene-parallax-diagram: 0px;
   }
 }

@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/glass.css" />
     <link rel="stylesheet" href="css/hero.css" />
+    <link rel="stylesheet" href="css/scenes.css" />
 
     <!-- Arma gli stati di partenza prima del primo paint, per non mostrare
          un fotogramma di contenuto gia composto. Senza JS, o con
@@ -145,8 +146,287 @@
           </div>
         </div>
       </section>
+
+      <!-- Indicatore di percorso: un punto per scena, evidenzia quella
+           attualmente pinnata. Solo desktop (>=1024px), vedi scenes.css. -->
+      <nav class="scenes__progress" aria-hidden="true">
+        <span class="dot" data-active="true"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </nav>
+
+      <section class="scenes" id="metodo" aria-label="Il metodo">
+        <!-- Scena 1 — Analisi -->
+        <article class="scene" data-scene="analisi">
+          <div class="scene__bg" aria-hidden="true"></div>
+          <div class="scene__sticky">
+            <div class="scene__inner">
+              <div class="scene__panel glass">
+                <p class="scene__index" data-reveal data-reveal-at="0">
+                  01 — Analisi
+                </p>
+                <h2 class="scene__title" data-reveal data-reveal-at="0.05">
+                  Osservare il movimento
+                </h2>
+
+                <div class="scene__diagram">
+                  <svg viewBox="0 0 600 160" fill="none" role="presentation">
+                    <path
+                      d="M40,80 L560,80"
+                      stroke="currentColor"
+                      stroke-opacity="0.5"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      data-draw
+                      data-draw-at="0.05"
+                      data-draw-span="0.35"
+                    />
+                    <g data-reveal data-reveal-at="0.25">
+                      <circle cx="120" cy="80" r="5" fill="currentColor" />
+                      <path d="M120,80V52" stroke="currentColor" stroke-opacity="0.4" />
+                    </g>
+                    <g data-reveal data-reveal-at="0.4">
+                      <circle cx="300" cy="80" r="5" fill="currentColor" />
+                      <path d="M300,80V108" stroke="currentColor" stroke-opacity="0.4" />
+                    </g>
+                    <g data-reveal data-reveal-at="0.55">
+                      <circle cx="480" cy="80" r="5" fill="currentColor" />
+                      <path d="M480,80V52" stroke="currentColor" stroke-opacity="0.4" />
+                    </g>
+                  </svg>
+                  <!-- Etichette come HTML, non SVG: la dimensione del testo
+                       deve restare leggibile ad ogni breakpoint, non
+                       scalare con il viewBox del diagramma. -->
+                  <span
+                    class="scene__diagram-label"
+                    style="left: 20%; top: 20%"
+                    data-reveal
+                    data-reveal-at="0.25"
+                    >Bacino</span
+                  >
+                  <span
+                    class="scene__diagram-label"
+                    style="left: 50%; top: 84%"
+                    data-reveal
+                    data-reveal-at="0.4"
+                    >Appoggio del piede</span
+                  >
+                  <span
+                    class="scene__diagram-label"
+                    style="left: 80%; top: 20%"
+                    data-reveal
+                    data-reveal-at="0.55"
+                    >Torace</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Scena 2 — Problema -->
+        <article class="scene" data-scene="problema">
+          <div class="scene__bg" aria-hidden="true"></div>
+          <div class="scene__sticky">
+            <div class="scene__inner">
+              <div class="scene__panel glass">
+                <p class="scene__index" data-reveal data-reveal-at="0">
+                  02 — Problema
+                </p>
+                <h2 class="scene__title" data-reveal data-reveal-at="0.05">
+                  Il compenso nascosto
+                </h2>
+                <p class="scene__quote" data-reveal data-reveal-at="0.12">
+                  Ti alleni da mesi, ma senti sempre il lavoro nella zona
+                  sbagliata?
+                </p>
+                <p class="scene__sub" data-reveal data-reveal-at="0.3">
+                  Non significa che non ti stai impegnando. Potrebbe
+                  significare che il tuo corpo sta compensando.
+                </p>
+
+                <div class="scene__diagram">
+                  <svg viewBox="0 0 600 160" fill="none" role="presentation">
+                    <path
+                      d="M40,110 L160,55 L280,125 L400,45 L520,95"
+                      stroke="currentColor"
+                      stroke-opacity="0.55"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      data-draw
+                      data-draw-at="0.35"
+                      data-draw-span="0.4"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Scena 3 — Percorso personalizzato -->
+        <article class="scene" data-scene="percorso">
+          <div class="scene__bg" aria-hidden="true"></div>
+          <div class="scene__sticky">
+            <div class="scene__inner">
+              <div class="scene__panel glass">
+                <p class="scene__index" data-reveal data-reveal-at="0">
+                  03 — Percorso personalizzato
+                </p>
+                <h2 class="scene__title" data-reveal data-reveal-at="0.05">
+                  La catena cinetica
+                </h2>
+                <p class="scene__quote" data-reveal data-reveal-at="0.12">
+                  Quando bacino, appoggio del piede e torace tornano a
+                  collaborare, lo stesso esercizio produce lo stimolo
+                  giusto.
+                </p>
+
+                <div class="scene__diagram">
+                  <svg viewBox="0 0 600 160" fill="none" role="presentation">
+                    <g data-reveal data-reveal-at="0.05">
+                      <circle cx="120" cy="115" r="5" fill="currentColor" />
+                      <circle cx="300" cy="45" r="5" fill="currentColor" />
+                      <circle cx="480" cy="115" r="5" fill="currentColor" />
+                    </g>
+                    <path
+                      d="M120,115 L300,45"
+                      stroke="currentColor"
+                      stroke-opacity="0.6"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      data-draw
+                      data-draw-at="0.15"
+                      data-draw-span="0.3"
+                    />
+                    <path
+                      d="M300,45 L480,115"
+                      stroke="currentColor"
+                      stroke-opacity="0.6"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      data-draw
+                      data-draw-at="0.45"
+                      data-draw-span="0.3"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Scena 4 — Progressione -->
+        <article class="scene" data-scene="progressione">
+          <div class="scene__bg" aria-hidden="true"></div>
+          <div class="scene__sticky">
+            <div class="scene__inner">
+              <div class="scene__panel glass">
+                <p class="scene__index" data-reveal data-reveal-at="0">
+                  04 — Progressione
+                </p>
+                <h2 class="scene__title" data-reveal data-reveal-at="0.05">
+                  Adattare il carico
+                </h2>
+                <p class="scene__quote" data-reveal data-reveal-at="0.12">
+                  Quando individuiamo la causa, possiamo adattare
+                  esercizio, carico e progressione al tuo corpo.
+                </p>
+
+                <div class="scene__diagram">
+                  <svg viewBox="0 0 600 160" fill="none" role="presentation">
+                    <path
+                      d="M40,140 L160,140 L160,105 L280,105 L280,70 L400,70 L400,35 L520,35"
+                      stroke="currentColor"
+                      stroke-opacity="0.55"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      data-draw
+                      data-draw-at="0.05"
+                      data-draw-span="0.5"
+                    />
+                    <g
+                      data-reveal
+                      data-reveal-at="0.55"
+                      fill="currentColor"
+                    >
+                      <circle cx="160" cy="140" r="3.5" />
+                      <circle cx="280" cy="105" r="3.5" />
+                      <circle cx="400" cy="70" r="3.5" />
+                      <circle cx="520" cy="35" r="3.5" />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Scena 5 — Correzione: testo al negativo, movimento al positivo -->
+        <article class="scene" data-scene="correzione">
+          <div class="scene__bg" aria-hidden="true"></div>
+          <div class="scene__sticky">
+            <div class="scene__inner">
+              <div class="scene__panel glass">
+                <p class="scene__index" data-reveal data-reveal-at="0">
+                  05 — Correzione
+                </p>
+                <h2 class="scene__title" data-reveal data-reveal-at="0.05">
+                  Senza correzione
+                </h2>
+                <p class="scene__quote" data-reveal data-reveal-at="0.12">
+                  Continuare ad aggiungere carico non corregge il compenso.
+                  Spesso lo rende semplicemente più evidente.
+                </p>
+
+                <div class="scene__diagram">
+                  <svg viewBox="0 0 600 160" fill="none" role="presentation">
+                    <path
+                      class="scene__path--risk"
+                      data-risk
+                      d="M40,80 C160,35 260,140 320,90 C420,20 480,140 560,70"
+                      stroke="currentColor"
+                      stroke-opacity="0.4"
+                      stroke-width="1.5"
+                      stroke-dasharray="3 7"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M40,80 L560,80"
+                      stroke="currentColor"
+                      stroke-opacity="0.75"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      data-draw
+                      data-draw-at="0.15"
+                      data-draw-span="0.55"
+                      data-inverse-of=".scene__path--risk"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Blocco di chiusura — non e' una scena narrativa: il percorso si
+           ferma e converge sulla CTA a bassa pressione (Fase 6 del doc). -->
+      <section class="cta-close" id="analisi">
+        <div class="cta-close__panel glass">
+          <p class="cta-close__index">06 — Passo successivo</p>
+          <p class="cta-close__text">
+            Scrivimi ANALISI e raccontami dove senti di essere bloccato.
+          </p>
+        </div>
+      </section>
     </main>
 
     <script src="js/motion.js" defer></script>
+    <script src="js/scenes.js" defer></script>
   </body>
 </html>

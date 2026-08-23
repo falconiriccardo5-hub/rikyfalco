@@ -1,0 +1,256 @@
+/* ==========================================================================
+   scenes.js — scroll-choreography delle cinque scene narrative.
+
+   Desktop (>=768px, senza prefers-reduced-motion): ogni scena resta
+   "pinnata" per l'altezza extra del suo wrapper; ad ogni frame si legge
+   la posizione di scroll (mai intercettata: nessun preventDefault, nessun
+   scrollTo) e si scrive SOLO opacity/transform (piu' stroke-dashoffset
+   sugli elementi SVG marcati [data-draw], strumento esplicitamente
+   ammesso in questa sessione). Letture e scritture sono raggruppate per
+   frame per evitare layout thrashing.
+
+   < 768px o prefers-reduced-motion: nessuno sticky, nessuno scrub. Le
+   scene degradano a un fade-up singolo per pannello via
+   IntersectionObserver (threshold 0.2, once), identico alla ricetta
+   usata in hero.
+   ========================================================================== */
+
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var scenesRoot = document.querySelector(".scenes");
+  if (!scenesRoot) return;
+
+  var scenes = Array.prototype.slice.call(
+    scenesRoot.querySelectorAll(".scene")
+  );
+  var ctaClose = document.querySelector(".cta-close");
+
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var desktop = window.matchMedia("(min-width: 768px)");
+
+  var styles = getComputedStyle(root);
+  function px(name) {
+    return parseFloat(styles.getPropertyValue(name)) || 0;
+  }
+  var EASE_ENTER = styles.getPropertyValue("--ease-enter").trim();
+  var PARALLAX_BG = px("--scene-parallax-bg");
+  var PARALLAX_DIAGRAM = px("--scene-parallax-diagram");
+
+  /* --------------------------------------------------------- misurazione --
+     Lunghezza reale del path (non stimata a mano), cosi' stroke-dasharray
+     copre esattamente il tracciato indipendentemente dalla sua forma.    */
+  function measureDraws() {
+    var els = scenesRoot.querySelectorAll("[data-draw]");
+    els.forEach(function (el) {
+      var len =
+        typeof el.getTotalLength === "function"
+          ? el.getTotalLength()
+          : parseFloat(el.getAttribute("data-len")) || 1000;
+      el.setAttribute("data-len", String(len));
+      el.style.strokeDasharray = String(len);
+      el.style.strokeDashoffset = String(len);
+    });
+  }
+  measureDraws();
+
+  /* ------------------------------------------------------------ statico --
+     Fallback comune a reduced-motion e mobile: tutto allo stato finale,
+     nessun listener di scroll attivo.                                    */
+  function renderStatic() {
+    scenes.forEach(function (scene) {
+      var bg = scene.querySelector(".scene__bg");
+      if (bg) bg.style.opacity = 1;
+      scene.querySelectorAll("[data-reveal]").forEach(function (el) {
+        el.style.opacity = 1;
+        el.style.transform = "none";
+      });
+      scene.querySelectorAll("[data-draw]").forEach(function (el) {
+        el.style.strokeDashoffset = 0;
+      });
+      var risk = scene.querySelector("[data-risk]");
+      if (risk) risk.style.opacity = 0;
+    });
+  }
+
+  /* --------------------------------------------------------- fade-up mobile
+     Un solo IntersectionObserver, once, su ogni pannello di scena e sul
+     blocco CTA di chiusura. Nessuno scroll-scrubbing.                   */
+  function armMobileFadeUp() {
+    if (!("IntersectionObserver" in window)) return;
+    var targets = scenes
+      .map(function (s) {
+        return s.querySelector(".scene__panel");
+      })
+      .filter(Boolean);
+    if (ctaClose) targets.push(ctaClose.querySelector(".cta-close__panel"));
+
+    targets.forEach(function (el) {
+      el.style.opacity = 0;
+      el.style.transform = "translateY(20px)";
+    });
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          io.unobserve(entry.target);
+          entry.target.animate(
+            [
+              { opacity: 0, transform: "translateY(20px)" },
+              { opacity: 1, transform: "translateY(0)" },
+            ],
+            { duration: 600, easing: EASE_ENTER, fill: "both" }
+          );
+        });
+      },
+      { threshold: 0.2 }
+    );
+    targets.forEach(function (el) {
+      io.observe(el);
+    });
+  }
+
+  /* --------------------------------------------------------- scrub desktop
+     Un solo rAF loop per tutte le scene: legge tutti i rect, poi scrive
+     tutti gli stili. Nessuno scroll nativo intercettato o rallentato.    */
+  function clamp01(v) {
+    return v < 0 ? 0 : v > 1 ? 1 : v;
+  }
+
+  function initScrub() {
+    var progressDots = Array.prototype.slice.call(
+      document.querySelectorAll(".scenes__progress .dot")
+    );
+    var ticking = false;
+
+    function sceneProgress(scene, vh) {
+      var rect = scene.getBoundingClientRect();
+      var total = rect.height - vh;
+      if (total <= 0) return rect.top <= 0 ? 1 : 0;
+      return clamp01(-rect.top / total);
+    }
+
+    function applyReveals(scene, p) {
+      var els = scene.querySelectorAll("[data-reveal]");
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        var at = parseFloat(el.getAttribute("data-reveal-at")) || 0;
+        var span = 0.22;
+        var local = clamp01((p - at) / span);
+        el.style.opacity = local;
+        el.style.transform =
+          "translateY(" + (1 - local) * px("--scene-reveal-shift") + "px)";
+      }
+    }
+
+    function applyDraws(scene, p) {
+      var els = scene.querySelectorAll("[data-draw]");
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        var at = parseFloat(el.getAttribute("data-draw-at")) || 0;
+        var span = parseFloat(el.getAttribute("data-draw-span")) || 0.45;
+        var local = clamp01((p - at) / span);
+        var len = parseFloat(el.getAttribute("data-len")) || 1000;
+        el.style.strokeDashoffset = String(len * (1 - local));
+
+        var risk = el.getAttribute("data-inverse-of");
+        if (risk) {
+          var riskEl = scene.querySelector(risk);
+          if (riskEl) riskEl.style.opacity = String(1 - local);
+        }
+      }
+    }
+
+    function update() {
+      ticking = false;
+      var vh = window.innerHeight;
+
+      /* lettura */
+      var data = scenes.map(function (scene) {
+        return { scene: scene, p: sceneProgress(scene, vh) };
+      });
+
+      /* scrittura */
+      data.forEach(function (d) {
+        var p = d.p;
+        var scene = d.scene;
+        var bg = scene.querySelector(".scene__bg");
+        if (bg) {
+          var fade = Math.min(p / 0.15, (1 - p) / 0.15, 1);
+          bg.style.opacity = String(clamp01(fade));
+          bg.style.setProperty("--py-bg", (p - 0.5) * -PARALLAX_BG + "px");
+        }
+        var diagram = scene.querySelector(".scene__diagram");
+        if (diagram) {
+          diagram.style.setProperty(
+            "--py-diagram",
+            (p - 0.5) * -PARALLAX_DIAGRAM + "px"
+          );
+        }
+        applyReveals(scene, p);
+        applyDraws(scene, p);
+      });
+
+      if (progressDots.length) {
+        var activeIndex = 0;
+        var vhAlign = vh / 2;
+        data.forEach(function (d, i) {
+          var rect = d.scene.getBoundingClientRect();
+          if (rect.top <= vhAlign && rect.bottom >= vhAlign) activeIndex = i;
+        });
+        progressDots.forEach(function (dot, i) {
+          dot.setAttribute("data-active", i === activeIndex ? "true" : "false");
+        });
+      }
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+
+    return function teardown() {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }
+
+  /* ------------------------------------------------------------- avvio ---- */
+  var teardownScrub = null;
+
+  function sync() {
+    if (teardownScrub) {
+      teardownScrub();
+      teardownScrub = null;
+    }
+    if (reduce.matches) {
+      renderStatic();
+      return;
+    }
+    if (!desktop.matches) {
+      renderStatic();
+      armMobileFadeUp();
+      return;
+    }
+    teardownScrub = initScrub();
+  }
+
+  sync();
+
+  function onPreferenceChange() {
+    sync();
+  }
+
+  if (typeof reduce.addEventListener === "function") {
+    reduce.addEventListener("change", onPreferenceChange);
+    desktop.addEventListener("change", onPreferenceChange);
+  } else if (typeof reduce.addListener === "function") {
+    reduce.addListener(onPreferenceChange);
+    desktop.addListener(onPreferenceChange);
+  }
+})();
