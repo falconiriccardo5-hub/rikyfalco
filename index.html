@@ -10,6 +10,25 @@
     />
     <meta name="theme-color" content="#07111F" />
 
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="assets/favicon.svg" />
+
+    <!-- Open Graph / Twitter.
+         NOTA DEPLOY: og:image e og:url devono diventare URL assoluti
+         (https://dominio/...) prima della pubblicazione — molti scraper
+         non risolvono i percorsi relativi. Vedi README. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:title" content="Analisi del movimento" />
+    <meta
+      property="og:description"
+      content="Se bacino, appoggio del piede e torace non collaborano, lo stesso esercizio può produrre uno stimolo completamente diverso."
+    />
+    <meta property="og:image" content="assets/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
     <!-- Un solo file variabile, subset latino. L'LCP della hero e l'headline:
          il preload del font e il lavoro sull'LCP. -->
     <link
@@ -20,10 +39,11 @@
       crossorigin
     />
 
-    <link rel="stylesheet" href="css/tokens.css" />
-    <link rel="stylesheet" href="css/glass.css" />
-    <link rel="stylesheet" href="css/hero.css" />
-    <link rel="stylesheet" href="css/scenes.css" />
+    <link rel="stylesheet" href="css/tokens.min.css" />
+    <link rel="stylesheet" href="css/glass.min.css" />
+    <link rel="stylesheet" href="css/header.min.css" />
+    <link rel="stylesheet" href="css/hero.min.css" />
+    <link rel="stylesheet" href="css/scenes.min.css" />
 
     <!-- Arma gli stati di partenza prima del primo paint, per non mostrare
          un fotogramma di contenuto gia composto. Senza JS, o con
@@ -36,7 +56,53 @@
   </head>
 
   <body>
-    <main>
+    <a class="skip-link" href="#metodo">Salta al contenuto</a>
+
+    <!-- Header sticky. Il wordmark e' un'etichetta descrittiva, non un
+         marchio: in assenza di un logo e di un nome forniti non si
+         inventa un'identita'. Terza voce di menu predisposta in README:
+         entra quando esistera' la sezione a cui puntare. -->
+    <header class="site-header" data-compact="false">
+      <div class="site-header__surface glass" aria-hidden="true"></div>
+
+      <div class="site-header__inner">
+        <a class="site-header__wordmark" href="#top">Analisi del movimento</a>
+
+        <button
+          class="site-header__toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Apri il menu"
+        >
+          <svg class="icon-open" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M4 7h16M4 12h16M4 17h16"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+          <svg class="icon-close" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M6 6l12 12M18 6L6 18"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+
+        <nav class="site-header__nav" id="site-nav">
+          <a class="site-header__link" href="#metodo">Metodo</a>
+          <a class="btn btn--primary site-header__cta" href="#analisi"
+            >Richiedi analisi</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
       <section class="hero">
         <!-- piano 1 — sfondo -->
         <div class="hero__bg" data-depth="back" aria-hidden="true"></div>
@@ -426,7 +492,8 @@
       </section>
     </main>
 
-    <script src="js/motion.js" defer></script>
-    <script src="js/scenes.js" defer></script>
+    <script src="js/header.min.js" defer></script>
+    <script src="js/motion.min.js" defer></script>
+    <script src="js/scenes.min.js" defer></script>
   </body>
 </html>

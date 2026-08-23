@@ -185,6 +185,26 @@
 
   --scene-reveal-shift: 20px;
   --scene-stagger: 90ms;
+
+  /* -------------------------------------------------------------- HEADER
+     La compattazione non anima l'altezza (proprieta' di reflow): la barra
+     in vetro e' un layer separato dal contenuto, scalato su Y, mentre il
+     contenuto trasla per restare centrato. Vedi css/header.css.        */
+  --header-height: 80px;
+  --header-height-compact: 64px;
+  --header-scale-compact: 0.8; /* 64 / 80 */
+  --header-shift-compact: -8px; /* (80 - 64) / 2 */
+  --header-scroll-trigger: 100px; /* letto da js/header.js */
+  --header-z: 10;
+
+  --header-link-gap: var(--space-4);
+  --header-menu-shift: -8px;
+
+  /* La barra scorre SOPRA i contenuti: la sola tinta accent al 7% non
+     basta a staccare il testo dall'headline che le passa sotto. Si
+     aggiunge una base scura semitrasparente sotto la tinta, mantenendo
+     il vetro (e la tinta del primario) ma garantendo la leggibilita'. */
+  --header-surface-base: rgb(var(--rgb-bg) / 0.72);
 }
 
 /* Sotto 768px: blur ridotto, parallasse disattivata (vedi hero.css/motion.js) */

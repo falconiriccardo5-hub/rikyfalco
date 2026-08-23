@@ -1,0 +1,271 @@
+/* ==========================================================================
+   header.css — header sticky in vetro scuro.
+
+   Compattazione 80px -> 64px SENZA animare l'altezza: la barra in vetro
+   (.site-header__surface) e il contenuto (.site-header__inner) sono due
+   layer sovrapposti e indipendenti. La barra viene scalata su Y con
+   transform-origin in alto; il contenuto trasla verso l'alto della meta'
+   della differenza per restare centrato. Solo transform e opacity.
+   ========================================================================== */
+
+/* Skip-link: primo elemento focalizzabile, visibile solo da tastiera. */
+.skip-link {
+  position: fixed;
+  z-index: calc(var(--header-z) + 1);
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-cta);
+  color: var(--color-on-cta);
+  font-size: var(--fs-small);
+  font-weight: var(--fw-label);
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--dur-micro) var(--ease-state);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.site-header {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--header-z);
+  height: var(--header-height);
+  /* Il wrapper non intercetta il puntatore: lo fanno i suoi figli, cosi'
+     l'area vuota accanto alla barra resta cliccabile per la pagina. */
+  pointer-events: none;
+}
+
+/* Ancore: il target non deve finire sotto la barra fissa. */
+html {
+  scroll-padding-top: calc(var(--header-height) + var(--space-2));
+}
+
+.site-header__surface {
+  position: absolute;
+  inset: 0;
+  transform-origin: top center;
+  transform: scaleY(1);
+  transition: transform var(--dur-micro) var(--ease-state);
+  border-radius: 0;
+  border-inline: 0;
+  border-block-start: 0;
+  pointer-events: auto;
+  /* Tinta accent (come ogni superficie in vetro) sopra una base scura:
+     la barra passa sopra l'headline della hero e senza base il testo
+     della navigazione non regge il contrasto. */
+  background-color: var(--header-surface-base);
+  background-image: linear-gradient(var(--glass-bg), var(--glass-bg));
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .site-header__surface {
+    background-color: var(--glass-fallback);
+    background-image: none;
+  }
+}
+
+/* Il vetro dell'header non ha raggi: e' una fascia a tutta larghezza. */
+.site-header__surface::before {
+  border-radius: 0;
+}
+
+.site-header__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+  transform: translateY(0);
+  transition: transform var(--dur-micro) var(--ease-state);
+  pointer-events: none;
+}
+
+.site-header__inner > * {
+  pointer-events: auto;
+}
+
+/* Stato compatto, attivato da js/header.js dopo --header-scroll-trigger. */
+.site-header[data-compact="true"] .site-header__surface {
+  transform: scaleY(var(--header-scale-compact));
+}
+
+.site-header[data-compact="true"] .site-header__inner {
+  transform: translateY(var(--header-shift-compact));
+}
+
+/* ------------------------------------------------------------- wordmark --
+   Etichetta descrittiva della pagina, non un nome proprio o un logo: in
+   assenza di un asset di marchio non si inventa un'identita'. Il punto
+   accent riprende i nodi articolari dei diagrammi delle scene.          */
+.site-header__wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4ch;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-header__wordmark::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.site-header__wordmark:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+/* ------------------------------------------------------------------ nav -- */
+.site-header__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--header-link-gap);
+}
+
+.site-header__link {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-label);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: opacity var(--dur-micro) var(--ease-state);
+}
+
+.site-header__link:hover {
+  color: var(--color-text);
+}
+
+.site-header__link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* CTA compatta: unico elemento lime della barra, fill solido opaco. */
+.site-header__cta {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-small);
+}
+
+/* --------------------------------------------------------- toggle mobile -- */
+.site-header__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: var(--glass-border-width) solid var(--glass-border-color);
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.site-header__toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.site-header__toggle svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.site-header__toggle .icon-close {
+  display: none;
+}
+
+.site-header__toggle[aria-expanded="true"] .icon-open {
+  display: none;
+}
+
+.site-header__toggle[aria-expanded="true"] .icon-close {
+  display: block;
+}
+
+/* ============================================================== <= 767px ===
+   Menu a tendina ancorato sotto la barra: nessun overlay a schermo pieno.
+   Chiuso, il pannello non e' raggiungibile ne' col puntatore ne' col TAB
+   (visibility:hidden lo toglie dall'ordine di tabulazione).             */
+@media (max-width: 767px) {
+  .site-header__toggle {
+    display: inline-flex;
+  }
+
+  /* Solo su mobile il nav diventa una superficie a se': e' un pannello
+     staccato sotto la barra. Fondo pieno, non vetro: sarebbe la seconda
+     superficie in vetro sovrapposta alla barra. */
+  .site-header__nav {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-end: var(--container-pad);
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+    min-width: 13rem;
+    margin-block-start: var(--space-1);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--color-card);
+    border: var(--glass-border-width) solid var(--glass-border-color);
+    box-shadow: var(--shadow-glass);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(var(--header-menu-shift));
+    transition:
+      opacity var(--dur-micro) var(--ease-state),
+      transform var(--dur-micro) var(--ease-state);
+  }
+
+  .site-header__nav[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .site-header__link {
+    padding-block: var(--space-1);
+  }
+
+  .site-header__cta {
+    text-align: center;
+  }
+}
+
+@media (min-width: 768px) {
+  /* Su desktop il menu e' sempre aperto: nessuno stato da gestire. */
+  .site-header__nav {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* ============================================ prefers-reduced-motion ======= */
+@media (prefers-reduced-motion: reduce) {
+  .site-header__surface,
+  .site-header__inner,
+  .site-header__nav {
+    transition: none !important;
+  }
+}

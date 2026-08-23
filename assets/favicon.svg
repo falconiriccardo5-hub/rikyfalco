@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Asse e nodo articolare: stesso linguaggio dei diagrammi delle scene.
+       Colori esclusivamente dai token di brand. -->
+  <rect width="64" height="64" rx="14" fill="#07111F" />
+  <path
+    d="M12 40h40"
+    stroke="#39A7FF"
+    stroke-opacity="0.45"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+  <path
+    d="M14 44 L30 26 L44 36"
+    fill="none"
+    stroke="#39A7FF"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle cx="30" cy="26" r="5.5" fill="#D8F238" />
+</svg>

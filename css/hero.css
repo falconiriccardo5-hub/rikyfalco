@@ -39,13 +39,24 @@ body {
   min-height: 100svh;
   display: flex;
   align-items: center;
-  padding-block: var(--space-15);
+  /* La barra fissa scorre sopra la hero: il contenuto non deve mai
+     iniziare sotto di essa. max() garantisce la distanza minima senza
+     cambiare il respiro desktop gia' approvato (120px > 80+24). */
+  padding-block-start: max(
+    var(--space-15),
+    calc(var(--header-height) + var(--space-3))
+  );
+  padding-block-end: var(--space-15);
   overflow: hidden;
 }
 
 @media (max-width: 767px) {
   .hero {
-    padding-block: var(--space-10);
+    padding-block-start: max(
+      var(--space-10),
+      calc(var(--header-height) + var(--space-3))
+    );
+    padding-block-end: var(--space-10);
   }
 }
 
