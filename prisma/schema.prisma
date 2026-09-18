@@ -1,0 +1,396 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkflowStatus {
+  DRAFT
+  STRATEGY
+  SCRIPT
+  STORYBOARD
+  ROUTING
+  GENERATING
+  QC
+  AWAITING_APPROVAL
+  APPROVED
+  REJECTED
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+enum WorkflowErrorCode {
+  GENERATION_FAILED
+  GENERATION_TIMEOUT
+  QC_FAILED
+  STORAGE_FAILED
+  PUBLISH_FAILED
+  AUTH_FAILED
+  BUDGET_EXCEEDED
+}
+
+enum AgentKind {
+  STRATEGIST
+  SCRIPTWRITER
+  DIRECTOR
+  MODEL_ROUTER
+  QUALITY_CONTROL
+}
+
+enum RunStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum ShotStatus {
+  PENDING
+  ROUTED
+  SUBMITTED
+  GENERATING
+  GENERATED
+  QC_PASSED
+  QC_FAILED
+  FAILED
+}
+
+enum GenerationJobStatus {
+  CREATED
+  SUBMITTED
+  QUEUED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  NSFW
+  TIMEOUT
+  CANCELED
+}
+
+enum AssetKind {
+  IMAGE
+  VIDEO
+  AUDIO
+  FRAME
+}
+
+enum ApprovalDecision {
+  APPROVED
+  REJECTED
+  REGENERATE
+  EDIT
+}
+
+enum PublicationStatus {
+  PENDING
+  IN_PROGRESS
+  PUBLISHED
+  FAILED
+}
+
+enum ContentStatus {
+  DRAFT
+  IN_PRODUCTION
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  name         String?
+  passwordHash String?
+  role         String      @default("owner")
+  workspaceId  String
+  workspace    Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  approvals    Approval[]
+  sessions     Session[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([workspaceId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Workspace {
+  id            String         @id @default(cuid())
+  name          String
+  slug          String         @unique
+  users         User[]
+  brandProfiles BrandProfile[]
+  contentItems  ContentItem[]
+  workflows     Workflow[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model BrandProfile {
+  id                String     @id @default(cuid())
+  workspaceId       String
+  workspace         Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  brandName         String
+  niche             String
+  primaryAudience   String
+  secondaryAudience String?
+  positioning       String
+  tone              String
+  visualStyle       String
+  colors            String[]
+  fonts             String[]
+  forbiddenStyles   String[]
+  ctaOptions        String[]
+  keywords          String[]
+  preferredDuration Int        @default(20)
+  preferredFormats  String[]
+  isDefault         Boolean    @default(false)
+  workflows         Workflow[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([workspaceId])
+}
+
+model ContentItem {
+  id              String        @id @default(cuid())
+  workspaceId     String
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workflowId      String?       @unique
+  workflow        Workflow?     @relation(fields: [workflowId], references: [id], onDelete: SetNull)
+  title           String
+  topic           String
+  hook            String
+  format          String        @default("instagram_reel")
+  status          ContentStatus @default(DRAFT)
+  caption         String?
+  publishedAt     DateTime?
+  performance     Json?
+  generatedAssets Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([workspaceId, status])
+  @@index([workspaceId, topic])
+}
+
+model Workflow {
+  id             String             @id @default(cuid())
+  workspaceId    String
+  workspace      Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  brandProfileId String
+  brandProfile   BrandProfile       @relation(fields: [brandProfileId], references: [id])
+  title          String
+  brief          String
+  targetOverride String?
+  goal           String?
+  durationSec    Int                @default(20)
+  styleOverride  String?
+  ctaOverride    String?
+  referenceMedia String[]
+  aspectRatio    String             @default("9:16")
+  status         WorkflowStatus     @default(DRAFT)
+  errorCode      WorkflowErrorCode?
+  errorMessage   String?
+  strategy       Json?
+  script         Json?
+  caption        String?
+  maxBudgetUsd   Decimal            @default(2.0) @db.Decimal(10, 4)
+  estimatedCost  Decimal            @default(0) @db.Decimal(10, 4)
+  actualCost     Decimal            @default(0) @db.Decimal(10, 4)
+  retryCount     Int                @default(0)
+  idempotencyKey String             @unique
+  publishAt      DateTime?
+  agentRuns      AgentRun[]
+  shots          Shot[]
+  approvals      Approval[]
+  publications   Publication[]
+  schedules      Schedule[]
+  costEvents     CostEvent[]
+  contentItem    ContentItem?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([workspaceId, status])
+}
+
+model AgentRun {
+  id          String    @id @default(cuid())
+  workflowId  String
+  workflow    Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  agent       AgentKind
+  status      RunStatus @default(RUNNING)
+  input       Json
+  output      Json?
+  error       String?
+  model       String?
+  costUsd     Decimal   @default(0) @db.Decimal(10, 4)
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([workflowId, agent])
+}
+
+model Shot {
+  id              String          @id @default(cuid())
+  workflowId      String
+  workflow        Workflow        @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  sceneId         String
+  orderIndex      Int
+  durationSec     Int
+  visualGoal      String
+  prompt          String
+  camera          String?
+  lens            String?
+  movement        String?
+  lighting        String?
+  environment     String?
+  style           String?
+  negativePrompt  String?
+  aspectRatio     String          @default("9:16")
+  references      String[]
+  onScreenText    String?
+  voiceover       String?
+  status          ShotStatus      @default(PENDING)
+  routing         Json?
+  qcReport        Json?
+  qcScore         Float?
+  regenCount      Int             @default(0)
+  generationJobs  GenerationJob[]
+  assets          Asset[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@unique([workflowId, orderIndex])
+  @@index([workflowId, status])
+}
+
+model GenerationJob {
+  id             String              @id @default(cuid())
+  shotId         String
+  shot           Shot                @relation(fields: [shotId], references: [id], onDelete: Cascade)
+  provider       String              @default("higgsfield")
+  endpoint       String
+  modelId        String
+  stage          String              @default("video")
+  input          Json
+  requestId      String?
+  statusUrl      String?
+  status         GenerationJobStatus @default(CREATED)
+  attempt        Int                 @default(1)
+  idempotencyKey String              @unique
+  error          String?
+  estimatedCost  Decimal             @default(0) @db.Decimal(10, 4)
+  actualCost     Decimal             @default(0) @db.Decimal(10, 4)
+  resultUrl      String?
+  assets         Asset[]
+  submittedAt    DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([shotId, status])
+  @@index([requestId])
+}
+
+model Asset {
+  id              String         @id @default(cuid())
+  shotId          String?
+  shot            Shot?          @relation(fields: [shotId], references: [id], onDelete: Cascade)
+  generationJobId String?
+  generationJob   GenerationJob? @relation(fields: [generationJobId], references: [id], onDelete: SetNull)
+  kind            AssetKind
+  storageKey      String
+  mimeType        String
+  bytes           Int?
+  width           Int?
+  height          Int?
+  durationSec     Float?
+  sourceUrl       String?
+  checksum        String?
+  createdAt       DateTime       @default(now())
+
+  @@index([shotId, kind])
+}
+
+model Approval {
+  id         String           @id @default(cuid())
+  workflowId String
+  workflow   Workflow         @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  decision   ApprovalDecision
+  notes      String?
+  createdAt  DateTime         @default(now())
+
+  @@index([workflowId])
+}
+
+model Publication {
+  id             String            @id @default(cuid())
+  workflowId     String
+  workflow       Workflow          @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  platform       String            @default("instagram")
+  status         PublicationStatus @default(PENDING)
+  idempotencyKey String            @unique
+  externalId     String?
+  permalink      String?
+  caption        String
+  error          String?
+  publishedAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([workflowId, status])
+}
+
+model Schedule {
+  id         String    @id @default(cuid())
+  workflowId String
+  workflow   Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  runAt      DateTime
+  timezone   String    @default("Europe/Rome")
+  dispatched Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  @@index([runAt, dispatched])
+}
+
+model CostEvent {
+  id         String   @id @default(cuid())
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  category   String
+  reference  String?
+  amountUsd  Decimal  @db.Decimal(10, 4)
+  estimated  Boolean  @default(false)
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([workflowId, category])
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  actor       String
+  action      String
+  target      String?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId, createdAt])
+}
