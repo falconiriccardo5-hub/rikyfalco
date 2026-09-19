@@ -19,6 +19,8 @@ npm run dev     # http://localhost:3000 — funziona senza altri servizi
 npm run smoke   # esegue l'intera pipeline e stampa il risultato
 ```
 
+**Live:** https://riccardo-orchestrator.vercel.app (Vercel + Supabase Postgres).
+
 **Deploy in produzione:** vedi [DEPLOYMENT.md](./DEPLOYMENT.md) — Vercel + Postgres gestito
 (Neon/Supabase), quattro variabili d'ambiente, login incluso. Il bootstrap di build applica
 migrazioni, brand profile e account amministratore, quindi il primo deploy è già usabile dal

@@ -1,5 +1,8 @@
 # Deployment
 
+> **Live:** https://riccardo-orchestrator.vercel.app — Vercel (`fra1`) + Supabase Postgres
+> (`eu-central-1`), deployed and verified end to end.
+
 The app is a **Next.js 15 App Router** project: server components, server-side API routes, a
 PostgreSQL database through Prisma, and a filesystem-free asset path. Frontend and backend live in
 the same deployable unit — splitting them would add a network hop between the dashboard and its own
@@ -25,11 +28,23 @@ Neon (or Supabase) → create a project → copy **two** connection strings:
 
 | Variable | Which string | Used for |
 |---|---|---|
-| `DATABASE_URL` | **Pooled** (`...-pooler...`) | every runtime query |
-| `DIRECT_URL` | **Direct** | migrations only |
+| `DATABASE_URL` | Shared pooler, **transaction mode** (port `6543`) | every runtime query |
+| `DIRECT_URL` | Shared pooler, **session mode** (port `5432`) | migrations only |
 
 Serverless functions open many short-lived connections; without the pooled URL Postgres runs out of
-connections under load.
+connections under load. Transaction mode does not support prepared statements, hence
+`?pgbouncer=true&connection_limit=1` on `DATABASE_URL`.
+
+Two Supabase details that cost a failed build if you get them wrong:
+
+- **Do not use the direct `db.<ref>.supabase.co` host.** On the free tier it is IPv6-only and Vercel
+  is IPv4-only, so both URLs go through the shared pooler instead.
+- **The pooler hostname carries a cluster number** — `aws-0-<region>` or `aws-1-<region>` — and it is
+  not guessable from the project ref. Copy it from the dashboard's Connect dialog. This deployment is
+  on `aws-0-eu-central-1.pooler.supabase.com`; `aws-1` failed to connect and the migration never ran.
+
+The username is `<role>.<project-ref>`, not just the role. This deployment uses a dedicated
+`orchestrator` role rather than the `postgres` superuser.
 
 ## 2. Deploy
 
@@ -53,6 +68,10 @@ creates (or updates the password of) the admin account. A fresh deploy therefore
 usable login instead of an empty database.
 
 ## 3. Sign in
+
+> On this deployment: **https://riccardo-orchestrator.vercel.app** with the `ADMIN_EMAIL` /
+> `ADMIN_PASSWORD` stored in the project's environment variables.
+
 
 Open the deployment URL. Every page redirects to `/login`; sign in with `ADMIN_EMAIL` /
 `ADMIN_PASSWORD`. Sessions are cookie-based (`httpOnly`, `secure`, `sameSite=lax`, 7 days) and
@@ -99,6 +118,27 @@ inside the request; auto-detected on Vercel), `RATE_LIMIT_PER_MINUTE`, `QC_MIN_S
 Never prefix any of these with `NEXT_PUBLIC_`: that would ship the secret to the browser.
 
 ---
+
+## Redeploying
+
+The project is **not** linked to the repository (linking needs the GitHub connection at project
+creation time), so a push does not auto-deploy yet. Either:
+
+- link it once in the dashboard — Project → Settings → Git → Connect, now that the account has a
+  GitHub login connection — after which every push to the branch deploys automatically; or
+- deploy explicitly: `vercel --prod`, or a POST to `/v13/deployments` with the `gitSource` pointing
+  at `falconiriccardo5-hub/rikyfalco` and the branch.
+
+Note the repository's default branch is `claude/ui-ux-pro-max-guide-we4d07`, while the app lives on
+`claude/intelligent-allen-qug2wp`. Set the production branch accordingly when you link the project.
+
+## Hobby-plan limits that shaped the configuration
+
+- **Functions cap at 60s**, so `vercel.json` and the two pipeline routes ask for 60, not 300. A whole
+  Reel completes in ~2.4s with the local drivers, so this only binds once the live Higgsfield driver
+  is on — and that path belongs on the worker anyway.
+- **Vercel Authentication was on by default** for this project and would have put a Vercel login in
+  front of the app; it is disabled so the app's own login is the only gate.
 
 ## What was changed to make this deployable
 
