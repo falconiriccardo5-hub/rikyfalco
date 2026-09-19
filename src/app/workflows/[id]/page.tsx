@@ -5,10 +5,22 @@ import { prisma } from '@/lib/db';
 import { toNumber } from '@/lib/cost';
 import { assetUrl } from '@/lib/storage';
 import { StatusChip } from '@/components/StatusChip';
+import { AutoRefresh } from '@/components/AutoRefresh';
+import { ShotActions } from './ShotActions';
 import { ApprovalGate } from './ApprovalGate';
 import { PipelineGraph, type PipelineNode } from './PipelineGraph';
 
 export const dynamic = 'force-dynamic';
+
+/** Statuses where the pipeline is still working, so the page should self-refresh. */
+const IN_FLIGHT: WorkflowStatus[] = [
+  WorkflowStatus.STRATEGY,
+  WorkflowStatus.SCRIPT,
+  WorkflowStatus.STORYBOARD,
+  WorkflowStatus.ROUTING,
+  WorkflowStatus.GENERATING,
+  WorkflowStatus.QC,
+];
 
 export default async function WorkflowPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,7 +33,10 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
       approvals: { orderBy: { createdAt: 'desc' } },
       shots: {
         orderBy: { orderIndex: 'asc' },
-        include: { assets: { orderBy: { createdAt: 'desc' }, take: 1 } },
+        include: {
+          assets: { orderBy: { createdAt: 'desc' }, take: 1 },
+          generationJobs: { orderBy: { createdAt: 'asc' } },
+        },
       },
     },
   });
@@ -122,6 +137,9 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
         </div>
         <div className="text-right">
           <StatusChip status={workflow.status} />
+          <div className="mt-2 flex justify-end">
+            <AutoRefresh active={IN_FLIGHT.includes(workflow.status)} label={workflow.status.toLowerCase().replace(/_/g, ' ')} />
+          </div>
           <p className="mt-2 text-xs tabular-nums text-muted">
             ${toNumber(workflow.actualCost).toFixed(2)} spent · est. $
             {toNumber(workflow.estimatedCost).toFixed(2)} · budget $
@@ -210,6 +228,14 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
                 </div>
               </div>
 
+              <div className="mt-3">
+                <ShotActions
+                  shotId={shot.id}
+                  disabled={workflow.status === WorkflowStatus.PUBLISHED}
+                  regenCount={shot.regenCount}
+                />
+              </div>
+
               <div className="mt-4 grid gap-4 sm:grid-cols-[180px_1fr]">
                 <div className="aspect-[9/16] overflow-hidden rounded-lg border border-line bg-ink">
                   {url && mimeType?.startsWith('video/') ? (
@@ -240,6 +266,49 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
                       ))}
                     </ul>
                   )}
+
+                  <details className="group">
+                    <summary className="cursor-pointer text-xs text-muted hover:text-neutral-300">
+                      Technical detail
+                    </summary>
+                    <dl className="mt-2 grid gap-x-6 gap-y-2 text-xs sm:grid-cols-2">
+                      <div>
+                        <dt className="text-muted">Camera</dt>
+                        <dd className="text-neutral-400">
+                          {[shot.camera, shot.lens, shot.movement].filter(Boolean).join(' · ') || '—'}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-muted">Lighting</dt>
+                        <dd className="text-neutral-400">{shot.lighting ?? '—'}</dd>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <dt className="text-muted">Negative prompt</dt>
+                        <dd className="text-neutral-400">{shot.negativePrompt ?? '—'}</dd>
+                      </div>
+                      {shot.voiceover && (
+                        <div className="sm:col-span-2">
+                          <dt className="text-muted">Voiceover</dt>
+                          <dd className="text-neutral-400">{shot.voiceover}</dd>
+                        </div>
+                      )}
+                    </dl>
+
+                    {shot.generationJobs.length > 0 && (
+                      <ul className="mt-3 space-y-1">
+                        {shot.generationJobs.map((job) => (
+                          <li key={job.id} className="flex flex-wrap items-center gap-2 text-xs">
+                            <span className="font-mono text-neutral-400">{job.stage}</span>
+                            <span className="text-muted">{job.modelId}</span>
+                            <span className="font-mono text-[10px] text-muted">
+                              {job.requestId ?? 'no request id'}
+                            </span>
+                            <StatusChip status={job.status} />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </details>
                 </div>
               </div>
             </article>

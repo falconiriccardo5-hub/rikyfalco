@@ -53,10 +53,11 @@ src/
     page.tsx             dashboard (conteggi per stato + workflow recenti)
     studio/              Content Studio, /studio/new con stima costi
     workflows/[id]/      workflow view: pipeline cliccabile + approval gate
+    agents/              registro agenti + ispettore delle run (/agents/runs/[id])
     jobs|assets|brand|calendar|analytics|settings/
     api/                 workflows, run, approve, reject, shots/regenerate,
                          generations, publications, health
-  components/StatusChip.tsx
+  components/           StatusChip, ModeBanner, AutoRefresh, JsonBlock
   lib/
     agents/              strategist, scriptwriter, director, modelRouter,
                          qualityControl, schemas, context
@@ -100,7 +101,8 @@ Punti non ovvi:
 La sezione **Agents** della dashboard è generata dal registro in `src/lib/agents/registry.ts`: per
 ogni agente mostra ruolo, input, contratto di output, guardrail, driver attivo e statistiche reali
 (run, fallimenti, durata media, spesa, ultimo modello), più lo storico delle run. Non può divergere
-dalla pipeline perché legge la stessa definizione che la pipeline usa.
+dalla pipeline perché legge la stessa definizione che la pipeline usa. Ogni run è ispezionabile su
+`/agents/runs/<id>`: input, output, durata, costo, modello, errore e i guardrail dell'agente.
 
 Lo Strategist **scegle** fra target primario (donne 30-50) e secondario (uomini 25-40) in base al
 brief, con fallback sul primario: i due pubblici non vengono fusi.
@@ -127,7 +129,14 @@ Non è un prompt testuale su una descrizione. Per ogni shot:
 4. il verdetto finale combina l'analisi visiva con i controlli deterministici, che hanno la
    precedenza: un aspect ratio sbagliato boccia lo shot qualunque punteggio dia il modello.
 
-Un `regeneration_required` rigenera **solo quello shot**, fino a 2 tentativi.
+Un `regeneration_required` rigenera **solo quello shot**, fino a 2 tentativi, ed è esposto in UI
+con un pulsante per shot nella workflow view.
+
+Il numero di tentativo fa parte della chiave di idempotenza `(shot, stage, attempt)` e decide due
+cose diverse: un tentativo rimasto incompleto viene **ripreso con lo stesso numero**, così la
+richiesta già inviata viene riconciliata invece di essere pagata due volte; un tentativo completato
+è chiuso, quindi una rigenerazione voluta passa a un numero nuovo — altrimenti riprodurrebbe il
+risultato precedente senza rigenerare niente.
 
 ## 5. API endpoints
 
@@ -216,14 +225,17 @@ Stato dipendenze a runtime: `GET /api/health`.
 ## 9. Test results
 
 ```
-Test Files  7 passed (7)
-     Tests  72 passed (72)
+Test Files  8 passed (8)
+     Tests  77 passed (77)
 ```
 
 Oltre ai test, la pipeline è stata **eseguita end-to-end** contro un PostgreSQL reale in modalità
 locale: brief → strategy → script → storyboard → routing → 4 shot generati → QC superato →
 `AWAITING_APPROVAL` → approvazione → tentativo di pubblicazione correttamente rifiutato (Fase 2).
 Tutte le pagine della dashboard rispondono 200 e gli asset sono serviti da `/api/assets/...`.
+Verificata anche la rigenerazione del singolo shot dall'UI: crea un tentativo nuovo con un nuovo
+asset e riporta il workflow ad `AWAITING_APPROVAL`; se sfora il budget lascia shot e workflow in
+`FAILED` con `BUDGET_EXCEEDED` visibile in dashboard, non bloccati in `GENERATING`.
 
 Coprono: contratto HTTP Higgsfield (header, body, webhook, mapping 401), polling (stato terminale,
 5xx transitorio, errore non ritentabile, timeout), non-rientranza della submission, routing
@@ -252,12 +264,14 @@ same-origin, password, chiavi di idempotenza).
    sui suoi input misurati. Il driver locale non guarda nulla e lo dichiara.
 5. **Pipeline non eseguita contro le API reali**: mancano le credenziali OpenAI, Higgsfield e S3.
    È stata eseguita per intero in modalità locale. Ogni adapter live è reale, non un mock.
-6. **Autenticazione minimale**: sessioni con cookie e hash scrypt, senza UI di login; in sviluppo
+6. **La dashboard si aggiorna con polling** (`AutoRefresh`) mentre la pipeline lavora: semplice e
+   affidabile, ma non è realtime; per molti workflow simultanei servirebbero SSE o websocket.
+7. **Autenticazione minimale**: sessioni con cookie e hash scrypt, senza UI di login; in sviluppo
    le route ricadono sul primo utente, in produzione rispondono 401.
-7. **Rate limit in-process**: da spostare su Redis prima di scalare orizzontalmente il web.
-8. **Voiceover e testo a schermo non vengono compositati**: gli shot sono footage muto, il montaggio
+8. **Rate limit in-process**: da spostare su Redis prima di scalare orizzontalmente il web.
+9. **Voiceover e testo a schermo non vengono compositati**: gli shot sono footage muto, il montaggio
    finale non è nello scope della Fase 1.
-9. **Analytics** copre produzione e costi, non le performance Instagram (dipende dal publisher).
+10. **Analytics** copre produzione e costi, non le performance Instagram (dipende dal publisher).
 
 ## 12. Next development steps
 

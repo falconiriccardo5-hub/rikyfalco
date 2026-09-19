@@ -210,16 +210,17 @@ export default async function AgentsPage() {
         ) : (
           <ul className="divide-y divide-line">
             {runs.slice(0, 25).map((run) => (
-              <li key={run.id} className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm">
+              <li key={run.id}>
+                <Link
+                  href={`/agents/runs/${run.id}`}
+                  className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm hover:bg-raised/60"
+                >
                 <span className="w-36 shrink-0 font-mono text-xs text-neutral-300">
                   {run.agent}
                 </span>
-                <Link
-                  href={`/workflows/${run.workflow.id}`}
-                  className="min-w-0 flex-1 truncate text-muted hover:text-accent"
-                >
+                <span className="min-w-0 flex-1 truncate text-muted">
                   {run.workflow.title}
-                </Link>
+                </span>
                 <span className="text-xs tabular-nums text-muted">
                   {run.completedAt
                     ? `${((run.completedAt.getTime() - run.startedAt.getTime()) / 1000).toFixed(2)}s`
@@ -236,6 +237,7 @@ export default async function AgentsPage() {
                 >
                   {run.status}
                 </span>
+                </Link>
               </li>
             ))}
           </ul>

@@ -1,6 +1,7 @@
 import {
   AgentKind,
   AssetKind,
+  GenerationJobStatus,
   Prisma,
   RunStatus,
   ShotStatus,
@@ -323,6 +324,35 @@ function toShotSpec(shot: {
  * Generate one shot and run QC on it. On a QC failure only THIS shot is
  * regenerated — the rest of the Reel is left alone (spec §9).
  */
+/**
+ * Which attempt number the next render of this shot should claim.
+ *
+ * Generation keys are (shot, stage, attempt), so this decides between two very
+ * different things:
+ *
+ * - An attempt whose stages did not all complete is RESUMED at the same number.
+ *   Its recorded request_id is then reconciled instead of resubmitted, which is
+ *   what stops a crashed run from being billed twice.
+ * - An attempt that completed is finished business, so a deliberate
+ *   regeneration moves to a fresh number. Reusing it would simply replay the
+ *   previous result and the shot would never actually be re-rendered.
+ */
+async function nextAttemptNumber(shotId: string): Promise<number> {
+  const jobs = await prisma.generationJob.findMany({
+    where: { shotId },
+    select: { attempt: true, status: true },
+  });
+
+  if (jobs.length === 0) return 1;
+
+  const highest = Math.max(...jobs.map((job) => job.attempt));
+  const unfinished = jobs.some(
+    (job) => job.attempt === highest && job.status !== GenerationJobStatus.COMPLETED,
+  );
+
+  return unfinished ? highest : highest + 1;
+}
+
 export async function produceShot(
   workflowId: string,
   shotId: string,
@@ -333,7 +363,10 @@ export async function produceShot(
     include: { brandProfile: true },
   });
 
-  for (let attempt = 1; attempt <= MAX_SHOT_REGENERATIONS + 1; attempt += 1) {
+  const firstAttempt = await nextAttemptNumber(shotId);
+  const lastAttempt = firstAttempt + MAX_SHOT_REGENERATIONS;
+
+  for (let attempt = firstAttempt; attempt <= lastAttempt; attempt += 1) {
     const shot = await prisma.shot.findUniqueOrThrow({ where: { id: shotId } });
     const spec = toShotSpec(shot);
 
@@ -447,7 +480,25 @@ export async function regenerateShot(shotId: string): Promise<void> {
         budgetPerShotUsd: Number.MAX_SAFE_INTEGER,
       });
 
-  await produceShot(shot.workflowId, shotId, decision);
+  try {
+    await produceShot(shot.workflowId, shotId, decision);
+  } catch (error) {
+    // A failed regeneration must not leave the shot spinning in GENERATING:
+    // the dashboard polls that status forever and the user sees no reason why
+    // (spec §22 — every error is visible in the dashboard).
+    const code = error instanceof OrchestratorError ? error.code : 'GENERATION_FAILED';
+    await prisma.shot.update({ where: { id: shotId }, data: { status: ShotStatus.FAILED } });
+    await prisma.workflow.update({
+      where: { id: shot.workflowId },
+      data: {
+        status: WorkflowStatus.FAILED,
+        errorCode: code,
+        errorMessage: (error as Error).message.slice(0, 1000),
+      },
+    });
+    logger.error('Shot regeneration failed', { shotId, code });
+    throw error;
+  }
 
   // Re-open the gate only when every shot is good again.
   const remaining = await prisma.shot.count({
@@ -459,3 +510,6 @@ export async function regenerateShot(shotId: string): Promise<void> {
 }
 
 export const __testables = { toShotSpec, strategySchema, scriptSchema };
+
+/** Exposed for tests: attempt numbering is what makes a regeneration real. */
+export const __attempts = { nextAttemptNumber };

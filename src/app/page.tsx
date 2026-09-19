@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { toNumber } from '@/lib/cost';
 import { StatusChip } from '@/components/StatusChip';
 import { ModeBanner } from '@/components/ModeBanner';
+import { AutoRefresh } from '@/components/AutoRefresh';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +34,19 @@ export default async function DashboardPage() {
     include: { _count: { select: { shots: true } } },
   });
 
+  const working = workflows.some((w) =>
+    (
+      [
+        WorkflowStatus.STRATEGY,
+        WorkflowStatus.SCRIPT,
+        WorkflowStatus.STORYBOARD,
+        WorkflowStatus.ROUTING,
+        WorkflowStatus.GENERATING,
+        WorkflowStatus.QC,
+      ] as WorkflowStatus[]
+    ).includes(w.status),
+  );
+
   const counts = new Map<string, number>();
   for (const group of GROUPS) {
     counts.set(group.label, workflows.filter((w) => group.statuses.includes(w.status)).length);
@@ -47,9 +61,12 @@ export default async function DashboardPage() {
             From brief to approved Reel, one gate before anything goes out.
           </p>
         </div>
-        <Link href="/studio/new" className="btn btn-primary">
-          + New Reel
-        </Link>
+        <div className="flex items-center gap-4">
+          <AutoRefresh active={working} label="pipeline running" />
+          <Link href="/studio/new" className="btn btn-primary">
+            + New Reel
+          </Link>
+        </div>
       </header>
 
       <ModeBanner />
