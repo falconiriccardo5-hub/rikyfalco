@@ -13,14 +13,14 @@ export function ModeBanner() {
   return (
     <div
       className={`panel flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5 text-xs ${
-        offline ? 'border-emerald-900/50' : 'border-amber-900/50'
+        offline ? 'border-positive/40/50' : 'border-warning/40'
       }`}
     >
       <span
         className={`chip ${
           offline
-            ? 'border-emerald-900 bg-emerald-950/50 text-emerald-300'
-            : 'border-amber-900 bg-amber-950/50 text-amber-300'
+            ? 'border-positive/40 bg-positive/10 text-positive'
+            : 'border-warning/40 bg-warning/10 text-warning'
         }`}
       >
         {offline ? 'local mode' : 'live services'}

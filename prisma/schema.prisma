@@ -4,7 +4,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Runtime uses the pooled connection (PgBouncer/Neon proxy); migrations need a
+  // direct one. DIRECT_URL falls back to DATABASE_URL when they are the same.
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum WorkflowStatus {

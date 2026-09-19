@@ -76,7 +76,7 @@ export default async function AssetsPage() {
 
             <div className="space-y-1.5 p-4">
               <div className="flex items-center justify-between gap-2">
-                <span className="chip border-line bg-raised text-neutral-400">{asset.kind}</span>
+                <span className="chip border-line bg-raised text-secondary">{asset.kind}</span>
                 <span className="text-[11px] tabular-nums text-muted">
                   {asset.bytes ? `${(asset.bytes / 1024).toFixed(0)} KB` : '—'}
                 </span>

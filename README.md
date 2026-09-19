@@ -19,6 +19,19 @@ npm run dev     # http://localhost:3000 — funziona senza altri servizi
 npm run smoke   # esegue l'intera pipeline e stampa il risultato
 ```
 
+**Deploy in produzione:** vedi [DEPLOYMENT.md](./DEPLOYMENT.md) — Vercel + Postgres gestito
+(Neon/Supabase), quattro variabili d'ambiente, login incluso. Il bootstrap di build applica
+migrazioni, brand profile e account amministratore, quindi il primo deploy è già usabile dal
+browser.
+
+### Design system
+
+Dashboard *data-dense* in un guscio scuro **tech-futuristic / aurora**, bento grid, glass misurato.
+Tipografia Inter con numeri tabulari; blu `#4C8DFF` come unico colore interattivo, viola solo
+decorativo, verde/ambra/rosso semantici. Regole rispettate: contrasto ≥ 4.5:1 su ogni testo, focus
+ring visibile, target touch ≥ 44px, icone SVG (mai emoji), nessun valore comunicato dal solo colore,
+`prefers-reduced-motion` onorato, nessuno scroll orizzontale da 375px in su.
+
 ---
 
 ## 1. Architecture overview
@@ -264,14 +277,18 @@ same-origin, password, chiavi di idempotenza).
    sui suoi input misurati. Il driver locale non guarda nulla e lo dichiara.
 5. **Pipeline non eseguita contro le API reali**: mancano le credenziali OpenAI, Higgsfield e S3.
    È stata eseguita per intero in modalità locale. Ogni adapter live è reale, non un mock.
-6. **La dashboard si aggiorna con polling** (`AutoRefresh`) mentre la pipeline lavora: semplice e
+6. **Errori e status HTTP in streaming**: le quattro pagine con skeleton (`agents`, `assets`,
+   `jobs`, `analytics`) vengono trasmesse in streaming, quindi un errore lì arriva con status HTTP
+   200 mentre l'interfaccia mostra correttamente la card d'errore. Le altre rotte restituiscono
+   404/500 corretti e `/api/health` riporta sempre lo stato reale (503 se il database è giù).
+7. **La dashboard si aggiorna con polling** (`AutoRefresh`) mentre la pipeline lavora: semplice e
    affidabile, ma non è realtime; per molti workflow simultanei servirebbero SSE o websocket.
-7. **Autenticazione minimale**: sessioni con cookie e hash scrypt, senza UI di login; in sviluppo
-   le route ricadono sul primo utente, in produzione rispondono 401.
-8. **Rate limit in-process**: da spostare su Redis prima di scalare orizzontalmente il web.
-9. **Voiceover e testo a schermo non vengono compositati**: gli shot sono footage muto, il montaggio
+8. **Autenticazione a utente singolo**: login con email e password (scrypt, sessioni hashate,
+   cookie httpOnly), nessuna registrazione, nessun reset password, nessun ruolo oltre `owner`.
+9. **Rate limit in-process**: da spostare su Redis prima di scalare orizzontalmente il web.
+10. **Voiceover e testo a schermo non vengono compositati**: gli shot sono footage muto, il montaggio
    finale non è nello scope della Fase 1.
-10. **Analytics** copre produzione e costi, non le performance Instagram (dipende dal publisher).
+11. **Analytics** copre produzione e costi, non le performance Instagram (dipende dal publisher).
 
 ## 12. Next development steps
 

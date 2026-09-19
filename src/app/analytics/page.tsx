@@ -47,7 +47,7 @@ export default async function AnalyticsPage() {
       </div>
 
       <section className="panel p-5">
-        <h2 className="text-sm font-medium text-neutral-300">Spend by category</h2>
+        <h2 className="text-sm font-medium text-secondary">Spend by category</h2>
         <dl className="mt-3 space-y-2">
           {byCategory.size === 0 && <p className="text-sm text-muted">No spend recorded yet.</p>}
           {[...byCategory.entries()].map(([category, amount]) => (

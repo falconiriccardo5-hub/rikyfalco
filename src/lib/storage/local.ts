@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { env } from '../env';
 import { OrchestratorError } from '../errors';
@@ -55,15 +56,15 @@ export function placeholderSvg(label: string, detail: string, aspectRatio: strin
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#15171F"/>
-      <stop offset="100%" stop-color="#0A0B0F"/>
+      <stop offset="0%" stop-color="#151925"/>
+      <stop offset="100%" stop-color="#080A12"/>
     </linearGradient>
   </defs>
   <rect width="${width}" height="${height}" fill="url(#g)"/>
-  <rect x="12" y="12" width="${width - 24}" height="${height - 24}" fill="none" stroke="#C8A96A" stroke-opacity="0.35" stroke-dasharray="8 6"/>
-  <text x="50%" y="46%" fill="#C8A96A" font-family="monospace" font-size="15" text-anchor="middle">SIMULATED SHOT</text>
-  <text x="50%" y="53%" fill="#8A8F9C" font-family="monospace" font-size="12" text-anchor="middle">${escape(label)}</text>
-  <text x="50%" y="59%" fill="#5A5F6C" font-family="monospace" font-size="10" text-anchor="middle">${escape(detail)}</text>
+  <rect x="12" y="12" width="${width - 24}" height="${height - 24}" fill="none" stroke="#4C8DFF" stroke-opacity="0.35" stroke-dasharray="8 6"/>
+  <text x="50%" y="46%" fill="#7BA9FF" font-family="monospace" font-size="15" text-anchor="middle">SIMULATED SHOT</text>
+  <text x="50%" y="53%" fill="#B4BDD4" font-family="monospace" font-size="12" text-anchor="middle">${escape(label)}</text>
+  <text x="50%" y="59%" fill="#8A93AC" font-family="monospace" font-size="10" text-anchor="middle">${escape(detail)}</text>
 </svg>`;
 }
 
@@ -74,11 +75,60 @@ export interface SyntheticAssetArgs {
   aspectRatio: string;
 }
 
-/** Create and store a placeholder asset without downloading anything. */
+const SYNTHETIC_PREFIX = 'synthetic/';
+
+export function isSyntheticKey(storageKey: string): boolean {
+  return storageKey.startsWith(SYNTHETIC_PREFIX);
+}
+
+/**
+ * A simulated shot carries its own description in its storage key, and the
+ * placeholder is redrawn on read. Nothing is persisted, which is what keeps
+ * simulated assets working on a read-only serverless filesystem where a written
+ * file would not survive to the next request.
+ */
 export async function storeSyntheticAsset(args: SyntheticAssetArgs): Promise<StoredAsset> {
+  const descriptor = Buffer.from(
+    JSON.stringify({ l: args.label, d: args.detail, r: args.aspectRatio }),
+    'utf8',
+  ).toString('base64url');
+
+  const storageKey = `${SYNTHETIC_PREFIX}${descriptor}/${randomUUID()}.svg`;
   const svg = placeholderSvg(args.label, args.detail, args.aspectRatio);
-  const storageKey = `${args.keyPrefix}/${randomUUID()}.svg`;
-  return write(storageKey, Buffer.from(svg, 'utf8'), 'image/svg+xml');
+  const body = Buffer.from(svg, 'utf8');
+
+  // A temp copy exists only so a file-reading QC driver has something to probe;
+  // serving never depends on it.
+  const workDir = await fs.mkdtemp(path.join(os.tmpdir(), 'synthetic-'));
+  const localPath = path.join(workDir, 'placeholder.svg');
+  await fs.writeFile(localPath, body).catch(() => undefined);
+
+  return {
+    storageKey,
+    bytes: body.byteLength,
+    checksum: createHash('sha256').update(body).digest('hex'),
+    mimeType: 'image/svg+xml',
+    localPath,
+  };
+}
+
+/** Redraw a synthetic placeholder from its key. */
+export function renderSyntheticAsset(storageKey: string): { body: Buffer; mimeType: string } {
+  const descriptor = storageKey.slice(SYNTHETIC_PREFIX.length).split('/')[0] ?? '';
+  let label = 'Simulated shot';
+  let detail = '';
+  let ratio = '9:16';
+
+  try {
+    const parsed = JSON.parse(Buffer.from(descriptor, 'base64url').toString('utf8'));
+    label = typeof parsed.l === 'string' ? parsed.l : label;
+    detail = typeof parsed.d === 'string' ? parsed.d : detail;
+    ratio = typeof parsed.r === 'string' ? parsed.r : ratio;
+  } catch {
+    // A malformed key still renders a placeholder rather than a broken image.
+  }
+
+  return { body: Buffer.from(placeholderSvg(label, detail, ratio), 'utf8'), mimeType: 'image/svg+xml' };
 }
 
 /** Persist bytes fetched from a real provider into the local root. */
@@ -92,6 +142,8 @@ export async function storeBuffer(
 }
 
 export async function readLocalAsset(storageKey: string): Promise<{ body: Buffer; mimeType: string }> {
+  if (isSyntheticKey(storageKey)) return renderSyntheticAsset(storageKey);
+
   const target = resolveKey(storageKey);
   const extension = path.extname(target).slice(1).toLowerCase();
   const mimeByExtension: Record<string, string> = {

@@ -19,9 +19,12 @@ export function verifyPassword(password: string, stored: string): boolean {
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
-function tokenHash(token: string): string {
+/** Sessions are stored hashed: a leaked database row cannot be replayed as a cookie. */
+export function sessionTokenHash(token: string): string {
   return createHash('sha256').update(token).digest('hex');
 }
+
+const tokenHash = sessionTokenHash;
 
 export async function createSession(userId: string): Promise<string> {
   const token = randomBytes(32).toString('hex');
@@ -70,18 +73,29 @@ export async function requireUser(): Promise<AuthedUser> {
   const user = await currentUser();
   if (user) return user;
 
-  if (process.env.NODE_ENV === 'production') {
+  // The single-user fallback exists only for local development, and only while
+  // no password has been set. In production, or once an account has a
+  // password, a real session is required.
+  if (process.env.NODE_ENV === 'production' || process.env.AUTH_REQUIRED === 'true') {
     throw new HttpError(401, 'Authentication required.');
   }
 
   const fallback = await prisma.user.findFirst({ orderBy: { createdAt: 'asc' } });
   if (!fallback) throw new HttpError(401, 'No user exists yet. Run `npm run db:seed`.');
+  if (fallback.passwordHash) {
+    throw new HttpError(401, 'Authentication required: sign in at /login.');
+  }
   return {
     id: fallback.id,
     email: fallback.email,
     workspaceId: fallback.workspaceId,
     role: fallback.role,
   };
+}
+
+/** True when this deployment demands a real login (production, or opted in). */
+export function authRequired(): boolean {
+  return process.env.NODE_ENV === 'production' || process.env.AUTH_REQUIRED === 'true';
 }
 
 /** Authorization: a resource is only reachable from its own workspace. */

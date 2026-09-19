@@ -299,7 +299,7 @@ export function NewReelForm({ brands }: { brands: BrandOption[] }) {
       </div>
 
       {estimate && (
-        <div className={`panel p-5 ${overBudget ? 'border-red-900/70' : 'border-accent/40'}`}>
+        <div className={`panel p-5 ${overBudget ? 'border-danger/40' : 'border-accent/40'}`}>
           <p className="text-xs uppercase tracking-wider text-muted">Estimated generation cost</p>
           <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1">
             <p className="text-2xl font-semibold tabular-nums">
@@ -310,7 +310,7 @@ export function NewReelForm({ brands }: { brands: BrandOption[] }) {
             </p>
           </div>
           {overBudget && (
-            <p className="mt-3 text-sm text-red-300">
+            <p className="mt-3 text-sm text-danger">
               Over budget. Raise the budget or shorten the Reel — generation will not start.
             </p>
           )}
@@ -318,7 +318,7 @@ export function NewReelForm({ brands }: { brands: BrandOption[] }) {
       )}
 
       {error && (
-        <div className="panel border-red-900/70 p-4 text-sm text-red-300">{error}</div>
+        <div className="panel border-danger/40 p-4 text-sm text-danger">{error}</div>
       )}
 
       <div className="flex flex-wrap gap-3">

@@ -38,13 +38,19 @@ export function inlineJobCount(): number {
 }
 
 /**
- * Run the pipeline in this process, without Redis.
+ * Is this process a serverless function that is frozen the moment it responds?
  *
- * The call is intentionally not awaited: the HTTP route answers immediately and
- * the dashboard follows the workflow's status, exactly as it does with the
- * worker. Failures are already persisted on the workflow by the orchestrator,
- * so nothing is lost by detaching here.
+ * On such a platform a detached background task is killed mid-flight, so the
+ * pipeline must finish inside the request. On a long-lived server detaching is
+ * better: the dashboard gets an immediate answer and polls for progress.
  */
+function mustFinishWithinRequest(): boolean {
+  if (process.env.INLINE_AWAIT === 'true') return true;
+  if (process.env.INLINE_AWAIT === 'false') return false;
+  return Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+}
+
+/** Run the pipeline in this process, without Redis. */
 async function runInline(data: WorkflowJobData): Promise<{ id: string }> {
   const id = `inline:${randomUUID()}`;
   inlineJobs.add(id);
@@ -53,7 +59,7 @@ async function runInline(data: WorkflowJobData): Promise<{ id: string }> {
   // Redis path does not need.
   const { runWorkflow, regenerateShot } = await import('../pipeline/orchestrator');
 
-  void (async () => {
+  const execute = async () => {
     try {
       if (data.kind === 'regenerate-shot') {
         if (!data.shotId) throw new Error('regenerate-shot job is missing shotId');
@@ -63,11 +69,16 @@ async function runInline(data: WorkflowJobData): Promise<{ id: string }> {
       }
       logger.info('Inline job completed', { id, kind: data.kind });
     } catch (error) {
+      // Already persisted on the workflow by the orchestrator; swallowed here so
+      // a failed pipeline does not also fail the HTTP response.
       logger.error('Inline job failed', { id, error: (error as Error).message });
     } finally {
       inlineJobs.delete(id);
     }
-  })();
+  };
+
+  if (mustFinishWithinRequest()) await execute();
+  else void execute();
 
   return { id };
 }

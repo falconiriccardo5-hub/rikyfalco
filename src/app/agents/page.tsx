@@ -58,14 +58,14 @@ export default async function AgentsPage() {
         </p>
       </header>
 
-      <section className={`panel p-5 ${offline ? 'border-emerald-900/60' : 'border-amber-900/60'}`}>
+      <section className={`panel p-5 ${offline ? 'border-positive/40/60' : 'border-warning/40'}`}>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-sm font-medium text-neutral-300">Runtime mode</h2>
+          <h2 className="text-sm font-medium text-secondary">Runtime mode</h2>
           <span
             className={`chip ${
               offline
-                ? 'border-emerald-900 bg-emerald-950/50 text-emerald-300'
-                : 'border-amber-900 bg-amber-950/50 text-amber-300'
+                ? 'border-positive/40 bg-positive/10 text-positive'
+                : 'border-warning/40 bg-warning/10 text-warning'
             }`}
           >
             {offline ? 'fully offline' : 'live services enabled'}
@@ -79,12 +79,12 @@ export default async function AgentsPage() {
         <ul className="mt-4 divide-y divide-line">
           {describeDrivers().map((driver) => (
             <li key={driver.key} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2.5">
-              <span className="w-32 shrink-0 text-sm text-neutral-300">{driver.label}</span>
+              <span className="w-32 shrink-0 text-sm text-secondary">{driver.label}</span>
               <span
                 className={`chip ${
                   driver.live
-                    ? 'border-amber-900 bg-amber-950/40 text-amber-300'
-                    : 'border-line bg-raised text-neutral-400'
+                    ? 'border-warning/40 bg-warning/10 text-warning'
+                    : 'border-line bg-raised text-secondary'
                 }`}
               >
                 {driver.value}
@@ -110,32 +110,32 @@ export default async function AgentsPage() {
                     </span>
                     <h3 className="text-base font-medium">{agent.name}</h3>
                     {agent.deterministic && (
-                      <span className="chip border-line bg-raised text-neutral-400">
+                      <span className="chip border-line bg-raised text-secondary">
                         deterministic
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 text-sm text-neutral-400">{agent.role}</p>
+                  <p className="mt-1 text-sm text-secondary">{agent.role}</p>
                 </div>
                 <span
                   className={`chip ${
                     driver.live
-                      ? 'border-amber-900 bg-amber-950/40 text-amber-300'
-                      : 'border-line bg-raised text-neutral-400'
+                      ? 'border-warning/40 bg-warning/10 text-warning'
+                      : 'border-line bg-raised text-secondary'
                   }`}
                 >
                   {driver.value}
                 </span>
               </div>
 
-              <p className="mt-3 text-sm text-neutral-400">{agent.responsibility}</p>
+              <p className="mt-3 text-sm text-secondary">{agent.responsibility}</p>
 
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-[11px] uppercase tracking-wider text-muted">Inputs</p>
                   <ul className="mt-1.5 flex flex-wrap gap-1.5">
                     {agent.inputs.map((input) => (
-                      <li key={input} className="chip border-line bg-raised/60 text-neutral-400">
+                      <li key={input} className="chip border-line bg-raised/60 text-secondary">
                         {input}
                       </li>
                     ))}
@@ -157,7 +157,7 @@ export default async function AgentsPage() {
                 <p className="text-[11px] uppercase tracking-wider text-muted">Guardrails</p>
                 <ul className="mt-1.5 space-y-1">
                   {agent.guardrails.map((rule) => (
-                    <li key={rule} className="text-xs text-neutral-400">
+                    <li key={rule} className="text-xs text-secondary">
                       · {rule}
                     </li>
                   ))}
@@ -167,27 +167,27 @@ export default async function AgentsPage() {
               <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-t border-line pt-4 text-xs">
                 <div>
                   <dt className="text-muted">Runs</dt>
-                  <dd className="tabular-nums text-neutral-300">{stat.total}</dd>
+                  <dd className="tabular-nums text-secondary">{stat.total}</dd>
                 </div>
                 <div>
                   <dt className="text-muted">Failed</dt>
-                  <dd className={`tabular-nums ${stat.failed ? 'text-red-300' : 'text-neutral-300'}`}>
+                  <dd className={`tabular-nums ${stat.failed ? 'text-danger' : 'text-secondary'}`}>
                     {stat.failed}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-muted">Avg duration</dt>
-                  <dd className="tabular-nums text-neutral-300">
+                  <dd className="tabular-nums text-secondary">
                     {stat.avgMs === null ? '—' : `${(stat.avgMs / 1000).toFixed(2)}s`}
                   </dd>
                 </div>
                 <div>
                   <dt className="text-muted">Spend</dt>
-                  <dd className="tabular-nums text-neutral-300">${stat.cost.toFixed(3)}</dd>
+                  <dd className="tabular-nums text-secondary">${stat.cost.toFixed(3)}</dd>
                 </div>
                 <div>
                   <dt className="text-muted">Last model</dt>
-                  <dd className="font-mono text-neutral-300">{stat.lastModel ?? '—'}</dd>
+                  <dd className="font-mono text-secondary">{stat.lastModel ?? '—'}</dd>
                 </div>
               </dl>
             </article>
@@ -197,7 +197,7 @@ export default async function AgentsPage() {
 
       <section className="panel overflow-hidden">
         <div className="border-b border-line px-5 py-3">
-          <h2 className="text-sm font-medium text-neutral-300">Recent agent runs</h2>
+          <h2 className="text-sm font-medium text-secondary">Recent agent runs</h2>
         </div>
         {runs.length === 0 ? (
           <p className="px-5 py-8 text-center text-sm text-muted">
@@ -215,7 +215,7 @@ export default async function AgentsPage() {
                   href={`/agents/runs/${run.id}`}
                   className="flex flex-wrap items-center gap-3 px-5 py-3 text-sm hover:bg-raised/60"
                 >
-                <span className="w-36 shrink-0 font-mono text-xs text-neutral-300">
+                <span className="w-36 shrink-0 font-mono text-xs text-secondary">
                   {run.agent}
                 </span>
                 <span className="min-w-0 flex-1 truncate text-muted">
@@ -229,10 +229,10 @@ export default async function AgentsPage() {
                 <span
                   className={`chip ${
                     run.status === RunStatus.FAILED
-                      ? 'border-red-900 bg-red-950/50 text-red-300'
+                      ? 'border-danger/40 bg-danger/10 text-danger'
                       : run.status === RunStatus.SUCCEEDED
-                        ? 'border-emerald-900 bg-emerald-950/40 text-emerald-300'
-                        : 'border-amber-900 bg-amber-950/40 text-amber-300'
+                        ? 'border-positive/40 bg-positive/10 text-positive'
+                        : 'border-warning/40 bg-warning/10 text-warning'
                   }`}
                 >
                   {run.status}

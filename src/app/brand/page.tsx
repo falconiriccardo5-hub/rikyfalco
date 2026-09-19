@@ -6,7 +6,7 @@ function Row({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <dt className="text-[11px] uppercase tracking-wider text-muted">{label}</dt>
-      <dd className="mt-0.5 text-sm text-neutral-300">{value || '—'}</dd>
+      <dd className="mt-0.5 text-sm text-secondary">{value || '—'}</dd>
     </div>
   );
 }

@@ -29,7 +29,7 @@ export default async function AgentRunPage({ params }: { params: Promise<{ id: s
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <header>
-        <Link href="/agents" className="text-xs text-muted hover:text-neutral-300">
+        <Link href="/agents" className="text-xs text-muted hover:text-secondary">
           ← Agents
         </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">
@@ -50,10 +50,10 @@ export default async function AgentRunPage({ params }: { params: Promise<{ id: s
             <dd
               className={`mt-0.5 text-sm ${
                 run.status === RunStatus.FAILED
-                  ? 'text-red-300'
+                  ? 'text-danger'
                   : run.status === RunStatus.SUCCEEDED
-                    ? 'text-emerald-300'
-                    : 'text-amber-300'
+                    ? 'text-positive'
+                    : 'text-warning'
               }`}
             >
               {run.status}
@@ -61,19 +61,19 @@ export default async function AgentRunPage({ params }: { params: Promise<{ id: s
           </div>
           <div>
             <dt className="text-[11px] uppercase tracking-wider text-muted">Duration</dt>
-            <dd className="mt-0.5 text-sm tabular-nums text-neutral-300">
+            <dd className="mt-0.5 text-sm tabular-nums text-secondary">
               {durationMs === null ? 'running' : `${(durationMs / 1000).toFixed(2)}s`}
             </dd>
           </div>
           <div>
             <dt className="text-[11px] uppercase tracking-wider text-muted">Cost</dt>
-            <dd className="mt-0.5 text-sm tabular-nums text-neutral-300">
+            <dd className="mt-0.5 text-sm tabular-nums text-secondary">
               ${toNumber(run.costUsd).toFixed(4)}
             </dd>
           </div>
           <div>
             <dt className="text-[11px] uppercase tracking-wider text-muted">Model</dt>
-            <dd className="mt-0.5 font-mono text-xs text-neutral-300">{run.model ?? '—'}</dd>
+            <dd className="mt-0.5 font-mono text-xs text-secondary">{run.model ?? '—'}</dd>
           </div>
         </dl>
 
@@ -84,19 +84,19 @@ export default async function AgentRunPage({ params }: { params: Promise<{ id: s
       </section>
 
       {run.error && (
-        <section className="panel border-red-900/70 p-5">
-          <h2 className="text-sm font-medium text-red-300">Error</h2>
-          <p className="mt-2 whitespace-pre-wrap text-sm text-red-200">{run.error}</p>
+        <section className="panel border-danger/40 p-5">
+          <h2 className="text-sm font-medium text-danger">Error</h2>
+          <p className="mt-2 whitespace-pre-wrap text-sm text-danger">{run.error}</p>
         </section>
       )}
 
       <section className="panel p-5">
-        <h2 className="text-sm font-medium text-neutral-300">Input</h2>
+        <h2 className="text-sm font-medium text-secondary">Input</h2>
         <JsonBlock value={run.input} />
       </section>
 
       <section className="panel p-5">
-        <h2 className="text-sm font-medium text-neutral-300">Output</h2>
+        <h2 className="text-sm font-medium text-secondary">Output</h2>
         {run.output ? (
           <JsonBlock value={run.output} />
         ) : (
@@ -106,10 +106,10 @@ export default async function AgentRunPage({ params }: { params: Promise<{ id: s
 
       {definition && (
         <section className="panel p-5">
-          <h2 className="text-sm font-medium text-neutral-300">Guardrails for this agent</h2>
+          <h2 className="text-sm font-medium text-secondary">Guardrails for this agent</h2>
           <ul className="mt-2 space-y-1">
             {definition.guardrails.map((rule) => (
-              <li key={rule} className="text-xs text-neutral-400">
+              <li key={rule} className="text-xs text-secondary">
                 · {rule}
               </li>
             ))}

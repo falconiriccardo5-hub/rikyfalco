@@ -7,44 +7,108 @@
 }
 
 body {
-  @apply bg-ink text-neutral-100 antialiased;
-  background-image:
-    radial-gradient(1000px 500px at 12% -10%, rgba(200, 169, 106, 0.08), transparent 60%),
-    radial-gradient(900px 500px at 100% 0%, rgba(80, 110, 190, 0.07), transparent 55%);
-  background-attachment: fixed;
+  @apply bg-void text-primary antialiased;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'tnum';
+}
+
+/* Aurora backdrop. Fixed and painted once — it never sits behind body copy,
+   and it is dropped entirely on small screens where the blur costs the most. */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 8% -10%, rgba(76, 141, 255, 0.16), transparent 60%),
+    radial-gradient(48rem 34rem at 92% 4%, rgba(139, 92, 246, 0.14), transparent 62%),
+    radial-gradient(52rem 36rem at 70% 100%, rgba(34, 211, 238, 0.08), transparent 60%);
+}
+
+@media (max-width: 640px) {
+  .aurora {
+    background: radial-gradient(40rem 26rem at 50% -10%, rgba(76, 141, 255, 0.12), transparent 65%);
+  }
 }
 
 @layer components {
+  /* Structural glass: translucent enough to read as a surface, opaque enough
+     that text on it still clears 4.5:1. */
   .panel {
-    @apply rounded-xl border border-line bg-surface/80 backdrop-blur-sm;
+    @apply rounded-2xl border border-line bg-surface/85 shadow-card backdrop-blur-xl;
+  }
+
+  .panel-flat {
+    @apply rounded-2xl border border-line bg-surface;
+  }
+
+  .panel-hover {
+    @apply transition-colors duration-200 hover:border-hairline hover:bg-raised/70;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line px-4 py-2
-      text-sm font-medium text-neutral-200 transition-colors hover:border-neutral-600
-      hover:bg-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent
-      disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-line
+      bg-raised/60 px-4 py-2.5 text-sm font-medium text-secondary transition-colors duration-200
+      hover:border-hairline hover:bg-raised hover:text-primary
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2
+      focus-visible:ring-offset-void disabled:cursor-not-allowed disabled:opacity-40
+      disabled:hover:bg-raised/60 disabled:hover:text-secondary;
+    min-height: 44px; /* touch target */
   }
 
   .btn-primary {
-    @apply border-accent/50 bg-accent/15 text-accent hover:border-accent hover:bg-accent/25;
+    @apply border-transparent bg-accent text-[#04060F] hover:bg-accent-soft hover:text-[#04060F];
   }
 
   .btn-danger {
-    @apply border-red-900/60 bg-red-950/40 text-red-300 hover:border-red-700 hover:bg-red-950/70;
+    @apply border-danger/40 bg-danger/10 text-danger hover:border-danger/70 hover:bg-danger/20 hover:text-danger;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+    min-height: 36px;
   }
 
   .field {
-    @apply w-full rounded-lg border border-line bg-ink/70 px-3 py-2 text-sm text-neutral-100
-      placeholder:text-neutral-600 focus:border-accent/60 focus:outline-none;
+    @apply w-full rounded-xl border border-line bg-ink/80 px-3.5 py-2.5 text-base text-primary
+      placeholder:text-muted/70 focus:border-accent/70 focus:outline-none focus:ring-2
+      focus:ring-accent/30 sm:text-sm;
   }
 
   .label {
-    @apply mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted;
+    @apply mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.12em] text-muted;
   }
 
   .chip {
-    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium
       uppercase tracking-wide;
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-muted;
+  }
+
+  .metric {
+    @apply font-semibold tabular-nums text-primary;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-xl bg-raised/60;
+  }
+
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r
+      from-transparent via-white/5 to-transparent;
+  }
+}
+
+/* Respect the user's motion preference (ux: reduced-motion). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

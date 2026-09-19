@@ -7,6 +7,7 @@ import { enqueueWorkflow } from '@/lib/queue';
 import { HttpError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 300;
 
 type Params = { params: Promise<{ id: string }> };
 

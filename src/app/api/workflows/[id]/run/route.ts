@@ -9,6 +9,9 @@ import { runWorkflow } from '@/lib/pipeline/orchestrator';
 import { HttpError } from '@/lib/errors';
 
 export const dynamic = 'force-dynamic';
+// On a serverless host the pipeline finishes inside this request (see the queue
+// driver), so the function needs room to do it.
+export const maxDuration = 300;
 
 type Params = { params: Promise<{ id: string }> };
 

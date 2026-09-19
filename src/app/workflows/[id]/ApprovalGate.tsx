@@ -60,7 +60,7 @@ export function ApprovalGate({
   return (
     <div className="panel p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-medium text-neutral-300">Approval gate</h2>
+        <h2 className="text-sm font-medium text-secondary">Approval gate</h2>
         {!atGate && (
           <p className="text-xs text-muted">
             {status === 'APPROVED' || status === 'SCHEDULED'
@@ -73,17 +73,17 @@ export function ApprovalGate({
       <dl className="mt-4 grid gap-4 sm:grid-cols-3">
         <div>
           <dt className="text-[11px] uppercase tracking-wider text-muted">CTA</dt>
-          <dd className="mt-0.5 text-sm text-neutral-300">{cta ?? '—'}</dd>
+          <dd className="mt-0.5 text-sm text-secondary">{cta ?? '—'}</dd>
         </div>
         <div>
           <dt className="text-[11px] uppercase tracking-wider text-muted">Publish date</dt>
-          <dd className="mt-0.5 text-sm text-neutral-300">
+          <dd className="mt-0.5 text-sm text-secondary">
             {publishAt ? new Date(publishAt).toLocaleString() : 'Not scheduled'}
           </dd>
         </div>
         <div>
           <dt className="text-[11px] uppercase tracking-wider text-muted">Cost</dt>
-          <dd className="mt-0.5 text-sm tabular-nums text-neutral-300">
+          <dd className="mt-0.5 text-sm tabular-nums text-secondary">
             ${actualCost.toFixed(2)}
           </dd>
         </div>
@@ -99,7 +99,7 @@ export function ApprovalGate({
             onChange={(e) => setDraftCaption(e.target.value)}
           />
         ) : (
-          <p className="mt-1.5 whitespace-pre-wrap text-sm text-neutral-300">
+          <p className="mt-1.5 whitespace-pre-wrap text-sm text-secondary">
             {caption ?? 'No caption generated yet.'}
           </p>
         )}
@@ -120,10 +120,10 @@ export function ApprovalGate({
         </div>
       )}
 
-      {error && <p className="mt-4 text-sm text-red-300">{error}</p>}
+      {error && <p className="mt-4 text-sm text-danger">{error}</p>}
 
       {!allShotsPassed && atGate && (
-        <p className="mt-4 text-sm text-amber-300">
+        <p className="mt-4 text-sm text-warning">
           Some shots have not passed QC. Regenerate them before approving.
         </p>
       )}

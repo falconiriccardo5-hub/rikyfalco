@@ -18,7 +18,7 @@ export default function SettingsPage() {
       </header>
 
       <section className="panel p-5">
-        <h2 className="text-sm font-medium text-neutral-300">Drivers</h2>
+        <h2 className="text-sm font-medium text-secondary">Drivers</h2>
         <p className="mt-1 text-xs text-muted">
           Each capability is backed by a local or a live implementation, chosen by environment
           variable. Defaults are local, so the product runs with no external connection.
@@ -26,12 +26,12 @@ export default function SettingsPage() {
         <ul className="mt-4 divide-y divide-line">
           {describeDrivers().map((driver) => (
             <li key={driver.key} className="flex flex-wrap items-baseline gap-3 py-2.5 text-sm">
-              <span className="w-32 shrink-0 text-neutral-300">{driver.label}</span>
+              <span className="w-32 shrink-0 text-secondary">{driver.label}</span>
               <span
                 className={`chip ${
                   driver.live
-                    ? 'border-amber-900 bg-amber-950/40 text-amber-300'
-                    : 'border-line bg-raised text-neutral-400'
+                    ? 'border-warning/40 bg-warning/10 text-warning'
+                    : 'border-line bg-raised text-secondary'
                 }`}
               >
                 {driver.value}
@@ -43,7 +43,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="panel p-5">
-        <h2 className="text-sm font-medium text-neutral-300">Higgsfield model catalog</h2>
+        <h2 className="text-sm font-medium text-secondary">Higgsfield model catalog</h2>
         <p className="mt-1 text-xs text-muted">
           Only endpoints verified against the official SDK are selectable. Point
           <code className="mx-1 text-accent">HF_CATALOG_PATH</code> at an updated JSON file to add
@@ -54,7 +54,7 @@ export default function SettingsPage() {
             <li key={model.id} className="flex flex-wrap items-center gap-3 py-3 text-sm">
               <span className="w-48 shrink-0 font-mono text-xs text-accent">{model.id}</span>
               <span className="min-w-0 flex-1 text-muted">{model.endpoint}</span>
-              <span className="chip border-line bg-raised text-neutral-400">{model.capability}</span>
+              <span className="chip border-line bg-raised text-secondary">{model.capability}</span>
               <span className="tabular-nums text-xs text-muted">
                 ~${model.estimatedCostUsd.toFixed(2)}
               </span>

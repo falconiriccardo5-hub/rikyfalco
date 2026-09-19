@@ -42,7 +42,7 @@ export function ShotActions({
           regenerated {regenCount}×
         </span>
       )}
-      {error && <span className="text-[11px] text-red-300">{error}</span>}
+      {error && <span className="text-[11px] text-danger">{error}</span>}
       <button
         type="button"
         className="btn px-3 py-1 text-xs"

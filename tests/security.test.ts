@@ -109,3 +109,28 @@ describe('idempotency keys', () => {
     expect(publicationKey('wf-1', 'instagram')).not.toBe(publicationKey('wf-2', 'instagram'));
   });
 });
+
+describe('synthetic asset keys', () => {
+  it('round-trips its descriptor so the placeholder survives a read-only filesystem', async () => {
+    const { renderSyntheticAsset, isSyntheticKey } = await import('@/lib/storage/local');
+    const descriptor = Buffer.from(
+      JSON.stringify({ l: 'Scene scene-2', d: 'soul+dop', r: '9:16' }),
+      'utf8',
+    ).toString('base64url');
+
+    const key = `synthetic/${descriptor}/abc.svg`;
+    expect(isSyntheticKey(key)).toBe(true);
+
+    const rendered = renderSyntheticAsset(key).body.toString('utf8');
+    expect(rendered).toContain('SIMULATED SHOT');
+    expect(rendered).toContain('Scene scene-2');
+    expect(rendered).toContain('width="540" height="960"');
+  });
+
+  it('still renders a placeholder for a corrupt key instead of throwing', async () => {
+    const { renderSyntheticAsset } = await import('@/lib/storage/local');
+    expect(renderSyntheticAsset('synthetic/not-base64!!/x.svg').body.toString()).toContain(
+      'SIMULATED SHOT',
+    );
+  });
+});

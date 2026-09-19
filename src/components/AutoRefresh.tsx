@@ -34,10 +34,10 @@ export function AutoRefresh({
   if (!active) return null;
 
   return (
-    <div className="flex items-center gap-2 text-xs text-amber-300">
+    <div className="flex items-center gap-2 text-xs text-warning">
       <span className="relative flex h-2 w-2">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-60" />
-        <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-warning opacity-60" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-warning" />
       </span>
       <span>
         {label} · auto-refreshing{tick > 0 ? ` (${tick})` : ''}

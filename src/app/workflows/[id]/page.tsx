@@ -127,7 +127,7 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
     <div className="mx-auto max-w-5xl space-y-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <Link href="/" className="text-xs text-muted hover:text-neutral-300">
+          <Link href="/" className="text-xs text-muted hover:text-secondary">
             ← Dashboard
           </Link>
           <h1 className="mt-2 truncate text-2xl font-semibold tracking-tight">{workflow.title}</h1>
@@ -149,29 +149,29 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
       </header>
 
       {workflow.errorCode && (
-        <div className="panel border-red-900/70 p-4">
-          <p className="chip border-red-900 bg-red-950/60 text-red-300">{workflow.errorCode}</p>
-          <p className="mt-2 text-sm text-red-200">{workflow.errorMessage}</p>
+        <div className="panel border-danger/40 p-4">
+          <p className="chip border-danger/40 bg-danger/10 text-danger">{workflow.errorCode}</p>
+          <p className="mt-2 text-sm text-danger">{workflow.errorMessage}</p>
         </div>
       )}
 
       <PipelineGraph nodes={nodes} />
 
       <section id="brief" className="panel p-5">
-        <h2 className="text-sm font-medium text-neutral-300">Brief</h2>
-        <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-400">{workflow.brief}</p>
+        <h2 className="text-sm font-medium text-secondary">Brief</h2>
+        <p className="mt-2 whitespace-pre-wrap text-sm text-secondary">{workflow.brief}</p>
       </section>
 
       {strategy && (
         <section id="strategy" className="panel p-5">
-          <h2 className="text-sm font-medium text-neutral-300">Strategy</h2>
+          <h2 className="text-sm font-medium text-secondary">Strategy</h2>
           <dl className="mt-3 grid gap-x-8 gap-y-3 sm:grid-cols-2">
             {Object.entries(strategy).map(([key, value]) => (
               <div key={key}>
                 <dt className="text-[11px] uppercase tracking-wider text-muted">
                   {key.replace(/_/g, ' ')}
                 </dt>
-                <dd className="mt-0.5 text-sm text-neutral-300">{String(value)}</dd>
+                <dd className="mt-0.5 text-sm text-secondary">{String(value)}</dd>
               </div>
             ))}
           </dl>
@@ -180,14 +180,14 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
 
       {script?.scenes && (
         <section id="script" className="panel p-5">
-          <h2 className="text-sm font-medium text-neutral-300">Script</h2>
+          <h2 className="text-sm font-medium text-secondary">Script</h2>
           <ol className="mt-3 space-y-3">
             {script.scenes.map((scene) => (
               <li key={scene.scene} className="border-l-2 border-line pl-3">
                 <p className="text-[11px] uppercase tracking-wider text-muted">
                   Scene {scene.scene}
                 </p>
-                <p className="mt-0.5 text-sm text-neutral-300">{scene.voiceover}</p>
+                <p className="mt-0.5 text-sm text-secondary">{scene.voiceover}</p>
                 {scene.on_screen_text && (
                   <p className="mt-1 text-xs text-accent">“{scene.on_screen_text}”</p>
                 )}
@@ -198,7 +198,7 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
       )}
 
       <section id="shots" className="space-y-4">
-        <h2 className="text-sm font-medium text-neutral-300">Shots</h2>
+        <h2 className="text-sm font-medium text-secondary">Shots</h2>
         {shotsWithUrls.length === 0 && (
           <p className="panel p-5 text-sm text-muted">No shots yet — run the pipeline.</p>
         )}
@@ -220,7 +220,7 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
                 </div>
                 <div className="flex items-center gap-2">
                   {typeof shot.qcScore === 'number' && (
-                    <span className="chip border-line bg-raised text-neutral-300">
+                    <span className="chip border-line bg-raised text-secondary">
                       QC {shot.qcScore.toFixed(2)}
                     </span>
                   )}
@@ -251,16 +251,16 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
                   )}
                 </div>
                 <div className="space-y-3 text-sm">
-                  <p className="text-neutral-400">{shot.prompt}</p>
+                  <p className="text-secondary">{shot.prompt}</p>
                   {routing?.model && (
                     <p className="text-xs text-muted">
-                      <span className="text-neutral-400">Model:</span> {routing.model} — {routing.reason}
+                      <span className="text-secondary">Model:</span> {routing.model} — {routing.reason}
                     </p>
                   )}
                   {qc?.issues && qc.issues.length > 0 && (
                     <ul className="space-y-1">
                       {qc.issues.map((issue, i) => (
-                        <li key={i} className="text-xs text-amber-300/90">
+                        <li key={i} className="text-xs text-warning">
                           [{issue.severity}] {issue.kind}: {issue.detail}
                         </li>
                       ))}
@@ -268,28 +268,28 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
                   )}
 
                   <details className="group">
-                    <summary className="cursor-pointer text-xs text-muted hover:text-neutral-300">
+                    <summary className="cursor-pointer text-xs text-muted hover:text-secondary">
                       Technical detail
                     </summary>
                     <dl className="mt-2 grid gap-x-6 gap-y-2 text-xs sm:grid-cols-2">
                       <div>
                         <dt className="text-muted">Camera</dt>
-                        <dd className="text-neutral-400">
+                        <dd className="text-secondary">
                           {[shot.camera, shot.lens, shot.movement].filter(Boolean).join(' · ') || '—'}
                         </dd>
                       </div>
                       <div>
                         <dt className="text-muted">Lighting</dt>
-                        <dd className="text-neutral-400">{shot.lighting ?? '—'}</dd>
+                        <dd className="text-secondary">{shot.lighting ?? '—'}</dd>
                       </div>
                       <div className="sm:col-span-2">
                         <dt className="text-muted">Negative prompt</dt>
-                        <dd className="text-neutral-400">{shot.negativePrompt ?? '—'}</dd>
+                        <dd className="text-secondary">{shot.negativePrompt ?? '—'}</dd>
                       </div>
                       {shot.voiceover && (
                         <div className="sm:col-span-2">
                           <dt className="text-muted">Voiceover</dt>
-                          <dd className="text-neutral-400">{shot.voiceover}</dd>
+                          <dd className="text-secondary">{shot.voiceover}</dd>
                         </div>
                       )}
                     </dl>
@@ -298,7 +298,7 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
                       <ul className="mt-3 space-y-1">
                         {shot.generationJobs.map((job) => (
                           <li key={job.id} className="flex flex-wrap items-center gap-2 text-xs">
-                            <span className="font-mono text-neutral-400">{job.stage}</span>
+                            <span className="font-mono text-secondary">{job.stage}</span>
                             <span className="text-muted">{job.modelId}</span>
                             <span className="font-mono text-[10px] text-muted">
                               {job.requestId ?? 'no request id'}

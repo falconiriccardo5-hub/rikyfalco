@@ -59,9 +59,11 @@ function mapStatus(status: V2Response['status']): GenerationJobStatus {
  */
 export async function runStage(args: RunStageArgs): Promise<StageResult> {
   const { workflowId, shotId, shot, stage, attempt, seedImageUrl } = args;
-  const client =
-    args.client ??
-    (drivers().generation === 'local' ? createLocalGenerationClient() : createHiggsfieldClient());
+  const local = drivers().generation === 'local';
+  const client = args.client ?? (local ? createLocalGenerationClient() : createHiggsfieldClient());
+  // Nothing is in flight with the local driver, so polling it on the provider's
+  // cadence would only add dead time to the request.
+  const pollOptions = local ? { intervalMs: 50, maxMs: 30_000 } : undefined;
   const key = generationKey(shotId, stage.stage, attempt);
 
   await assertWithinBudget(workflowId, stage.estimatedCostUsd);
@@ -91,7 +93,12 @@ export async function runStage(args: RunStageArgs): Promise<StageResult> {
       jobId: job.id,
       requestId: job.requestId,
     });
-    return finalize(job.id, workflowId, await pollUntilTerminal(client, job.requestId), stage);
+    return finalize(
+      job.id,
+      workflowId,
+      await pollUntilTerminal(client, job.requestId, pollOptions),
+      stage,
+    );
   }
 
   if (job.status === GenerationJobStatus.COMPLETED && job.resultUrl) {
@@ -125,7 +132,7 @@ export async function runStage(args: RunStageArgs): Promise<StageResult> {
   });
 
   const terminal = submitted.request_id
-    ? await pollUntilTerminal(client, submitted.request_id)
+    ? await pollUntilTerminal(client, submitted.request_id, pollOptions)
     : submitted;
 
   return finalize(job.id, workflowId, terminal, stage);
