@@ -47,6 +47,8 @@ async function withAgentRun<T extends { costUsd: number; model: string }>(
   input: Prisma.InputJsonValue,
   fn: () => Promise<T>,
   extractOutput: (result: T) => Prisma.InputJsonValue,
+  /** Cost bucket for this run; QC is tracked separately from the writing agents. */
+  costCategory: 'agent' | 'qc' = 'agent',
 ): Promise<T> {
   const run = await prisma.agentRun.create({
     data: { workflowId, agent, input, status: RunStatus.RUNNING },
@@ -66,7 +68,7 @@ async function withAgentRun<T extends { costUsd: number; model: string }>(
     });
     await recordCost({
       workflowId,
-      category: 'agent',
+      category: costCategory,
       amountUsd: result.costUsd,
       reference: agent,
     });
@@ -407,20 +409,35 @@ export async function produceShot(
     });
 
     try {
-      const qc = await runQualityControl({
-        filePath: stored.localPath,
-        shot: spec,
-        brand: workflow.brandProfile,
-        expectedDurationSec: shot.durationSec,
-        expectedAspectRatio: shot.aspectRatio,
-      });
-
-      await recordCost({
+      // Logged as an AgentRun like every other agent (spec §21): QC is a
+      // reviewer whose verdict has to be auditable, not an anonymous step.
+      const qc = await withAgentRun(
         workflowId,
-        category: 'qc',
-        amountUsd: qc.costUsd,
-        reference: shotId,
-      });
+        AgentKind.QUALITY_CONTROL,
+        {
+          shotId,
+          sceneId: shot.sceneId,
+          attempt,
+          expectedDurationSec: shot.durationSec,
+          expectedAspectRatio: shot.aspectRatio,
+        },
+        () =>
+          runQualityControl({
+            filePath: stored.localPath,
+            shot: spec,
+            brand: workflow.brandProfile,
+            expectedDurationSec: shot.durationSec,
+            expectedAspectRatio: shot.aspectRatio,
+          }),
+        (result) =>
+          ({
+            report: result.report,
+            probe: result.probe,
+            frameCount: result.frameCount,
+            visionNotes: result.vision.notes,
+          }) as unknown as Prisma.InputJsonValue,
+        'qc',
+      );
 
       await prisma.asset.create({
         data: {
