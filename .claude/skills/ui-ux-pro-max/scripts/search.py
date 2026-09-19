@@ -1,314 +1,171 @@
 #!/usr/bin/env python3
-"""CLI search tool for the ui-ux-pro-max skill's design databases.
+# -*- coding: utf-8 -*-
+"""
+UI/UX Pro Max Search - BM25 search engine for UI/UX style guides
+Usage: python search.py "<query>" [--domain <domain>] [--stack <stack>] [--max-results 3]
+       python search.py "<query>" --design-system [-p "Project Name"]
+       python search.py "<query>" --design-system --persist [-p "Project Name"] --output-dir "<project-root>" [--page "dashboard"]
+       python search.py "<query>" --design-system --variance 8 --motion 9 --density 7
 
-Examples:
-    search.py "healthcare dashboard" --domain product
-    search.py "glassmorphism dark" --domain style -n 5
-    search.py "layout responsive form" --stack html-tailwind
-    search.py "beauty spa wellness service" --design-system -p "Serenity Spa"
+Domains: style, color, chart, landing, product, ux, typography, google-fonts, icons, gsap, react, web
+Stacks: react, nextjs, vue, svelte, astro, swiftui, react-native, flutter, nuxtjs, nuxt-ui,
+        html-tailwind, shadcn, jetpack-compose, threejs, angular, laravel
+
+Design dials (1-10, only with --design-system):
+  --variance   DESIGN_VARIANCE: 1=centered/minimal, 10=bold/asymmetric
+  --motion     MOTION_INTENSITY: 1=subtle, 10=complex; attaches a GSAP snippet from motion.csv
+  --density    VISUAL_DENSITY: 1=spacious, 10=dense/dashboard; overrides the spacing scale
+
+Persistence (Master + Overrides pattern):
+  --persist      Save design system to design-system/<project-slug>/MASTER.md
+  --output-dir   Directory the design-system/ folder is created under (defaults to cwd --
+                 always pass this explicitly, pointed at the project root)
+  --page         Also create a page-specific override file in design-system/<project-slug>/pages/
+  --force        Overwrite an existing MASTER.md (without this, persistence is skipped
+                 if MASTER.md already exists, so prior design decisions aren't lost)
 """
 
 import argparse
-import csv
-import os
+import json as json_module
 import sys
+import io
+from core import CSV_CONFIG, AVAILABLE_STACKS, MAX_RESULTS, UNTRUNCATED_COLS, search, search_stack
+from design_system import generate_design_system
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-STACKS_DIR = os.path.join(DATA_DIR, "stacks")
+# Force UTF-8 for stdout/stderr to handle emojis on Windows (cp1252 default)
+if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
-DOMAIN_FILES = {
-    "product": "product.csv",
-    "style": "style.csv",
-    "typography": "typography.csv",
-    "color": "color.csv",
-    "landing": "landing.csv",
-    "chart": "chart.csv",
-    "ux": "ux.csv",
-    "react": "react.csv",
-    "web": "web.csv",
-    "prompt": "prompt.csv",
-}
-
-STACKS = [
-    "html-tailwind", "react", "nextjs", "vue", "svelte",
-    "swiftui", "react-native", "flutter", "shadcn",
-]
-
-# Fields (besides id) that are searched for keyword matches, per domain/stack.
-SEARCH_FIELDS = {
-    "product": ["type", "name", "keywords", "notes"],
-    "style": ["name", "keywords", "description", "best_for"],
-    "typography": ["heading_font", "body_font", "keywords", "personality", "best_for"],
-    "color": ["name", "category", "keywords"],
-    "landing": ["name", "keywords", "sections", "best_for"],
-    "chart": ["name", "keywords", "data_type"],
-    "ux": ["title", "category", "guideline"],
-    "react": ["keyword", "title", "guideline", "category"],
-    "web": ["keyword", "title", "guideline", "category"],
-    "prompt": ["style_name", "ai_prompt_keywords", "css_keywords"],
-    "stack": ["keyword", "title", "guideline", "category"],
-}
+TRUNCATE_AT = 300
 
 
-def load_csv(path):
-    if not os.path.exists(path):
-        return []
-    with open(path, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+def format_output(result, full=False):
+    """Format results for Claude consumption (token-optimized)"""
+    if "error" in result:
+        return f"Error: {result['error']}"
 
-
-def score_row(row, terms, fields):
-    haystack = " ".join(str(row.get(f, "")) for f in fields).lower()
-    score = 0
-    for term in terms:
-        if term in haystack:
-            score += 2 if any(term in str(row.get(f, "")).lower().split() for f in fields) else 1
-    return score
-
-
-def search_rows(rows, query, fields, max_results=10):
-    terms = [t for t in query.lower().replace(",", " ").split() if t]
-    if not terms:
-        return rows[:max_results]
-    scored = []
-    for row in rows:
-        s = score_row(row, terms, fields)
-        if s > 0:
-            scored.append((s, row))
-    scored.sort(key=lambda x: x[0], reverse=True)
-    if not scored:
-        return []
-    return [row for _, row in scored[:max_results]]
-
-
-def print_rows(rows, title):
-    if not rows:
-        print(f"No results found for {title}.")
-        return
-    print(f"\n=== {title} ({len(rows)} result{'s' if len(rows) != 1 else ''}) ===")
-    for row in rows:
-        print("-" * 60)
-        for k, v in row.items():
-            if v:
-                print(f"{k}: {v}")
-
-
-def cmd_domain(args):
-    if args.domain not in DOMAIN_FILES:
-        print(f"Unknown domain '{args.domain}'. Available: {', '.join(sorted(DOMAIN_FILES))}", file=sys.stderr)
-        sys.exit(1)
-    rows = load_csv(os.path.join(DATA_DIR, DOMAIN_FILES[args.domain]))
-    fields = SEARCH_FIELDS[args.domain]
-    results = search_rows(rows, args.query, fields, args.max_results)
-    print_rows(results, f"domain: {args.domain}")
-
-
-def cmd_stack(args):
-    if args.stack not in STACKS:
-        print(f"Unknown stack '{args.stack}'. Available: {', '.join(STACKS)}", file=sys.stderr)
-        sys.exit(1)
-    rows = load_csv(os.path.join(STACKS_DIR, f"{args.stack}.csv"))
-    results = search_rows(rows, args.query, SEARCH_FIELDS["stack"], args.max_results)
-    print_rows(results, f"stack: {args.stack}")
-
-
-def find_best_reasoning_rule(query):
-    rows = load_csv(os.path.join(DATA_DIR, "ui-reasoning.csv"))
-    terms = [t for t in query.lower().replace(",", " ").split() if t]
-    best, best_score = None, 0
-    for row in rows:
-        haystack = row.get("trigger_keywords", "").lower()
-        score = sum(1 for t in terms if t in haystack)
-        if score > best_score:
-            best, best_score = row, score
-    return best
-
-
-def lookup(rows_by_id, row_id):
-    return rows_by_id.get(row_id)
-
-
-def index_by_id(rows):
-    return {r["id"]: r for r in rows}
-
-
-def find_antipatterns(query, max_results=3):
-    rows = load_csv(os.path.join(DATA_DIR, "anti-patterns.csv"))
-    terms = [t for t in query.lower().replace(",", " ").split() if t]
-    scored = []
-    for row in rows:
-        haystack = row.get("context_keywords", "").lower()
-        score = sum(1 for t in terms if t in haystack)
-        if score > 0:
-            scored.append((score, row))
-    scored.sort(key=lambda x: x[0], reverse=True)
-    return [r for _, r in scored[:max_results]]
-
-
-def build_design_system(query, project_name=None):
-    products = index_by_id(load_csv(os.path.join(DATA_DIR, "product.csv")))
-    styles = index_by_id(load_csv(os.path.join(DATA_DIR, "style.csv")))
-    colors = index_by_id(load_csv(os.path.join(DATA_DIR, "color.csv")))
-    typography = index_by_id(load_csv(os.path.join(DATA_DIR, "typography.csv")))
-    landing = index_by_id(load_csv(os.path.join(DATA_DIR, "landing.csv")))
-
-    rule = find_best_reasoning_rule(query)
-
-    if rule:
-        product = lookup(products, rule["product_id"])
-        style = lookup(styles, rule["style_id"])
-        color = lookup(colors, rule["color_id"])
-        type_pair = lookup(typography, rule["typography_id"])
-        pattern = lookup(landing, rule["pattern_id"])
-        reasoning = rule["reasoning"]
+    output = []
+    if result.get("stack"):
+        output.append("## UI Pro Max Stack Guidelines")
+        output.append(f"**Stack:** {result['stack']} | **Query:** {result['query']}")
     else:
-        # Fallback: best keyword match per domain, independently.
-        product = (search_rows(list(products.values()), query, SEARCH_FIELDS["product"], 1) or [None])[0]
-        style = (search_rows(list(styles.values()), query, SEARCH_FIELDS["style"], 1) or [None])[0]
-        color = (search_rows(list(colors.values()), query, SEARCH_FIELDS["color"], 1) or [None])[0]
-        type_pair = (search_rows(list(typography.values()), query, SEARCH_FIELDS["typography"], 1) or [None])[0]
-        pattern = (search_rows(list(landing.values()), query, SEARCH_FIELDS["landing"], 1) or [None])[0]
-        reasoning = "No exact reasoning rule matched; each recommendation was selected independently by keyword relevance."
+        output.append("## UI Pro Max Search Results")
+        domain_note = result['domain']
+        if result.get("auto_detected"):
+            domain_note += " (auto-detected"
+            if result.get("runner_up_domain"):
+                domain_note += f", runner-up: {result['runner_up_domain']}"
+            domain_note += ")"
+        output.append(f"**Domain:** {domain_note} | **Query:** {result['query']}")
+    output.append(f"**Source:** {result['file']} | **Found:** {result['count']} results\n")
 
-    antipatterns = find_antipatterns(query)
-    if not antipatterns and product:
-        antipatterns = find_antipatterns(product.get("keywords", ""))
+    if result['count'] == 0:
+        redirect = result.get("redirect")
+        if redirect:
+            output.append(
+                "This legacy style label is now modeled in the "
+                f"`{redirect['domain']}` domain as `{redirect['id']}`. "
+                "Search that domain instead of treating a page composition as a visual style."
+            )
+            return "\n".join(output)
+        output.append(
+            "No matches. This is not a match with an empty value -- the query "
+            "did not hit the database. Retry with broader/different keywords "
+            "before falling back to general defaults, and say explicitly that "
+            "no database match was found if you do fall back."
+        )
+        suggestions = result.get("suggestions") or []
+        if suggestions:
+            output.append(f"**Closest known terms:** {', '.join(suggestions)}")
+        return "\n".join(output)
 
-    return {
-        "query": query,
-        "project_name": project_name,
-        "product": product,
-        "style": style,
-        "color": color,
-        "typography": type_pair,
-        "pattern": pattern,
-        "reasoning": reasoning,
-        "antipatterns": antipatterns,
-    }
+    for i, row in enumerate(result['results'], 1):
+        output.append(f"### Result {i}")
+        for key, value in row.items():
+            value_str = str(value)
+            if not full and key not in UNTRUNCATED_COLS and len(value_str) > TRUNCATE_AT:
+                value_str = value_str[:TRUNCATE_AT] + "..."
+            output.append(f"- **{key}:** {value_str}")
+        output.append("")
 
-
-def format_ascii(ds):
-    lines = []
-    title = f"DESIGN SYSTEM — {ds['project_name']}" if ds["project_name"] else "DESIGN SYSTEM"
-    width = max(60, len(title) + 4)
-    lines.append("+" + "-" * (width - 2) + "+")
-    lines.append("| " + title.ljust(width - 4) + " |")
-    lines.append("+" + "-" * (width - 2) + "+")
-    lines.append(f"Query: {ds['query']}")
-
-    def section(name, row, fields):
-        lines.append("")
-        lines.append(f"[{name}]")
-        if not row:
-            lines.append("  (no match found)")
-            return
-        for f in fields:
-            if row.get(f):
-                lines.append(f"  {f}: {row[f]}")
-
-    if ds["product"]:
-        section("Product Pattern", ds["product"], ["name", "recommended_pattern", "notes"])
-    if ds["style"]:
-        section("Style", ds["style"], ["name", "description", "effects", "anti_patterns"])
-    if ds["color"]:
-        section("Color Palette", ds["color"], ["name", "primary", "secondary", "accent", "background", "text", "contrast_note"])
-    if ds["typography"]:
-        section("Typography", ds["typography"], ["heading_font", "body_font", "personality", "google_fonts_import"])
-    if ds["pattern"]:
-        section("Landing Structure", ds["pattern"], ["name", "sections", "cta_strategy"])
-
-    lines.append("")
-    lines.append("[Reasoning]")
-    lines.append(f"  {ds['reasoning']}")
-
-    if ds["antipatterns"]:
-        lines.append("")
-        lines.append("[Anti-patterns to avoid]")
-        for ap in ds["antipatterns"]:
-            lines.append(f"  - {ap['avoid']}: {ap['why']}")
-
-    lines.append("")
-    lines.append("+" + "-" * (width - 2) + "+")
-    return "\n".join(lines)
-
-
-def format_markdown(ds):
-    lines = []
-    title = f"Design System — {ds['project_name']}" if ds["project_name"] else "Design System"
-    lines.append(f"# {title}")
-    lines.append("")
-    lines.append(f"**Query:** {ds['query']}")
-    lines.append("")
-
-    def section(name, row, fields):
-        lines.append(f"## {name}")
-        if not row:
-            lines.append("_No match found._")
-            lines.append("")
-            return
-        for f in fields:
-            if row.get(f):
-                label = f.replace("_", " ").title()
-                lines.append(f"- **{label}:** {row[f]}")
-        lines.append("")
-
-    if ds["product"]:
-        section("Product Pattern", ds["product"], ["name", "recommended_pattern", "notes"])
-    if ds["style"]:
-        section("Style", ds["style"], ["name", "description", "effects", "anti_patterns"])
-    if ds["color"]:
-        section("Color Palette", ds["color"], ["name", "primary", "secondary", "accent", "background", "text", "contrast_note"])
-    if ds["typography"]:
-        section("Typography", ds["typography"], ["heading_font", "body_font", "personality", "google_fonts_import"])
-    if ds["pattern"]:
-        section("Landing Structure", ds["pattern"], ["name", "sections", "cta_strategy"])
-
-    lines.append("## Reasoning")
-    lines.append(ds["reasoning"])
-    lines.append("")
-
-    if ds["antipatterns"]:
-        lines.append("## Anti-patterns to avoid")
-        for ap in ds["antipatterns"]:
-            lines.append(f"- **{ap['avoid']}** — {ap['why']}")
-        lines.append("")
-
-    return "\n".join(lines)
-
-
-def cmd_design_system(args):
-    ds = build_design_system(args.query, args.project_name)
-    if args.format == "markdown":
-        print(format_markdown(ds))
-    else:
-        print(format_ascii(ds))
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Search the ui-ux-pro-max design databases.")
-    parser.add_argument("query", help="Search keywords, e.g. 'healthcare dashboard elegant'")
-    parser.add_argument("-n", "--max-results", type=int, default=10, help="Maximum results to return")
-    parser.add_argument("--domain", choices=sorted(DOMAIN_FILES), help="Search a specific domain database")
-    parser.add_argument("--stack", choices=STACKS, help="Search a specific stack's implementation guidelines")
-    parser.add_argument("--design-system", action="store_true", help="Generate a full design system recommendation")
-    parser.add_argument("-p", "--project-name", help="Project name to include in --design-system output")
-    parser.add_argument("-f", "--format", choices=["ascii", "markdown"], default="ascii", help="Output format for --design-system")
-
-    args = parser.parse_args()
-
-    selected = sum(bool(x) for x in [args.domain, args.stack, args.design_system])
-    if selected > 1:
-        parser.error("Choose only one of --domain, --stack, or --design-system")
-
-    if args.design_system:
-        cmd_design_system(args)
-    elif args.domain:
-        cmd_domain(args)
-    elif args.stack:
-        cmd_stack(args)
-    else:
-        parser.error("Specify one of --domain <domain>, --stack <stack>, or --design-system")
+    return "\n".join(output)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="UI Pro Max Search")
+    parser.add_argument("query", help="Search query")
+    parser.add_argument("--domain", "-d", choices=list(CSV_CONFIG.keys()), help="Search domain")
+    parser.add_argument("--stack", "-s", choices=AVAILABLE_STACKS, help=f"Stack-specific search. Available: {', '.join(AVAILABLE_STACKS)}")
+    parser.add_argument("--max-results", "-n", type=int, choices=range(1, 21), default=MAX_RESULTS,
+                        metavar="1-20", help="Max results (default: 3)")
+    parser.add_argument("--json", action="store_true", help="Output as JSON")
+    parser.add_argument("--full", action="store_true", help="Do not truncate long field values in text output")
+    # Design system generation
+    parser.add_argument("--design-system", "-ds", action="store_true", help="Generate complete design system recommendation")
+    parser.add_argument("--project-name", "-p", type=str, default=None, help="Project name for design system output")
+    parser.add_argument("--format", "-f", choices=["ascii", "markdown"], default="ascii", help="Output format for design system (ignored if --json)")
+    # Persistence (Master + Overrides pattern)
+    parser.add_argument("--persist", action="store_true", help="Save design system to design-system/<project-slug>/MASTER.md (creates hierarchical structure)")
+    parser.add_argument("--page", type=str, default=None, help="Create page-specific override file in design-system/<project-slug>/pages/")
+    parser.add_argument("--output-dir", "-o", type=str, default=None, help="Output directory for persisted files (default: current directory -- pass this explicitly, pointed at the project root)")
+    parser.add_argument("--force", action="store_true", help="Overwrite an existing MASTER.md when persisting (default: skip if it already exists)")
+    # Design dials (1-10), only applied with --design-system
+    parser.add_argument("--variance", type=int, choices=range(1, 11), metavar="1-10", help="DESIGN_VARIANCE dial: 1=centered/minimal, 10=bold/asymmetric (only with --design-system)")
+    parser.add_argument("--motion", type=int, choices=range(1, 11), metavar="1-10", help="MOTION_INTENSITY dial: 1=subtle, 10=complex; pulls a matching GSAP snippet from motion.csv (only with --design-system)")
+    parser.add_argument("--density", type=int, choices=range(1, 11), metavar="1-10", help="VISUAL_DENSITY dial: 1=spacious, 10=dense/dashboard; overrides the spacing scale (only with --design-system)")
+
+    args = parser.parse_args()
+
+    # Design system takes priority
+    if args.design_system:
+        result = generate_design_system(
+            args.query,
+            args.project_name,
+            args.format,
+            persist=args.persist,
+            page=args.page,
+            output_dir=args.output_dir,
+            variance=args.variance,
+            motion=args.motion,
+            density=args.density,
+            force=args.force,
+        )
+
+        if args.json:
+            print(json_module.dumps(
+                {"design_system": result["design_system"], "persistence": result["persistence"]},
+                indent=2, ensure_ascii=False,
+            ))
+        else:
+            print(result["text"])
+
+            if args.persist:
+                persistence = result["persistence"] or {}
+                print("\n" + "=" * 60)
+                if persistence.get("status") == "skipped_exists":
+                    print(f"⚠️  {persistence.get('message', 'MASTER.md already exists; not overwritten.')}")
+                else:
+                    ds_dir = persistence.get("design_system_dir", "design-system/<project>")
+                    print(f"✅ Design system persisted to {ds_dir}/")
+                    for f in persistence.get("created_files", []):
+                        print(f"   📄 {f}")
+                    print("")
+                    print(f"📖 Usage: When building a page, check {ds_dir}/pages/[page].md first.")
+                    print("   If it exists, its rules override MASTER.md. Otherwise, use MASTER.md.")
+                print("=" * 60)
+    # Stack search
+    elif args.stack:
+        result = search_stack(args.query, args.stack, args.max_results)
+        if args.json:
+            print(json_module.dumps(result, indent=2, ensure_ascii=False))
+        else:
+            print(format_output(result, full=args.full))
+    # Domain search
+    else:
+        result = search(args.query, args.domain, args.max_results)
+        if args.json:
+            print(json_module.dumps(result, indent=2, ensure_ascii=False))
+        else:
+            print(format_output(result, full=args.full))
