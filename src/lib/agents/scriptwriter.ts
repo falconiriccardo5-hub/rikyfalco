@@ -1,4 +1,6 @@
 import { completeJson } from '../llm/openai';
+import { drivers } from '../drivers';
+import { localScript } from './local';
 import { type AgentContext, renderBrand } from './context';
 import { scriptSchema, type Script, type Strategy } from './schemas';
 
@@ -27,6 +29,11 @@ export async function runScriptwriter(
   context: AgentContext,
   strategy: Strategy,
 ): Promise<ScriptwriterResult> {
+  if (drivers().agents === 'local') {
+    const { data, model, costUsd } = localScript(context, strategy);
+    return { script: data, model, costUsd };
+  }
+
   const user = [
     '### BRAND PROFILE',
     renderBrand(context.brand),

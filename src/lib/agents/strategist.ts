@@ -1,4 +1,6 @@
 import { completeJson } from '../llm/openai';
+import { drivers } from '../drivers';
+import { localStrategy } from './local';
 import { type AgentContext, renderBrand, renderBriefBlock, renderPriorContent } from './context';
 import { strategySchema, type Strategy } from './schemas';
 
@@ -24,6 +26,11 @@ export interface StrategistResult {
 }
 
 export async function runStrategist(context: AgentContext): Promise<StrategistResult> {
+  if (drivers().agents === 'local') {
+    const { data, model, costUsd } = localStrategy(context);
+    return { strategy: data, model, costUsd };
+  }
+
   const user = [
     '### BRAND PROFILE',
     renderBrand(context.brand),

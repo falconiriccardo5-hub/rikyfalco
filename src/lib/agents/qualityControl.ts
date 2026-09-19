@@ -1,5 +1,7 @@
 import { completeJson } from '../llm/openai';
 import { env } from '../env';
+import { drivers } from '../drivers';
+import { localQcVision } from './local';
 import { extractFrames, probeMedia, type MediaProbe } from '../qc/ffmpeg';
 import { renderBrand } from './context';
 import type { BrandProfile } from '@prisma/client';
@@ -127,8 +129,50 @@ export function buildReport(vision: QcVision, hardIssues: QcIssue[], minScore: n
   return { approved, score: Number(score.toFixed(3)), issues, regeneration_required: !approved };
 }
 
+/**
+ * Local QC driver: no ffmpeg binary, no vision call. The measurements are
+ * derived from the shot spec rather than from a file, because in local mode
+ * there is no real footage to measure. It is reported as simulated in the
+ * report's notes so nobody mistakes it for a genuine visual review.
+ */
+async function runLocalQualityControl(input: QcInput): Promise<QcResult> {
+  const e = env();
+  const [w, h] = input.expectedAspectRatio.split(':').map(Number);
+  const height = 1920;
+  const width = Math.round((height * (w || 9)) / (h || 16));
+
+  const probe: MediaProbe = {
+    durationSec: input.expectedDurationSec,
+    width,
+    height,
+    aspectRatio: input.expectedAspectRatio,
+    codec: 'simulated',
+    bitrate: null,
+    hasAudio: false,
+  };
+
+  const { data: vision, model, costUsd } = localQcVision(input.shot);
+  const hardIssues = deterministicIssues(
+    probe,
+    input.expectedDurationSec,
+    input.expectedAspectRatio,
+    input.minWidth,
+  );
+
+  return {
+    report: buildReport(vision, hardIssues, e.QC_MIN_SCORE),
+    probe,
+    vision,
+    frameCount: 0,
+    costUsd,
+    model,
+  };
+}
+
 export async function runQualityControl(input: QcInput): Promise<QcResult> {
   const e = env();
+
+  if (drivers().qc === 'local') return runLocalQualityControl(input);
 
   // 1. Measure the file itself (ffprobe) — never ask a model for these numbers.
   const probe = await probeMedia(input.filePath);

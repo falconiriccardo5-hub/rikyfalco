@@ -11,7 +11,7 @@ import { prisma } from '../db';
 import { logger } from '../logger';
 import { OrchestratorError } from '../errors';
 import { recordCost, toNumber } from '../cost';
-import { cleanupLocal, ingestFromUrl } from '../storage/s3';
+import { cleanupWorkingCopy, ingestAsset } from '../storage';
 import { runStrategist } from '../agents/strategist';
 import { runScriptwriter } from '../agents/scriptwriter';
 import { runDirector } from '../agents/director';
@@ -253,9 +253,13 @@ export async function runWorkflow(
     }
 
     if (options.estimateOnly) {
+      // Pricing a Reel must not consume it: hand the workflow back in the
+      // status it arrived in, or "Estimate cost" would leave it stuck in
+      // ROUTING and the GENERATE button could never start it.
+      await setStatus(workflowId, workflow.status);
       return {
         workflowId,
-        status: WorkflowStatus.ROUTING,
+        status: workflow.status,
         estimatedCostUsd: estimatedTotal,
         shots: shots.length,
       };
@@ -361,7 +365,13 @@ export async function produceShot(
     }
 
     // Store the asset in our own bucket before reviewing or publishing it.
-    const stored = await ingestFromUrl(videoUrl, `workflows/${workflowId}/shots/${shotId}`);
+    const stored = await ingestAsset({
+      sourceUrl: videoUrl,
+      keyPrefix: `workflows/${workflowId}/shots/${shotId}`,
+      label: `Scene ${shot.sceneId} · ${shot.durationSec}s`,
+      detail: decision.model,
+      aspectRatio: shot.aspectRatio,
+    });
 
     try {
       const qc = await runQualityControl({
@@ -383,7 +393,7 @@ export async function produceShot(
         data: {
           shotId,
           generationJobId: lastJobId,
-          kind: AssetKind.VIDEO,
+          kind: stored.mimeType.startsWith('video/') ? AssetKind.VIDEO : AssetKind.IMAGE,
           storageKey: stored.storageKey,
           mimeType: stored.mimeType,
           bytes: stored.bytes,
@@ -416,7 +426,7 @@ export async function produceShot(
         data: { regenCount: { increment: 1 } },
       });
     } finally {
-      await cleanupLocal(stored.localPath);
+      await cleanupWorkingCopy(stored.localPath);
     }
   }
 

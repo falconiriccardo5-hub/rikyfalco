@@ -3,6 +3,7 @@ import { WorkflowStatus } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { toNumber } from '@/lib/cost';
 import { StatusChip } from '@/components/StatusChip';
+import { ModeBanner } from '@/components/ModeBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,8 @@ export default async function DashboardPage() {
           + New Reel
         </Link>
       </header>
+
+      <ModeBanner />
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
         {GROUPS.map((group) => (

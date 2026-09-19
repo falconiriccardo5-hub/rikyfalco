@@ -1,4 +1,6 @@
 import { completeJson } from '../llm/openai';
+import { drivers } from '../drivers';
+import { localStoryboard } from './local';
 import { selectableModels } from '../higgsfield/catalog';
 import { type AgentContext, renderBrand } from './context';
 import { storyboardSchema, type Script, type Storyboard, type Strategy } from './schemas';
@@ -34,6 +36,11 @@ export async function runDirector(
   strategy: Strategy,
   script: Script,
 ): Promise<DirectorResult> {
+  if (drivers().agents === 'local') {
+    const { data, model, costUsd } = localStoryboard(context, strategy, script);
+    return { storyboard: data, model, costUsd };
+  }
+
   const capabilities = selectableModels()
     .map((m) => `- ${m.id} (${m.capability}, ${m.qualityTier}, up to ${m.durationsSec.at(-1) ?? 'n/a'}s)`)
     .join('\n');

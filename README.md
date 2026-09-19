@@ -4,8 +4,20 @@ Brief → Reel Instagram, attraverso una pipeline di agenti AI, con un gate uman
 pubblicazione.
 
 **Fase 1 (questa consegna):** `BRIEF → STRATEGIST → SCRIPTWRITER → DIRECTOR → MODEL ROUTER →
-HIGGSFIELD → QC → APPROVAL`. Instagram Publisher, scheduling e analytics di performance esistono
+GENERAZIONE → QC → APPROVAL`. Instagram Publisher, scheduling e analytics di performance esistono
 come interfacce pronte, non come implementazioni complete.
+
+**Modalità locale (default): nessuna connessione esterna.** Agenti, generazione, storage, coda e QC
+hanno tutti un driver locale attivo di default: il prodotto gira end-to-end con il solo database,
+senza chiavi API, senza Redis, senza ffmpeg e senza spendere nulla. Gli adapter reali (OpenAI,
+Higgsfield, S3, BullMQ, ffmpeg) sono già scritti e si attivano cambiando una variabile d'ambiente.
+
+```bash
+cp .env.example .env && npm install
+npx prisma migrate dev --name init && npm run db:seed
+npm run dev     # http://localhost:3000 — funziona senza altri servizi
+npm run smoke   # esegue l'intera pipeline e stampa il risultato
+```
 
 ---
 
@@ -85,6 +97,11 @@ Punti non ovvi:
 | **Model Router** | shot, aspect ratio, budget per shot, seed image | `model, reason, estimated_cost, parameters, stages[]` |
 | **Quality Control** | file video, shot spec, brand | `approved, score, issues[], regeneration_required` |
 
+La sezione **Agents** della dashboard è generata dal registro in `src/lib/agents/registry.ts`: per
+ogni agente mostra ruolo, input, contratto di output, guardrail, driver attivo e statistiche reali
+(run, fallimenti, durata media, spesa, ultimo modello), più lo storico delle run. Non può divergere
+dalla pipeline perché legge la stessa definizione che la pipeline usa.
+
 Lo Strategist **scegle** fra target primario (donne 30-50) e secondario (uomini 25-40) in base al
 brief, con fallback sul primario: i due pubblici non vengono fusi.
 
@@ -153,6 +170,26 @@ sostituibile via `HF_CATALOG_PATH`: quando Higgsfield pubblica nuovi modelli si 
 non il codice, e un eventuale text-to-video verificato viene preferito automaticamente in un solo
 stage.
 
+## 6-bis. Driver (locale vs live)
+
+| Capability | `local` (default) | Live |
+|---|---|---|
+| `AGENTS_DRIVER` | agenti deterministici offline | `openai` |
+| `GENERATION_DRIVER` | generazione simulata, job e polling reali | `higgsfield` |
+| `STORAGE_DRIVER` | filesystem + `/api/assets/...` con controllo di workspace | `s3` (signed URL) |
+| `QUEUE_DRIVER` | `inline`, nessun Redis | `redis` (worker BullMQ) |
+| `QC_DRIVER` | QC simulato, nessun binario | `ffmpeg` + vision model |
+
+Gli agenti locali **non sostituiscono** quelli veri: non inventano una strategia, riformulano il
+brief nel contratto giusto (leggono durata, target e CTA dal testo, scelgono fra target primario e
+secondario, evitano un topic già usato). Servono a far girare e rivedere il prodotto prima che le
+API siano collegate. In modalità locale gli shot sono **placeholder marcati "SIMULATED SHOT"**, mai
+confondibili con footage reale, e il QC dichiara nelle note che il verdetto è simulato.
+
+`GET /api/health` riporta `offline: true/false`, i driver attivi e quali dipendenze sono davvero
+richieste dalla configurazione corrente. La dashboard mostra la stessa cosa in cima alla home e
+nella pagina Agents.
+
 ## 7. Environment variables
 
 Vedi `.env.example`. Tutte server-side: nessun `NEXT_PUBLIC_HF_*`, nessun segreto nel repository.
@@ -162,13 +199,16 @@ Minimo per far girare la pipeline: `DATABASE_URL`, `REDIS_URL`, `OPENAI_API_KEY`
 ## 8. Commands to run locally
 
 ```bash
-cp .env.example .env            # e compila le credenziali
+cp .env.example .env            # i default sono locali: nessuna credenziale richiesta
 npm install
 npx prisma migrate dev --name init
 npm run db:seed                 # workspace + brand profile Riccardo Fitness
 npm run dev                     # web  → http://localhost:3000
-npm run worker                  # worker (processo separato, obbligatorio)
+npm run smoke                   # esegue l'intera pipeline da riga di comando
 ```
+
+Il worker separato (`npm run worker`) serve solo con `QUEUE_DRIVER=redis`; con il default `inline`
+la pipeline gira nel processo web.
 
 Verifiche: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
 Stato dipendenze a runtime: `GET /api/health`.
@@ -176,9 +216,14 @@ Stato dipendenze a runtime: `GET /api/health`.
 ## 9. Test results
 
 ```
-Test Files  5 passed (5)
-     Tests  45 passed (45)
+Test Files  7 passed (7)
+     Tests  72 passed (72)
 ```
+
+Oltre ai test, la pipeline è stata **eseguita end-to-end** contro un PostgreSQL reale in modalità
+locale: brief → strategy → script → storyboard → routing → 4 shot generati → QC superato →
+`AWAITING_APPROVAL` → approvazione → tentativo di pubblicazione correttamente rifiutato (Fase 2).
+Tutte le pagine della dashboard rispondono 200 e gli asset sono serviti da `/api/assets/...`.
 
 Coprono: contratto HTTP Higgsfield (header, body, webhook, mapping 401), polling (stato terminale,
 5xx transitorio, errore non ritentabile, timeout), non-rientranza della submission, routing
@@ -202,10 +247,11 @@ same-origin, password, chiavi di idempotenza).
    nel catalogo sono segnaposto plausibili, non prezzi ufficiali verificati**: vanno allineati al
    listino reale prima di fidarsi dei numeri di budget.
 3. **Nessun endpoint text-to-video verificato**, da cui il percorso a due stadi descritto sopra.
-4. **`ffmpeg`/`ffprobe` non sono installati in questo container**, quindi il QC non è stato
-   eseguito end-to-end su un file reale; la logica è testata a unità sui suoi input misurati.
-5. **Pipeline non eseguita end-to-end contro le API reali**: mancano le credenziali OpenAI,
-   Higgsfield e S3. Ogni adapter è reale, non un mock.
+4. **`ffmpeg`/`ffprobe` non sono installati in questo container**, quindi il QC con analisi reale
+   dei frame (`QC_DRIVER=ffmpeg`) non è stato eseguito su un file vero; la logica è testata a unità
+   sui suoi input misurati. Il driver locale non guarda nulla e lo dichiara.
+5. **Pipeline non eseguita contro le API reali**: mancano le credenziali OpenAI, Higgsfield e S3.
+   È stata eseguita per intero in modalità locale. Ogni adapter live è reale, non un mock.
 6. **Autenticazione minimale**: sessioni con cookie e hash scrypt, senza UI di login; in sviluppo
    le route ricadono sul primo utente, in produzione rispondono 401.
 7. **Rate limit in-process**: da spostare su Redis prima di scalare orizzontalmente il web.

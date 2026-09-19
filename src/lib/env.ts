@@ -9,6 +9,18 @@ const schema = z.object({
   DATABASE_URL: z.string().min(1).optional(),
   REDIS_URL: z.string().min(1).default('redis://localhost:6379'),
 
+  /**
+   * Driver seams. Defaults are "local", so the dashboard and the agent pipeline
+   * run end to end without reaching any external service. Switching a driver to
+   * "live" activates the real adapter, which is already implemented.
+   */
+  AGENTS_DRIVER: z.enum(['local', 'openai']).default('local'),
+  GENERATION_DRIVER: z.enum(['local', 'higgsfield']).default('local'),
+  STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),
+  QUEUE_DRIVER: z.enum(['inline', 'redis']).default('inline'),
+  QC_DRIVER: z.enum(['local', 'ffmpeg']).default('local'),
+  LOCAL_STORAGE_DIR: z.string().default('.local-assets'),
+
   OPENAI_API_KEY: z.string().min(1).optional(),
   OPENAI_TEXT_MODEL: z.string().default('gpt-4.1'),
   OPENAI_VISION_MODEL: z.string().default('gpt-4.1'),

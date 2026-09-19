@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db';
 import { fail, ok } from '@/lib/api';
 import { requireUser, assertWorkspace } from '@/lib/security/auth';
 import { costSnapshot } from '@/lib/cost';
-import { signedUrl } from '@/lib/storage/s3';
+import { assetUrl } from '@/lib/storage';
 import { HttpError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 
@@ -43,7 +43,7 @@ export async function GET(_request: Request, { params }: Params) {
         assets: await Promise.all(
           shot.assets.map(async (asset) => {
             try {
-              return { ...asset, url: await signedUrl(asset.storageKey) };
+              return { ...asset, url: await assetUrl(asset.storageKey) };
             } catch (error) {
               logger.warn('Could not sign an asset URL', { assetId: asset.id, error: (error as Error).message });
               return { ...asset, url: null };

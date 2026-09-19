@@ -1,4 +1,5 @@
 import { selectableModels } from '@/lib/higgsfield/catalog';
+import { describeDrivers } from '@/lib/drivers';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,31 @@ export default function SettingsPage() {
           Live dependency state is at <code className="text-accent">/api/health</code>.
         </p>
       </header>
+
+      <section className="panel p-5">
+        <h2 className="text-sm font-medium text-neutral-300">Drivers</h2>
+        <p className="mt-1 text-xs text-muted">
+          Each capability is backed by a local or a live implementation, chosen by environment
+          variable. Defaults are local, so the product runs with no external connection.
+        </p>
+        <ul className="mt-4 divide-y divide-line">
+          {describeDrivers().map((driver) => (
+            <li key={driver.key} className="flex flex-wrap items-baseline gap-3 py-2.5 text-sm">
+              <span className="w-32 shrink-0 text-neutral-300">{driver.label}</span>
+              <span
+                className={`chip ${
+                  driver.live
+                    ? 'border-amber-900 bg-amber-950/40 text-amber-300'
+                    : 'border-line bg-raised text-neutral-400'
+                }`}
+              >
+                {driver.value}
+              </span>
+              <span className="min-w-0 flex-1 text-xs text-muted">{driver.detail}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="panel p-5">
         <h2 className="text-sm font-medium text-neutral-300">Higgsfield model catalog</h2>

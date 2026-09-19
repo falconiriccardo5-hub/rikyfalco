@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { ShotStatus, WorkflowStatus } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { toNumber } from '@/lib/cost';
-import { signedUrl } from '@/lib/storage/s3';
+import { assetUrl } from '@/lib/storage';
 import { StatusChip } from '@/components/StatusChip';
 import { ApprovalGate } from './ApprovalGate';
 import { PipelineGraph, type PipelineNode } from './PipelineGraph';
@@ -97,12 +97,12 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
       let url: string | null = null;
       if (asset) {
         try {
-          url = await signedUrl(asset.storageKey);
+          url = await assetUrl(asset.storageKey);
         } catch {
           url = null; // Storage not configured or object missing — the page still renders.
         }
       }
-      return { shot, url };
+      return { shot, url, mimeType: asset?.mimeType ?? null };
     }),
   );
 
@@ -184,7 +184,7 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
         {shotsWithUrls.length === 0 && (
           <p className="panel p-5 text-sm text-muted">No shots yet — run the pipeline.</p>
         )}
-        {shotsWithUrls.map(({ shot, url }, index) => {
+        {shotsWithUrls.map(({ shot, url, mimeType }, index) => {
           const qc = shot.qcReport as {
             score?: number;
             issues?: { kind: string; severity: string; detail: string }[];
@@ -212,8 +212,12 @@ export default async function WorkflowPage({ params }: { params: Promise<{ id: s
 
               <div className="mt-4 grid gap-4 sm:grid-cols-[180px_1fr]">
                 <div className="aspect-[9/16] overflow-hidden rounded-lg border border-line bg-ink">
-                  {url ? (
+                  {url && mimeType?.startsWith('video/') ? (
                     <video src={url} controls className="h-full w-full object-cover" />
+                  ) : url ? (
+                    // A simulated shot stores a still placeholder, not footage.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={url} alt={`Shot ${index + 1} placeholder`} className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full items-center justify-center text-[11px] text-muted">
                       no asset

@@ -11,6 +11,8 @@ import {
   type HiggsfieldClient,
   type V2Response,
 } from '../higgsfield/client';
+import { createLocalGenerationClient } from '../higgsfield/localClient';
+import { drivers } from '../drivers';
 import { buildStageInput, type RenderStage } from '../agents/modelRouter';
 import type { ShotSpec } from '../agents/schemas';
 
@@ -57,7 +59,9 @@ function mapStatus(status: V2Response['status']): GenerationJobStatus {
  */
 export async function runStage(args: RunStageArgs): Promise<StageResult> {
   const { workflowId, shotId, shot, stage, attempt, seedImageUrl } = args;
-  const client = args.client ?? createHiggsfieldClient();
+  const client =
+    args.client ??
+    (drivers().generation === 'local' ? createLocalGenerationClient() : createHiggsfieldClient());
   const key = generationKey(shotId, stage.stage, attempt);
 
   await assertWithinBudget(workflowId, stage.estimatedCostUsd);
@@ -83,7 +87,7 @@ export async function runStage(args: RunStageArgs): Promise<StageResult> {
 
   // Recovery path: this attempt already reached the provider. Read, do not resend.
   if (job.requestId) {
-    logger.info('Reconciling an existing Higgsfield request instead of resubmitting', {
+    logger.info('Reconciling an existing generation request instead of resubmitting', {
       jobId: job.id,
       requestId: job.requestId,
     });
@@ -163,7 +167,7 @@ async function finalize(
   if (response.status !== 'completed') {
     throw new OrchestratorError(
       'GENERATION_FAILED',
-      `Higgsfield returned "${response.status}" for ${stage.modelId}.`,
+      `The generation provider returned "${response.status}" for ${stage.modelId}.`,
       { requestId: response.request_id },
     );
   }
@@ -171,7 +175,7 @@ async function finalize(
   if (!url) {
     throw new OrchestratorError(
       'GENERATION_FAILED',
-      `Higgsfield reported completion without a media URL for ${stage.modelId}.`,
+      `The generation provider reported completion without a media URL for ${stage.modelId}.`,
     );
   }
 

@@ -9,3 +9,4 @@ build/
 coverage/
 .DS_Store
 /tmp-assets/
+.local-assets/
