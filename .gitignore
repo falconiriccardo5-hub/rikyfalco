@@ -5,3 +5,4 @@ data/outbox/
 .env
 data/*.db-shm
 data/*.db-wal
+data/backup/
