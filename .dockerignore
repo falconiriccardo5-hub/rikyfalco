@@ -1,0 +1,5 @@
+data/
+mac/
+.git/
+node_modules/
+*.md

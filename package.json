@@ -1,0 +1,14 @@
+{
+  "name": "fitmanager",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gestionale locale per personal trainer: clienti, percorsi, rate, contabilita e promemoria rinnovo via email.",
+  "type": "module",
+  "engines": { "node": ">=22.5.0" },
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node scripts/seed.js",
+    "promemoria": "node scripts/promemoria.js",
+    "backup": "node scripts/backup.js"
+  }
+}
