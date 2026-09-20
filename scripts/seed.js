@@ -1,4 +1,5 @@
 // Popola il database con dati di esempio (utile per provare l'app).
+import '../src/env.js';
 import { db } from '../src/db.js';
 import * as M from '../src/model.js';
 import { addGiorni, addMesi, oggi } from '../src/dates.js';

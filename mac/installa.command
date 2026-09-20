@@ -55,6 +55,7 @@ cat > "$AGENTE" <<PLIST
     <key>PORT</key><string>$PORTA</string>
     <key>DB_FILE</key><string>$DATI/fitmanager.db</string>
     <key>BACKUP_DIR</key><string>$DATI/backup</string>
+    <key>FITMANAGER_CONFIG</key><string>$DATI/config.env</string>
   </dict>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
@@ -109,4 +110,6 @@ open "http://localhost:$PORTA/" 2>/dev/null || true
 echo
 echo "Fatto. Il gestionale e' attivo su http://localhost:$PORTA"
 echo "Si riavvia da solo a ogni accesso al Mac. Per aprirlo: icona FitManager."
+echo
+echo "Per usarlo anche da iPhone: doppio click su mac/accesso-iphone.command"
 read -r -p "Premi Invio per chiudere questa finestra." _

@@ -1,4 +1,5 @@
 // Copia di sicurezza manuale: `npm run backup`.
+import '../src/env.js';
 import { eseguiBackup } from '../src/backup.js';
 
 const esito = eseguiBackup();

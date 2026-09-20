@@ -1,3 +1,4 @@
+import './src/env.js';
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize, resolve } from 'node:path';
@@ -12,7 +13,7 @@ const PORT = Number(process.env.PORT) || 4000;
 // In locale si ascolta solo su 127.0.0.1; in cloud si imposta HOST=0.0.0.0.
 const HOST = process.env.HOST || '127.0.0.1';
 const PUBLIC = resolve(process.cwd(), 'public');
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.png': 'image/png', '.webmanifest': 'application/manifest+json; charset=utf-8' };
 
 const json = (res, dati, status = 200) => {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
@@ -163,7 +164,8 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
       return res.end(paginaLogin());
     }
-    if (!richiestaAutorizzata(req) && url.pathname !== '/styles.css') {
+    const PUBBLICI = ['/styles.css', '/sw.js', '/manifest.webmanifest'];
+    if (!richiestaAutorizzata(req) && !PUBBLICI.includes(url.pathname) && !url.pathname.startsWith('/icone/')) {
       if (url.pathname.startsWith('/api')) return json(res, { errore: 'Non autorizzato' }, 401);
       res.writeHead(302, { location: '/login' });
       return res.end();

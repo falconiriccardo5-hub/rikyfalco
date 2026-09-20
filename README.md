@@ -7,6 +7,8 @@ Copre: anagrafica clienti, percorsi con durata 3/6/12 mesi o personalizzata in
 giorni, pagamento con rate generate automaticamente, contabilità con export CSV e
 **promemoria email automatico a 30 giorni dalla fine del percorso**.
 
+Si usa dal Mac e, installandola dalla schermata Home di Safari, anche da iPhone.
+
 ## Installazione su Mac (consigliata)
 
 Serve solo Node.js 22.5 o superiore, da https://nodejs.org (versione LTS).
@@ -38,6 +40,34 @@ npm start                # http://localhost:4000
 
 Nessun `npm install`: il progetto usa solo moduli nativi di Node (`node:sqlite`,
 `node:http`, `node:tls`).
+
+## Usarlo su iPhone (senza App Store)
+
+Il gestionale è una **PWA**: si installa dalla schermata Home di Safari, senza
+App Store e senza account sviluppatore. I dati restano sul Mac, l'iPhone fa solo
+da schermo.
+
+1. Sul Mac, doppio click su **`mac/accesso-iphone.command`**. Ti chiede una
+   password (obbligatoria: apre il gestionale agli altri dispositivi della rete)
+   e stampa l'indirizzo da usare.
+2. Sull'iPhone apri **Safari** su quell'indirizzo, inserisci la password.
+3. Tocca **Condividi** → **Aggiungi a Home**. Ottieni l'icona FitManager: si apre
+   a tutto schermo, senza barre di Safari, con la barra di navigazione in basso
+   pensata per il pollice.
+
+La sessione dura 30 giorni, quindi la password si inserisce raramente.
+
+**In casa** basta il Wi-Fi. **Fuori casa**, senza comprare un dominio né esporre
+nulla su internet, installa [Tailscale](https://tailscale.com/download) (gratuito
+per uso personale) sul Mac e sull'iPhone e accedi con lo stesso account: i due
+dispositivi si vedono ovunque tramite una rete privata. Poi rilancia
+`mac/accesso-iphone.command`, che rileva l'indirizzo Tailscale e te lo mostra.
+
+Da sapere: **l'iPhone vede il gestionale solo mentre il Mac è acceso e sveglio**.
+Per non avere sorprese: *Impostazioni di Sistema → Batteria → Opzioni →
+"Impedisci lo stop automatico quando lo schermo è spento"*. Se ti serve
+l'accesso anche a Mac spento, l'alternativa è pubblicarlo online (sezione sotto):
+stessa app, stessa icona sulla Home.
 
 ## Dove stanno i dati, e i backup
 
@@ -106,11 +136,13 @@ src/mailer.js        client SMTP minimale + modalità bozza
 src/promemoria.js    composizione email e job di rinnovo
 public/              interfaccia (HTML, CSS, JS senza framework)
 src/backup.js        copie di sicurezza del database
+src/env.js           lettura dei file .env / config.env
 src/auth.js          accesso con password (solo se pubblicato online)
 scripts/seed.js      dati di esempio
 scripts/promemoria.js esecuzione manuale del job
 scripts/backup.js    copia di sicurezza manuale
-mac/                 installazione e disinstallazione su macOS
+public/sw.js, manifest.webmanifest, icone/   installazione come app su iPhone
+mac/                 installazione, accesso da iPhone, disinstallazione
 Dockerfile, render.yaml  pubblicazione online con disco persistente
 ```
 

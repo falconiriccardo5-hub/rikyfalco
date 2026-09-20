@@ -64,7 +64,8 @@ function anello(percentuale, sopra, sotto, size = 160) {
     </div></div>`;
 }
 
-function barre(valori) {
+function barre(tutti) {
+  const valori = suTelefono() ? tutti.slice(-6) : tutti;
   const max = Math.max(1, ...valori.map((v) => v.valore));
   return `<div class="barre">${valori.map((v) => `
     <div class="barra ${v.valore === max && max > 0 ? 'max' : ''}" title="${esc(v.titolo || '')}">
@@ -91,19 +92,22 @@ const chiudiModale = () => $('#modale').close();
 
 /* ---------------- routing ---------------- */
 const VOCI = [
-  { id: 'dashboard', label: 'Dashboard', icona: 'home' },
-  { id: 'clienti', label: 'Clienti', icona: 'users' },
-  { id: 'nuovo', label: 'Nuovo percorso', icona: 'plus' },
-  { id: 'rinnovi', label: 'Rinnovi', icona: 'mail' },
-  { id: 'contabilita', label: 'Contabilità', icona: 'euro' },
+  { id: 'dashboard', label: 'Dashboard', breve: 'Home', icona: 'home' },
+  { id: 'clienti', label: 'Clienti', breve: 'Clienti', icona: 'users' },
+  { id: 'nuovo', label: 'Nuovo percorso', breve: 'Nuovo', icona: 'plus' },
+  { id: 'rinnovi', label: 'Rinnovi', breve: 'Rinnovi', icona: 'mail' },
+  { id: 'contabilita', label: 'Contabilità', breve: 'Conti', icona: 'euro' },
 ];
+
+// Su telefono lo schermo è stretto: etichette brevi e grafico sugli ultimi mesi.
+const suTelefono = () => window.matchMedia('(max-width: 760px)').matches;
 
 function disegnaSidebar(attiva) {
   $('#sidebar').innerHTML = `
     <div class="logo">RF</div>
-    ${VOCI.map((v) => `<button class="nav-btn ${v.id === attiva ? 'attivo' : ''}" data-vai="${v.id}" title="${v.label}" aria-label="${v.label}">${icona(v.icona)}</button>`).join('')}
+    ${VOCI.map((v) => `<button class="nav-btn ${v.id === attiva ? 'attivo' : ''}" data-vai="${v.id}" title="${v.label}" aria-label="${v.label}">${icona(v.icona)}<em>${v.breve}</em></button>`).join('')}
     <div class="spazio"></div>
-    <button class="nav-btn ${attiva === 'impostazioni' ? 'attivo' : ''}" data-vai="impostazioni" title="Impostazioni" aria-label="Impostazioni">${icona('settings')}</button>`;
+    <button class="nav-btn ${attiva === 'impostazioni' ? 'attivo' : ''}" data-vai="impostazioni" title="Impostazioni" aria-label="Impostazioni">${icona('settings')}<em>Opzioni</em></button>`;
 }
 
 const testata = (titolo, sottotitolo, azioni = '') => `
@@ -307,7 +311,11 @@ function formCliente(cliente = null) {
       chiudiModale();
       toast('Cliente salvato');
       location.hash = `cliente/${salvato.id}`;
-      naviga();
+      if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
+naviga();
     } catch (err) { toast(err.message, 'errore'); }
   });
 }
@@ -337,7 +345,7 @@ VISTE.cliente = async (id) => {
     <div class="riga-flex">
       <section class="card cresce" style="min-width:340px">
         <div class="etichetta">Anagrafica</div>
-        <div class="griglia g2" style="margin-top:16px">
+        <div class="griglia g2 compatta" style="margin-top:16px">
           ${[['Email', c.email], ['Telefono', c.telefono], ['Codice fiscale', c.codice_fiscale],
              ['Data di nascita', c.data_nascita ? dataIt(c.data_nascita) : ''],
              ['Certificato medico', c.scadenza_certificato ? dataIt(c.scadenza_certificato) : ''],
@@ -356,7 +364,7 @@ VISTE.cliente = async (id) => {
         <div style="margin-top:18px;display:flex;align-items:center;gap:22px;flex-wrap:wrap">
           ${anello(avanzamento, giorniRimanenti >= 0 ? giorniRimanenti : 0, 'giorni alla fine', 140)}
           <div style="flex:1;min-width:180px;display:grid;gap:14px">
-            <div class="griglia g2">
+            <div class="griglia g2 compatta">
               ${[['Inizio', dataIt(attivo.data_inizio)], ['Fine', dataIt(attivo.data_fine)],
                  ['Durata', durataLabel(attivo)], ['Importo', eur(attivo.importo_totale)]]
                 .map(([k, v]) => `<div><div class="etichetta">${k}</div><div style="margin-top:4px;font-weight:600">${v}</div></div>`).join('')}
@@ -436,7 +444,11 @@ VISTE.cliente = async (id) => {
       try {
         await api(`/rate/${rata.dataset.rata}`, { method: 'PUT', body: pagata ? { pagata: false } : { pagata: true, data_pagamento: oggiIso(), metodo: attivo.metodo_pagamento } });
         toast(pagata ? 'Incasso annullato' : 'Incasso registrato');
-        naviga();
+        if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
+naviga();
       } catch (err) { toast(err.message, 'errore'); }
     }
   });
@@ -458,7 +470,11 @@ VISTE.cliente = async (id) => {
     try {
       const r = await api(`/percorsi/${attivo.id}/promemoria`, { method: 'POST', body: { forza: true } });
       toast(r.stato === 'inviata' ? 'Email inviata' : r.stato === 'bozza' ? 'SMTP non configurato: bozza salvata in data/outbox' : `Errore: ${r.dettaglio}`, r.stato === 'errore' ? 'errore' : '');
-      naviga();
+      if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
+naviga();
     } catch (err) { toast(err.message, 'errore'); }
   });
   $('#btn-rinnova').addEventListener('click', () => { location.hash = `nuovo/${c.id}/${attivo.id}`; });
@@ -685,7 +701,11 @@ VISTE.rinnovi = async () => {
     try {
       const r = await api('/job/promemoria', { method: 'POST' });
       toast(r.inviati ? `${r.inviati} promemoria elaborati` : 'Nessun promemoria da inviare');
-      naviga();
+      if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
+naviga();
     } catch (err) { toast(err.message, 'errore'); }
   });
 
@@ -695,7 +715,11 @@ VISTE.rinnovi = async () => {
       try {
         const r = await api(`/percorsi/${invia.dataset.invia}/promemoria`, { method: 'POST', body: { forza: true } });
         toast(r.stato === 'inviata' ? 'Email inviata' : r.stato === 'bozza' ? 'Bozza salvata in data/outbox' : r.dettaglio, r.stato === 'errore' ? 'errore' : '');
-        naviga();
+        if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
+naviga();
       } catch (err) { toast(err.message, 'errore'); }
     }
     const ant = e.target.closest('[data-anteprima]');
@@ -820,5 +844,9 @@ VISTE.impostazioni = async () => {
     } catch (err) { toast(err.message, 'errore'); }
   });
 };
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
 
 naviga();
