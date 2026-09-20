@@ -5,8 +5,12 @@ import { db, getImpostazioni, setImpostazioni } from './src/db.js';
 import * as M from './src/model.js';
 import { eseguiJobPromemoria, inviaPromemoria, componiEmail } from './src/promemoria.js';
 import { calcolaFine, diffGiorni, oggi } from './src/dates.js';
+import { eseguiBackup } from './src/backup.js';
+import { cookieSessione, paginaLogin, passwordAttiva, passwordCorretta, richiestaAutorizzata } from './src/auth.js';
 
 const PORT = Number(process.env.PORT) || 4000;
+// In locale si ascolta solo su 127.0.0.1; in cloud si imposta HOST=0.0.0.0.
+const HOST = process.env.HOST || '127.0.0.1';
 const PUBLIC = resolve(process.cwd(), 'public');
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 
@@ -139,9 +143,31 @@ async function statico(req, res, url) {
   }
 }
 
+async function login(req, res) {
+  let dati = '';
+  for await (const pezzo of req) dati += pezzo;
+  const password = new URLSearchParams(dati).get('password');
+  if (!passwordCorretta(password)) {
+    res.writeHead(401, { 'content-type': 'text/html; charset=utf-8' });
+    return res.end(paginaLogin('Password errata.'));
+  }
+  res.writeHead(303, { location: '/', 'set-cookie': cookieSessione() });
+  res.end();
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   try {
+    if (passwordAttiva() && url.pathname === '/login') {
+      if (req.method === 'POST') return await login(req, res);
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      return res.end(paginaLogin());
+    }
+    if (!richiestaAutorizzata(req) && url.pathname !== '/styles.css') {
+      if (url.pathname.startsWith('/api')) return json(res, { errore: 'Non autorizzato' }, 401);
+      res.writeHead(302, { location: '/login' });
+      return res.end();
+    }
     if (url.pathname.startsWith('/api')) await api(req, res, url);
     else await statico(req, res, url);
   } catch (err) {
@@ -149,16 +175,23 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-// Job promemoria: al primo avvio e poi ogni 24 ore (l'app resta aperta in locale).
+// Promemoria e backup: al primo avvio e poi ogni 24 ore.
 const ORE_24 = 24 * 60 * 60 * 1000;
-const pianificaJob = () => {
+const lavoriGiornalieri = () => {
   eseguiJobPromemoria()
     .then((r) => r.inviati && console.log(`[promemoria] ${r.inviati} email elaborate`))
     .catch((e) => console.error('[promemoria]', e.message));
+  try {
+    const b = eseguiBackup();
+    console.log(`[backup] ${b.file}`);
+  } catch (e) {
+    console.error('[backup]', e.message);
+  }
 };
 
-server.listen(PORT, () => {
-  console.log(`FitManager e' in ascolto su http://localhost:${PORT}`);
-  pianificaJob();
-  setInterval(pianificaJob, ORE_24).unref?.();
+server.listen(PORT, HOST, () => {
+  console.log(`FitManager e' in ascolto su http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`);
+  if (passwordAttiva()) console.log('Accesso protetto da password.');
+  lavoriGiornalieri();
+  setInterval(lavoriGiornalieri, ORE_24);
 });

@@ -7,9 +7,28 @@ Copre: anagrafica clienti, percorsi con durata 3/6/12 mesi o personalizzata in
 giorni, pagamento con rate generate automaticamente, contabilità con export CSV e
 **promemoria email automatico a 30 giorni dalla fine del percorso**.
 
-## Avvio
+## Installazione su Mac (consigliata)
 
-Serve Node.js 22.5 o superiore (`node -v`).
+Serve solo Node.js 22.5 o superiore, da https://nodejs.org (versione LTS).
+Poi, dalla cartella del progetto, doppio click su **`mac/installa.command`**.
+
+Lo script:
+
+- verifica Node.js e sposta i dati in `~/Library/Application Support/FitManager`,
+  fuori dalla cartella del progetto: restano al loro posto anche se aggiorni o
+  sposti il codice;
+- configura l'avvio automatico a ogni accesso al Mac, con riavvio in caso di
+  crash (LaunchAgent), quindi il gestionale è sempre raggiungibile su
+  http://localhost:4000 senza aprire il Terminale;
+- crea l'icona **FitManager** in `~/Applications` e sulla Scrivania: aprendola
+  parte il browser sul gestionale (e riaccende il server se serve).
+
+La prima volta macOS può chiedere conferma perché il file arriva da internet:
+tasto destro sul file → *Apri* → *Apri*.
+
+Per fermare tutto: doppio click su `mac/disinstalla.command` (i dati restano).
+
+### Avvio manuale
 
 ```bash
 cp .env.example .env     # opzionale: dati mittente e SMTP
@@ -19,6 +38,14 @@ npm start                # http://localhost:4000
 
 Nessun `npm install`: il progetto usa solo moduli nativi di Node (`node:sqlite`,
 `node:http`, `node:tls`).
+
+## Dove stanno i dati, e i backup
+
+Tutto in un unico file SQLite: `data/fitmanager.db` con l'avvio manuale,
+`~/Library/Application Support/FitManager/fitmanager.db` dopo l'installazione su
+Mac. Il server crea una **copia di sicurezza al giorno** nella sottocartella
+`backup/` e conserva le ultime 30; `npm run backup` ne fa una subito. Per
+spostare l'archivio su un altro computer basta copiare il file `.db`.
 
 ## Come funziona
 
@@ -51,6 +78,23 @@ Linux/macOS, Utilità di pianificazione su Windows):
 0 9 * * *  cd /percorso/del/progetto && npm run promemoria
 ```
 
+## Pubblicare online (opzionale)
+
+Se ti serve accedere anche fuori casa, il progetto è pronto per essere pubblicato
+su un servizio con disco persistente, **senza comprare un dominio**: ottieni un
+indirizzo tipo `https://fitmanager-tuonome.onrender.com`.
+
+Nel repository trovi `Dockerfile` e `render.yaml` già configurati: il volume
+montato su `/var/data` tiene database e backup tra un deploy e l'altro. Su Render
+serve un piano a pagamento (il piano gratuito non offre dischi persistenti e
+azzererebbe i dati a ogni riavvio).
+
+**Imposta sempre `APP_PASSWORD`** quando pubblichi: senza, il gestionale con i
+dati dei clienti sarebbe accessibile a chiunque conosca l'indirizzo. Con la
+password attiva compare una schermata di accesso e la sessione dura 30 giorni.
+In locale lasciala vuota: il server ascolta solo su `127.0.0.1`, quindi non è
+raggiungibile dalla rete.
+
 ## Struttura
 
 ```
@@ -61,8 +105,13 @@ src/dates.js         calcolo durate e scadenze
 src/mailer.js        client SMTP minimale + modalità bozza
 src/promemoria.js    composizione email e job di rinnovo
 public/              interfaccia (HTML, CSS, JS senza framework)
+src/backup.js        copie di sicurezza del database
+src/auth.js          accesso con password (solo se pubblicato online)
 scripts/seed.js      dati di esempio
 scripts/promemoria.js esecuzione manuale del job
+scripts/backup.js    copia di sicurezza manuale
+mac/                 installazione e disinstallazione su macOS
+Dockerfile, render.yaml  pubblicazione online con disco persistente
 ```
 
 ## API

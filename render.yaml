@@ -1,0 +1,29 @@
+# Pubblicazione su Render con disco persistente e sottodominio gratuito
+# (https://nome-scelto.onrender.com): nessun dominio da comprare.
+services:
+  - type: web
+    name: fitmanager
+    runtime: docker
+    plan: starter          # il piano gratuito non offre dischi persistenti
+    healthCheckPath: /login
+    disk:
+      name: dati
+      mountPath: /var/data # qui restano database e backup tra un deploy e l'altro
+      sizeGB: 1
+    envVars:
+      - key: APP_PASSWORD  # obbligatoria online: protegge i dati dei clienti
+        sync: false
+      - key: APP_SECRET
+        generateValue: true
+      - key: PT_NOME
+        sync: false
+      - key: PT_EMAIL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false

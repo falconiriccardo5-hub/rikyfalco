@@ -8,6 +8,7 @@
   "scripts": {
     "start": "node server.js",
     "seed": "node scripts/seed.js",
-    "promemoria": "node scripts/promemoria.js"
+    "promemoria": "node scripts/promemoria.js",
+    "backup": "node scripts/backup.js"
   }
 }

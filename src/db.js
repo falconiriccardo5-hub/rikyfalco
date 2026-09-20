@@ -2,10 +2,12 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
-const FILE = process.env.DB_FILE || resolve(process.cwd(), 'data', 'fitmanager.db');
-mkdirSync(dirname(FILE), { recursive: true });
+// DB_FILE permette di tenere i dati fuori dalla cartella del progetto
+// (su macOS: ~/Library/Application Support/FitManager/fitmanager.db).
+export const FILE_DB = process.env.DB_FILE || resolve(process.cwd(), 'data', 'fitmanager.db');
+mkdirSync(dirname(FILE_DB), { recursive: true });
 
-export const db = new DatabaseSync(FILE);
+export const db = new DatabaseSync(FILE_DB);
 db.exec('PRAGMA journal_mode = WAL');
 db.exec('PRAGMA foreign_keys = ON');
 
