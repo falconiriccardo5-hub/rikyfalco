@@ -3,3 +3,5 @@ data/*.db
 data/*.db-journal
 data/outbox/
 .env
+data/*.db-shm
+data/*.db-wal
