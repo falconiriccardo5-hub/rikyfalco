@@ -16,9 +16,39 @@ const confrontaSicuro = (a, b) => {
 export const passwordCorretta = (inserita) => confrontaSicuro(inserita ?? '', process.env.APP_PASSWORD);
 export const tokenValido = (token) => Boolean(token) && confrontaSicuro(token, tokenAtteso());
 
-export function cookieSessione() {
+export function cookieSessione(sicuro = false) {
   // 30 giorni: l'app resta aperta senza richiedere la password a ogni accesso.
-  return `fm_sessione=${tokenAtteso()}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${60 * 60 * 24 * 30}`;
+  return `fm_sessione=${tokenAtteso()}; Path=/; HttpOnly; SameSite=Lax${sicuro ? '; Secure' : ''}; Max-Age=${60 * 60 * 24 * 30}`;
+}
+
+// Quando si passa da un tunnel HTTPS il cookie va marcato Secure.
+export const connessioneCifrata = (req) =>
+  Boolean(req.socket?.encrypted) || String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https';
+
+// Blocco dei tentativi: con un indirizzo pubblico la password e' l'unica difesa.
+const TENTATIVI_MAX = 8;
+const FINESTRA_MS = 15 * 60 * 1000;
+const tentativi = new Map();
+
+const chiaveOrigine = (req) =>
+  String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || 'sconosciuto';
+
+export function loginBloccato(req) {
+  const voce = tentativi.get(chiaveOrigine(req));
+  if (!voce) return 0;
+  if (Date.now() - voce.primo > FINESTRA_MS) return 0;
+  if (voce.conteggio < TENTATIVI_MAX) return 0;
+  return Math.ceil((FINESTRA_MS - (Date.now() - voce.primo)) / 60000);
+}
+
+export function registraTentativo(req, riuscito) {
+  const chiave = chiaveOrigine(req);
+  if (riuscito) return tentativi.delete(chiave);
+  const voce = tentativi.get(chiave);
+  if (!voce || Date.now() - voce.primo > FINESTRA_MS) tentativi.set(chiave, { conteggio: 1, primo: Date.now() });
+  else voce.conteggio += 1;
+  // La mappa resta piccola: si scartano le voci scadute.
+  for (const [k, v] of tentativi) if (Date.now() - v.primo > FINESTRA_MS) tentativi.delete(k);
 }
 
 export function leggiCookie(intestazione, nome) {

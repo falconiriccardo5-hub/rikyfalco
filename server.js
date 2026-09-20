@@ -7,7 +7,7 @@ import * as M from './src/model.js';
 import { eseguiJobPromemoria, inviaPromemoria, componiEmail } from './src/promemoria.js';
 import { calcolaFine, diffGiorni, oggi } from './src/dates.js';
 import { eseguiBackup } from './src/backup.js';
-import { cookieSessione, paginaLogin, passwordAttiva, passwordCorretta, richiestaAutorizzata } from './src/auth.js';
+import { connessioneCifrata, cookieSessione, loginBloccato, paginaLogin, passwordAttiva, passwordCorretta, registraTentativo, richiestaAutorizzata } from './src/auth.js';
 
 const PORT = Number(process.env.PORT) || 4000;
 // In locale si ascolta solo su 127.0.0.1; in cloud si imposta HOST=0.0.0.0.
@@ -145,14 +145,21 @@ async function statico(req, res, url) {
 }
 
 async function login(req, res) {
+  const minutiBlocco = loginBloccato(req);
+  if (minutiBlocco) {
+    res.writeHead(429, { 'content-type': 'text/html; charset=utf-8' });
+    return res.end(paginaLogin(`Troppi tentativi. Riprova tra ${minutiBlocco} minuti.`));
+  }
   let dati = '';
   for await (const pezzo of req) dati += pezzo;
   const password = new URLSearchParams(dati).get('password');
   if (!passwordCorretta(password)) {
+    registraTentativo(req, false);
     res.writeHead(401, { 'content-type': 'text/html; charset=utf-8' });
     return res.end(paginaLogin('Password errata.'));
   }
-  res.writeHead(303, { location: '/', 'set-cookie': cookieSessione() });
+  registraTentativo(req, true);
+  res.writeHead(303, { location: '/', 'set-cookie': cookieSessione(connessioneCifrata(req)) });
   res.end();
 }
 

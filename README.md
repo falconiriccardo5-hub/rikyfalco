@@ -57,11 +57,24 @@ da schermo.
 
 La sessione dura 30 giorni, quindi la password si inserisce raramente.
 
-**In casa** basta il Wi-Fi. **Fuori casa**, senza comprare un dominio né esporre
-nulla su internet, installa [Tailscale](https://tailscale.com/download) (gratuito
-per uso personale) sul Mac e sull'iPhone e accedi con lo stesso account: i due
-dispositivi si vedono ovunque tramite una rete privata. Poi rilancia
-`mac/accesso-iphone.command`, che rileva l'indirizzo Tailscale e te lo mostra.
+**In casa** basta il Wi-Fi: è quanto configura `mac/accesso-iphone.command`.
+
+**Fuori casa** ci sono due strade, nessuna richiede di comprare un dominio:
+
+- **Tunnel dal Mac** — doppio click su **`mac/accesso-internet.command`**. Installa
+  e configura un tunnel che pubblica il gestionale su un indirizzo `https://`
+  aperto da Safari come un sito qualsiasi: **sull'iPhone non si installa niente**.
+  Due opzioni: *ngrok* con account gratuito, che dà un indirizzo fisso (consigliato,
+  così l'icona sulla Home continua a funzionare), oppure *Cloudflare* senza alcun
+  account, ma con indirizzo che cambia a ogni riavvio del Mac. Il tunnel riparte da
+  solo a ogni accesso, come l'app.
+- **Rete privata** — se puoi installare [Tailscale](https://tailscale.com/download)
+  su entrambi i dispositivi, è la via più riservata: niente viene esposto su
+  internet. `mac/accesso-iphone.command` rileva l'indirizzo Tailscale da solo.
+
+Con il tunnel l'indirizzo è pubblico, quindi la password è obbligatoria (minimo 10
+caratteri) ed è l'unica difesa: dopo **8 tentativi sbagliati** l'accesso da quel
+dispositivo resta bloccato per 15 minuti.
 
 Da sapere: **l'iPhone vede il gestionale solo mentre il Mac è acceso e sveglio**.
 Per non avere sorprese: *Impostazioni di Sistema → Batteria → Opzioni →
@@ -142,7 +155,7 @@ scripts/seed.js      dati di esempio
 scripts/promemoria.js esecuzione manuale del job
 scripts/backup.js    copia di sicurezza manuale
 public/sw.js, manifest.webmanifest, icone/   installazione come app su iPhone
-mac/                 installazione, accesso da iPhone, disinstallazione
+mac/                 installazione, accesso da iPhone e da internet, disinstallazione
 Dockerfile, render.yaml  pubblicazione online con disco persistente
 ```
 
