@@ -13,6 +13,21 @@ echo "FitManager — installazione"
 echo "Progetto: $PROGETTO"
 echo
 
+# Lo ZIP scaricato da GitHub a volte finisce in una cartella dentro la cartella:
+# in quel caso i file veri sono un livello piu' in basso e vanno risaliti.
+if [ ! -f "$PROGETTO/server.js" ]; then
+  INTERNA="$(dirname "$(find "$PROGETTO" -maxdepth 3 -name server.js 2>/dev/null | head -1)")"
+  if [ -n "$INTERNA" ] && [ "$INTERNA" != "." ] && [ -f "$INTERNA/server.js" ]; then
+    echo "I file erano in una sottocartella: li sposto al posto giusto."
+    cp -R "$INTERNA"/. "$PROGETTO"/ && rm -rf "$INTERNA"
+  else
+    echo "In questa cartella non trovo server.js:"
+    echo "  $PROGETTO"
+    echo "Scarica di nuovo il progetto e riprova."
+    read -r -p "Premi Invio per chiudere." _ ; exit 1
+  fi
+fi
+
 # 1. Node.js
 if ! command -v node >/dev/null 2>&1; then
   echo "Node.js non risulta installato."
