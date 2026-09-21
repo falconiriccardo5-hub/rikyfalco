@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riky Falco — Personal Trainer</title>
+<meta name="description" content="Percorsi di allenamento e nutrizione personalizzati, online e in presenza. Metodo strutturato, risultati misurabili.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="header" id="header">
+  <div class="container header__inner">
+    <a href="#hero" class="logo">RIKY<span>FALCO</span></a>
+
+    <nav class="nav" id="nav">
+      <a href="#servizi">Servizi</a>
+      <a href="#come-funziona">Come funziona</a>
+      <a href="#risultati">Risultati</a>
+      <a href="#chi-sono">Chi sono</a>
+      <a href="#pricing">Prezzi</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="header__actions">
+      <a href="#cta-finale" class="btn btn--primary btn--sm">Prenota una call</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Apri menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO (ospita l'animazione 3D scroll-driven) ============ -->
+<section class="hero" id="hero">
+  <!-- SLOT ANIMAZIONE 3D: il canvas/iframe va inserito qui dentro -->
+  <div class="hero__stage" id="hero3d" data-3d-slot>
+    <div class="hero__placeholder">
+      <span>SLOT ANIMAZIONE 3D</span>
+      <small>canvas / iframe scroll-driven — inserire qui</small>
+    </div>
+  </div>
+
+  <div class="hero__content container">
+    <p class="eyebrow">Personal Training · Online &amp; In presenza</p>
+    <h1 class="hero__title">Il corpo che vuoi,<br>con un metodo che funziona.</h1>
+    <p class="hero__sub">
+      Percorsi di allenamento e nutrizione costruiti sulla tua vita reale:
+      lavoro, tempo, infortuni, abitudini. Niente schede copia-incolla.
+    </p>
+    <div class="hero__cta">
+      <a href="#cta-finale" class="btn btn--primary">Inizia il tuo percorso</a>
+      <a href="#come-funziona" class="btn btn--ghost">Scopri il metodo</a>
+    </div>
+    <ul class="hero__bullets">
+      <li>Primo colloquio gratuito</li>
+      <li>Nessun vincolo di palestra</li>
+      <li>Assistenza continua</li>
+    </ul>
+  </div>
+
+  <div class="hero__scroll" aria-hidden="true"><span></span>scroll</div>
+</section>
+
+<!-- ============ SOCIAL PROOF ============ -->
+<section class="social-proof" id="social-proof">
+  <div class="container">
+    <p class="social-proof__label">Oltre 300 persone hanno già cambiato abitudini</p>
+    <div class="social-proof__logos">
+      <div class="logo-slot">LOGO / TESTATA</div>
+      <div class="logo-slot">LOGO / PALESTRA</div>
+      <div class="logo-slot">CERTIFICAZIONE</div>
+      <div class="logo-slot">CERTIFICAZIONE</div>
+      <div class="logo-slot">PARTNER</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong>300+</strong><span>percorsi seguiti</span></div>
+      <div class="stat"><strong>8</strong><span>anni di esperienza</span></div>
+      <div class="stat"><strong>94%</strong><span>tasso di rinnovo</span></div>
+      <div class="stat"><strong>4.9/5</strong><span>valutazione media</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEMA ============ -->
+<section class="section section--dark" id="problema">
+  <div class="container">
+    <p class="eyebrow">Il problema</p>
+    <h2 class="section__title">Ti alleni, ma i risultati non arrivano.</h2>
+    <p class="section__lead">
+      Nella maggior parte dei casi non è questione di volontà: è questione di metodo.
+      Ecco cosa blocca davvero le persone che incontro ogni giorno.
+    </p>
+
+    <div class="grid grid--3">
+      <article class="card card--problem">
+        <span class="card__index">01</span>
+        <h3>Schede generiche</h3>
+        <p>Programmi scaricati o copiati dal compagno di palestra, che ignorano la tua struttura, la tua mobilità e i tuoi tempi.</p>
+      </article>
+      <article class="card card--problem">
+        <span class="card__index">02</span>
+        <h3>Zero costanza</h3>
+        <p>Parti carico a gennaio e molli a marzo. Senza un sistema sostenibile la motivazione non basta mai.</p>
+      </article>
+      <article class="card card--problem">
+        <span class="card__index">03</span>
+        <h3>Informazioni contraddittorie</h3>
+        <p>Digiuni, integratori, mode social: troppo rumore e nessuna priorità chiara su cosa fare davvero oggi.</p>
+      </article>
+      <article class="card card--problem">
+        <span class="card__index">04</span>
+        <h3>Dolori e infortuni</h3>
+        <p>Tecnica approssimativa e carichi mal gestiti trasformano l'allenamento in un problema invece che in una soluzione.</p>
+      </article>
+      <article class="card card--problem">
+        <span class="card__index">05</span>
+        <h3>Alimentazione scollegata</h3>
+        <p>Ti alleni bene ma mangi a caso, oppure segui diete rigide impossibili da mantenere oltre le due settimane.</p>
+      </article>
+      <article class="card card--problem">
+        <span class="card__index">06</span>
+        <h3>Nessun dato</h3>
+        <p>Senza misurare carichi, progressi e composizione corporea non sai se stai migliorando o solo faticando.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOLUZIONE ============ -->
+<section class="section" id="soluzione">
+  <div class="container">
+    <div class="split">
+      <div class="split__text">
+        <p class="eyebrow">La soluzione</p>
+        <h2 class="section__title">Un solo percorso, costruito su di te.</h2>
+        <p class="section__lead">
+          Analizzo la tua situazione di partenza, definiamo insieme un obiettivo concreto
+          e costruisco un programma che si adatta alla tua settimana — non il contrario.
+          Ogni mese rivediamo i numeri e correggiamo la rotta.
+        </p>
+        <ul class="checklist">
+          <li>Valutazione iniziale posturale, funzionale e alimentare</li>
+          <li>Programma di allenamento aggiornato ogni 4 settimane</li>
+          <li>Linee guida nutrizionali sostenibili, senza pesare tutto</li>
+          <li>Video-correzione della tecnica su ogni esercizio chiave</li>
+          <li>Contatto diretto con me, non con un assistente</li>
+        </ul>
+        <a href="#pricing" class="btn btn--primary">Vedi i percorsi</a>
+      </div>
+
+      <div class="split__aside">
+        <div class="panel">
+          <h3 class="panel__title">Prima → Dopo il metodo</h3>
+          <div class="compare">
+            <div class="compare__col">
+              <span class="compare__tag compare__tag--before">Prima</span>
+              <ul>
+                <li>Alleno "a sensazione"</li>
+                <li>Risultati altalenanti</li>
+                <li>Dolori ricorrenti</li>
+                <li>Dieta on/off</li>
+              </ul>
+            </div>
+            <div class="compare__col">
+              <span class="compare__tag compare__tag--after">Dopo</span>
+              <ul>
+                <li>Programma progressivo</li>
+                <li>Progressi misurabili</li>
+                <li>Tecnica pulita</li>
+                <li>Abitudini stabili</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVIZI / FEATURES ============ -->
+<section class="section section--alt" id="servizi">
+  <div class="container">
+    <p class="eyebrow">Servizi</p>
+    <h2 class="section__title">Scegli come vuoi lavorare con me.</h2>
+    <p class="section__lead">Tre modalità, stesso metodo. Cambia solo il livello di presenza e di assistenza.</p>
+
+    <div class="grid grid--3">
+      <article class="card card--feature">
+        <h3>Personal training 1:1</h3>
+        <p>Sedute individuali in studio o in palestra, con correzione tecnica in tempo reale e programmazione dedicata.</p>
+        <ul class="mini-list">
+          <li>Sedute da 60 minuti</li>
+          <li>Valutazione iniziale inclusa</li>
+          <li>Programma personalizzato</li>
+        </ul>
+      </article>
+      <article class="card card--feature">
+        <h3>Coaching online</h3>
+        <p>Il percorso completo a distanza: schede, video, check settimanali e supporto continuo dove ti trovi.</p>
+        <ul class="mini-list">
+          <li>App con scheda e video</li>
+          <li>Check settimanale</li>
+          <li>Chat diretta</li>
+        </ul>
+      </article>
+      <article class="card card--feature">
+        <h3>Small group</h3>
+        <p>Allenamento in piccoli gruppi da 3 a 5 persone: stessa qualità tecnica, costo condiviso, più motivazione.</p>
+        <ul class="mini-list">
+          <li>Max 5 persone</li>
+          <li>2 sedute a settimana</li>
+          <li>Ideale per iniziare</li>
+        </ul>
+      </article>
+      <article class="card card--feature">
+        <h3>Ricomposizione corporea</h3>
+        <p>Percorso mirato per perdere grasso e costruire massa muscolare, con monitoraggio periodico dei parametri.</p>
+      </article>
+      <article class="card card--feature">
+        <h3>Preparazione atletica</h3>
+        <p>Forza, potenza e condizionamento specifici per il tuo sport, integrati con il calendario delle gare.</p>
+      </article>
+      <article class="card card--feature">
+        <h3>Rieducazione al movimento</h3>
+        <p>Mobilità, stabilità e ritorno al carico dopo stop o infortuni, in collaborazione con il tuo fisioterapista.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COME FUNZIONA ============ -->
+<section class="section" id="come-funziona">
+  <div class="container">
+    <p class="eyebrow">Come funziona</p>
+    <h2 class="section__title">Quattro passi, zero improvvisazione.</h2>
+
+    <ol class="steps">
+      <li class="step">
+        <span class="step__num">1</span>
+        <h3>Call conoscitiva</h3>
+        <p>30 minuti gratuiti per capire il tuo punto di partenza, gli obiettivi e il tempo reale che hai a disposizione.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">2</span>
+        <h3>Valutazione</h3>
+        <p>Test di mobilità, forza e composizione corporea. Raccolgo i dati che serviranno a misurare ogni progresso.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">3</span>
+        <h3>Programma su misura</h3>
+        <p>Ricevi allenamento e linee guida alimentari, con video esplicativi e priorità chiare settimana per settimana.</p>
+      </li>
+      <li class="step">
+        <span class="step__num">4</span>
+        <h3>Check e progressione</h3>
+        <p>Ogni mese rivediamo numeri e sensazioni, aggiorniamo carichi e volumi e alziamo l'asticella.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ RISULTATI / CASE STUDY ============ -->
+<section class="section section--dark" id="risultati">
+  <div class="container">
+    <p class="eyebrow">Risultati</p>
+    <h2 class="section__title">Casi reali, numeri reali.</h2>
+    <p class="section__lead">Tre percorsi tra i tanti, raccontati dall'inizio alla fine.</p>
+
+    <div class="grid grid--3">
+      <article class="case">
+        <div class="case__media" data-media-slot>FOTO / SLOT</div>
+        <div class="case__body">
+          <h3>Marco, 34 anni — Ricomposizione</h3>
+          <p class="case__meta">6 mesi · Coaching online</p>
+          <p>Partiva da sedentarietà totale e mal di schiena ricorrente. Abbiamo costruito la base di forza prima di toccare il deficit calorico.</p>
+          <div class="case__kpis">
+            <div><strong>-11 kg</strong><span>massa grassa</span></div>
+            <div><strong>+4 kg</strong><span>massa magra</span></div>
+            <div><strong>3x</strong><span>settimana</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="case__media" data-media-slot>FOTO / SLOT</div>
+        <div class="case__body">
+          <h3>Giulia, 28 anni — Forza</h3>
+          <p class="case__meta">8 mesi · Personal training 1:1</p>
+          <p>Obiettivo: smettere di avere paura dei pesi. Percorso tecnico sui fondamentali e progressione graduale dei carichi.</p>
+          <div class="case__kpis">
+            <div><strong>+40 kg</strong><span>squat</span></div>
+            <div><strong>+25 kg</strong><span>stacco</span></div>
+            <div><strong>0</strong><span>infortuni</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="case">
+        <div class="case__media" data-media-slot>FOTO / SLOT</div>
+        <div class="case__body">
+          <h3>Luca, 41 anni — Ritorno al carico</h3>
+          <p class="case__meta">5 mesi · Rieducazione al movimento</p>
+          <p>Dopo un'ernia discale è tornato ad allenarsi in sicurezza, lavorando prima su mobilità e controllo del core.</p>
+          <div class="case__kpis">
+            <div><strong>-90%</strong><span>episodi di dolore</span></div>
+            <div><strong>+18 kg</strong><span>panca</span></div>
+            <div><strong>4x</strong><span>settimana</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIANZE ============ -->
+<section class="section section--alt" id="testimonianze">
+  <div class="container">
+    <p class="eyebrow">Testimonianze</p>
+    <h2 class="section__title">Cosa dicono le persone che seguo.</h2>
+
+    <div class="grid grid--3">
+      <figure class="quote">
+        <blockquote>"Per la prima volta ho capito <em>perché</em> stavo facendo ogni esercizio. È cambiato tutto: la costanza è arrivata da sola."</blockquote>
+        <figcaption><span class="avatar" data-media-slot></span><span><strong>Sara M.</strong><small>Coaching online · 9 mesi</small></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>"Mi allenavo da anni senza risultati. In sei mesi ho ottenuto più di quanto avessi fatto nei precedenti cinque."</blockquote>
+        <figcaption><span class="avatar" data-media-slot></span><span><strong>Andrea T.</strong><small>Personal training 1:1 · 6 mesi</small></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>"La cosa che apprezzo di più è la disponibilità: scrivo, ricevo risposta, e non mi sento mai lasciata sola."</blockquote>
+        <figcaption><span class="avatar" data-media-slot></span><span><strong>Elena R.</strong><small>Small group · 1 anno</small></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>"Dopo l'infortunio pensavo di dover smettere. Oggi sollevo più di prima e senza dolore."</blockquote>
+        <figcaption><span class="avatar" data-media-slot></span><span><strong>Luca B.</strong><small>Rieducazione · 5 mesi</small></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>"Zero diete assurde. Piccoli cambiamenti sostenibili che, sommati, hanno fatto la differenza."</blockquote>
+        <figcaption><span class="avatar" data-media-slot></span><span><strong>Martina C.</strong><small>Coaching online · 4 mesi</small></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>"Programmazione seria e attenzione alla tecnica. Si vede subito che dietro c'è competenza vera."</blockquote>
+        <figcaption><span class="avatar" data-media-slot></span><span><strong>Davide P.</strong><small>Preparazione atletica · 7 mesi</small></span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHI SONO / TEAM ============ -->
+<section class="section" id="chi-sono">
+  <div class="container">
+    <div class="split split--reverse">
+      <div class="split__aside">
+        <div class="portrait" data-media-slot>FOTO RITRATTO / SLOT</div>
+      </div>
+      <div class="split__text">
+        <p class="eyebrow">Chi sono</p>
+        <h2 class="section__title">Riky Falco, personal trainer.</h2>
+        <p class="section__lead">
+          Da otto anni aiuto persone comuni a costruire un rapporto stabile con l'allenamento.
+          Non sono interessato ai risultati lampo: mi interessa che tra cinque anni tu ti stia
+          ancora allenando, meglio di oggi.
+        </p>
+        <ul class="checklist">
+          <li>Laurea in Scienze Motorie</li>
+          <li>Certificazione Strength &amp; Conditioning</li>
+          <li>Specializzazione in rieducazione funzionale</li>
+          <li>Formazione continua in nutrizione applicata allo sport</li>
+        </ul>
+
+        <h3 class="subhead">Il team</h3>
+        <div class="team">
+          <div class="team__member">
+            <span class="avatar avatar--lg" data-media-slot></span>
+            <strong>Nome Cognome</strong>
+            <small>Nutrizionista</small>
+          </div>
+          <div class="team__member">
+            <span class="avatar avatar--lg" data-media-slot></span>
+            <strong>Nome Cognome</strong>
+            <small>Fisioterapista</small>
+          </div>
+          <div class="team__member">
+            <span class="avatar avatar--lg" data-media-slot></span>
+            <strong>Nome Cognome</strong>
+            <small>Trainer small group</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING / OFFERTA ============ -->
+<section class="section section--alt" id="pricing">
+  <div class="container">
+    <p class="eyebrow">Percorsi</p>
+    <h2 class="section__title">Scegli il livello di supporto.</h2>
+    <p class="section__lead">Tutti i percorsi includono valutazione iniziale e programma personalizzato. Nessun vincolo di rinnovo automatico.</p>
+
+    <div class="grid grid--3 pricing">
+      <article class="plan">
+        <h3 class="plan__name">Start</h3>
+        <p class="plan__price"><strong>€ 89</strong><span>/ mese</span></p>
+        <p class="plan__desc">Per chi vuole iniziare con un programma serio e autonomia di gestione.</p>
+        <ul class="mini-list">
+          <li>Scheda aggiornata ogni 6 settimane</li>
+          <li>Video tecnici degli esercizi</li>
+          <li>Check mensile via messaggio</li>
+          <li>Linee guida alimentari generali</li>
+        </ul>
+        <a href="#cta-finale" class="btn btn--ghost btn--block">Scegli Start</a>
+      </article>
+
+      <article class="plan plan--featured">
+        <span class="plan__badge">Il più scelto</span>
+        <h3 class="plan__name">Coaching</h3>
+        <p class="plan__price"><strong>€ 159</strong><span>/ mese</span></p>
+        <p class="plan__desc">Il percorso completo online, con assistenza continua e revisione costante.</p>
+        <ul class="mini-list">
+          <li>Scheda aggiornata ogni 4 settimane</li>
+          <li>Video-correzione della tecnica</li>
+          <li>Check settimanale</li>
+          <li>Piano nutrizionale personalizzato</li>
+          <li>Chat diretta con me</li>
+        </ul>
+        <a href="#cta-finale" class="btn btn--primary btn--block">Scegli Coaching</a>
+      </article>
+
+      <article class="plan">
+        <h3 class="plan__name">1:1 Premium</h3>
+        <p class="plan__price"><strong>€ 320</strong><span>/ mese</span></p>
+        <p class="plan__desc">Sedute individuali in presenza più tutto il supporto del percorso Coaching.</p>
+        <ul class="mini-list">
+          <li>8 sedute individuali al mese</li>
+          <li>Programmazione dedicata</li>
+          <li>Valutazioni periodiche complete</li>
+          <li>Coordinamento con nutrizionista</li>
+          <li>Priorità di risposta</li>
+        </ul>
+        <a href="#cta-finale" class="btn btn--ghost btn--block">Scegli Premium</a>
+      </article>
+    </div>
+
+    <p class="pricing__note">Possibilità di pagamento trimestrale con sconto. Prima call sempre gratuita e senza impegno.</p>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="container container--narrow">
+    <p class="eyebrow">FAQ</p>
+    <h2 class="section__title">Domande frequenti.</h2>
+
+    <div class="faq">
+      <details class="faq__item">
+        <summary>Devo essere già allenato per iniziare?</summary>
+        <p>No. La maggior parte delle persone che seguo parte da zero o dopo anni di stop. Il programma parte dal tuo livello reale, non da quello ideale.</p>
+      </details>
+      <details class="faq__item">
+        <summary>Serve una palestra attrezzata?</summary>
+        <p>No. Costruisco il programma sull'attrezzatura che hai davvero a disposizione: palestra, home gym o anche solo corpo libero e qualche elastico.</p>
+      </details>
+      <details class="faq__item">
+        <summary>Quanto tempo devo dedicare ogni settimana?</summary>
+        <p>Si parte da tre sedute da 45-60 minuti. Se hai meno tempo, adattiamo volume e frequenza: meglio due sedute costanti che cinque saltate.</p>
+      </details>
+      <details class="faq__item">
+        <summary>Il piano alimentare è incluso?</summary>
+        <p>Nei percorsi Coaching e Premium ricevi linee guida nutrizionali personalizzate. Per esigenze cliniche specifiche lavoro insieme alla nutrizionista del team.</p>
+      </details>
+      <details class="faq__item">
+        <summary>In quanto tempo vedrò i primi risultati?</summary>
+        <p>Forza e qualità del movimento migliorano già nelle prime 4 settimane. I cambiamenti visibili di composizione corporea arrivano generalmente tra il secondo e il terzo mese.</p>
+      </details>
+      <details class="faq__item">
+        <summary>Posso disdire quando voglio?</summary>
+        <p>Sì. Non ci sono rinnovi automatici né penali: il percorso continua solo finché ha senso per te.</p>
+      </details>
+      <details class="faq__item">
+        <summary>Ho avuto un infortunio, posso allenarmi?</summary>
+        <p>Nella maggior parte dei casi sì, con le dovute cautele. Dopo la valutazione decido se procedere direttamente o coordinarmi prima con il tuo fisioterapista.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINALE ============ -->
+<section class="cta-final" id="cta-finale">
+  <div class="container container--narrow">
+    <h2 class="cta-final__title">Il momento giusto non arriva. Si sceglie.</h2>
+    <p class="cta-final__sub">
+      Prenota una call conoscitiva gratuita di 30 minuti: capiamo insieme da dove partire
+      e se il mio metodo è adatto a te. Nessun obbligo, nessuna vendita forzata.
+    </p>
+
+    <form class="cta-form" id="ctaForm" novalidate>
+      <div class="cta-form__row">
+        <label class="field">
+          <span>Nome</span>
+          <input type="text" name="nome" placeholder="Il tuo nome" required>
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" name="email" placeholder="nome@email.it" required>
+        </label>
+      </div>
+      <label class="field">
+        <span>Obiettivo principale</span>
+        <select name="obiettivo">
+          <option>Perdere grasso</option>
+          <option>Aumentare massa muscolare</option>
+          <option>Migliorare forza e performance</option>
+          <option>Tornare ad allenarmi dopo uno stop</option>
+          <option>Altro</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Raccontami in breve la tua situazione</span>
+        <textarea name="messaggio" rows="4" placeholder="Da quanto ti alleni, che tempo hai, eventuali infortuni..."></textarea>
+      </label>
+      <button type="submit" class="btn btn--primary btn--block">Prenota la call gratuita</button>
+      <p class="cta-form__note">Rispondo personalmente entro 24 ore lavorative.</p>
+      <p class="cta-form__feedback" id="formFeedback" role="status"></p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <a href="#hero" class="logo">RIKY<span>FALCO</span></a>
+      <p>Personal training, preparazione atletica e rieducazione al movimento. Online e in presenza.</p>
+    </div>
+
+    <div class="footer__col">
+      <h4>Sito</h4>
+      <a href="#servizi">Servizi</a>
+      <a href="#come-funziona">Come funziona</a>
+      <a href="#risultati">Risultati</a>
+      <a href="#pricing">Prezzi</a>
+      <a href="#faq">FAQ</a>
+    </div>
+
+    <div class="footer__col">
+      <h4>Contatti</h4>
+      <a href="mailto:info@rikyfalco.it">info@rikyfalco.it</a>
+      <a href="tel:+390000000000">+39 000 000 0000</a>
+      <span>Via Esempio 00, Città</span>
+    </div>
+
+    <div class="footer__col">
+      <h4>Social</h4>
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+      <a href="#">YouTube</a>
+      <a href="#">LinkedIn</a>
+    </div>
+  </div>
+
+  <div class="container footer__bottom">
+    <small>© <span id="year">2026</span> Riky Falco — P.IVA 00000000000. Tutti i diritti riservati.</small>
+    <small><a href="#">Privacy</a> · <a href="#">Cookie</a> · <a href="#">Termini</a></small>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
