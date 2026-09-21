@@ -3,20 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Riky Falco — Personal Trainer</title>
-<meta name="description" content="Percorsi di allenamento e nutrizione personalizzati, online e in presenza. Metodo strutturato, risultati misurabili.">
+<title>Riky Falco — Personal Trainer | Allenamento e nutrizione su misura</title>
+<meta name="description" content="Percorsi di allenamento e nutrizione personalizzati, online e in presenza. Metodo strutturato, progressi misurabili, assistenza continua.">
+<meta name="theme-color" content="#0a0a0c">
+
+<meta property="og:title" content="Riky Falco — Personal Trainer">
+<meta property="og:description" content="Allenamento e nutrizione su misura, online e in presenza.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<!-- ============ HEADER ============ -->
-<header class="header" id="header">
-  <div class="container header__inner">
-    <a href="#hero" class="logo">RIKY<span>FALCO</span></a>
+<a href="#main" class="sr-only">Vai al contenuto</a>
 
-    <nav class="nav" id="nav">
+<!-- ===== Sprite icone (SVG, nessuna emoji) ===== -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5.5 5.5L20 6.5"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6.5 6.5v11M3 9v6m14.5-8.5v11M21 9v6M6.5 12h11"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-9.3A4 4 0 0 1 12 8a4 4 0 0 1 7 2.7C19 15.6 12 20 12 20Z"/></symbol>
+  <symbol id="i-nutrition" viewBox="0 0 24 24"><path d="M12 8c0 6-3.5 12-6 12S3 15 6 10s6-2 6-2Zm0 0c0-6 3.5-6 6-4s1 10-2 12"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4m0 16h16M8 16v-5m4 5V8m4 8v-3"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4m8-4v4"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 11 5-3v8l-5-3Z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5.4A8 8 0 1 1 21 12Z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0m1.5-12a3.4 3.4 0 0 1 0 6.8M18 20a6.5 6.5 0 0 0-2-4.7"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v6c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6l-7-3Z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13m-5-6 6 6-6 6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 6 3.5-6 3.5v-7Z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.7 6.3.9-4.5 4.4 1 6.2-5.5-2.9-5.5 2.9 1-6.2L3 9.6l6.3-.9L12 3Z"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5.5"/><path d="m8.5 13.5-1.5 7 5-2.5 5 2.5-1.5-7"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5A2.5 2.5 0 0 1 4 20.5Z"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="M8.5 10.5 12 8l3.5 2.5M9 15h6"/></symbol>
+  <symbol id="i-phone-app" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5M14 3c.5 2.8 2.2 4.4 5 4.7"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10.5 9.5 5 2.5-5 2.5v-5Z"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8 11v6m0-9.2v.1M12 17v-3.5a2 2 0 0 1 4 0V17"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></symbol>
+</svg>
+
+<!-- =========================================================
+     1. HEADER
+     ========================================================= -->
+<header class="header" id="header">
+  <div class="header__inner">
+    <a href="#hero" class="logo" aria-label="Riky Falco, home">
+      <span class="logo__mark" aria-hidden="true"><svg class="icon"><use href="#i-bolt"/></svg></span>
+      RIKY<span>FALCO</span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Navigazione principale">
       <a href="#servizi">Servizi</a>
-      <a href="#come-funziona">Come funziona</a>
+      <a href="#programmi">Programmi</a>
+      <a href="#come-funziona">Metodo</a>
       <a href="#risultati">Risultati</a>
       <a href="#chi-sono">Chi sono</a>
       <a href="#pricing">Prezzi</a>
@@ -24,58 +76,66 @@
     </nav>
 
     <div class="header__actions">
-      <a href="#cta-finale" class="btn btn--primary btn--sm">Prenota una call</a>
-      <button class="nav-toggle" id="navToggle" aria-label="Apri menu" aria-expanded="false">
-        <span></span><span></span><span></span>
+      <a href="tel:+390000000000" class="header__phone">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-phone"/></svg>+39 000 000 0000
+      </a>
+      <a href="#contatti" class="btn btn--primary btn--sm">Prenota una call</a>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Apri il menu" aria-expanded="false" aria-controls="nav">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
       </button>
     </div>
   </div>
 </header>
 
-<main>
+<main id="main">
 
-<!-- ============ HERO (ospita l'animazione 3D scroll-driven) ============ -->
-<section class="hero" id="hero">
-  <!-- SLOT ANIMAZIONE 3D: il canvas/iframe va inserito qui dentro -->
+<!-- =========================================================
+     2. HERO — contenitore dell'animazione 3D scroll-driven
+     ========================================================= -->
+<section class="hero" id="hero" aria-labelledby="hero-title">
+
+  <!-- SLOT 3D: sostituire il contenuto con canvas / iframe / video -->
   <div class="hero__stage" id="hero3d" data-3d-slot>
-    <div class="hero__placeholder">
-      <span>SLOT ANIMAZIONE 3D</span>
-      <small>canvas / iframe scroll-driven — inserire qui</small>
+    <div class="hero__slot">
+      <strong>Slot animazione 3D</strong>
+      <small>canvas · iframe · video — scroll-driven, progress 0 → 1</small>
     </div>
   </div>
 
   <div class="hero__content container">
-    <p class="eyebrow">Personal Training · Online &amp; In presenza</p>
-    <h1 class="hero__title">Il corpo che vuoi,<br>con un metodo che funziona.</h1>
+    <p class="eyebrow">Personal training · Online e in presenza</p>
+    <h1 class="hero__title" id="hero-title">Il corpo che vuoi,<br>con un metodo <em>che funziona</em>.</h1>
     <p class="hero__sub">
-      Percorsi di allenamento e nutrizione costruiti sulla tua vita reale:
-      lavoro, tempo, infortuni, abitudini. Niente schede copia-incolla.
+      Allenamento e nutrizione costruiti sulla tua vita reale: lavoro, tempo,
+      infortuni, abitudini. Niente schede copia-incolla, niente diete impossibili.
     </p>
     <div class="hero__cta">
-      <a href="#cta-finale" class="btn btn--primary">Inizia il tuo percorso</a>
-      <a href="#come-funziona" class="btn btn--ghost">Scopri il metodo</a>
+      <a href="#contatti" class="btn btn--primary">Inizia il tuo percorso<svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a href="#come-funziona" class="btn btn--ghost"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-play"/></svg>Scopri il metodo</a>
     </div>
     <ul class="hero__bullets">
-      <li>Primo colloquio gratuito</li>
-      <li>Nessun vincolo di palestra</li>
-      <li>Assistenza continua</li>
+      <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Primo colloquio gratuito</li>
+      <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Nessun vincolo di palestra</li>
+      <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Assistenza continua</li>
     </ul>
   </div>
-
-  <div class="hero__scroll" aria-hidden="true"><span></span>scroll</div>
 </section>
 
-<!-- ============ SOCIAL PROOF ============ -->
-<section class="social-proof" id="social-proof">
+<!-- =========================================================
+     3. SOCIAL PROOF
+     ========================================================= -->
+<section class="proof" id="social-proof" aria-label="Riconoscimenti e numeri">
   <div class="container">
-    <p class="social-proof__label">Oltre 300 persone hanno già cambiato abitudini</p>
-    <div class="social-proof__logos">
-      <div class="logo-slot">LOGO / TESTATA</div>
-      <div class="logo-slot">LOGO / PALESTRA</div>
+    <p class="proof__label">Oltre 300 persone hanno già cambiato abitudini con questo metodo</p>
+
+    <div class="proof__logos">
+      <div class="logo-slot">LOGO PALESTRA</div>
       <div class="logo-slot">CERTIFICAZIONE</div>
-      <div class="logo-slot">CERTIFICAZIONE</div>
+      <div class="logo-slot">TESTATA STAMPA</div>
+      <div class="logo-slot">FEDERAZIONE</div>
       <div class="logo-slot">PARTNER</div>
     </div>
+
     <div class="stats">
       <div class="stat"><strong>300+</strong><span>percorsi seguiti</span></div>
       <div class="stat"><strong>8</strong><span>anni di esperienza</span></div>
@@ -85,95 +145,108 @@
   </div>
 </section>
 
-<!-- ============ PROBLEMA ============ -->
-<section class="section section--dark" id="problema">
+<!-- =========================================================
+     4. PROBLEMA
+     ========================================================= -->
+<section class="section" id="problema" aria-labelledby="problema-title">
   <div class="container">
-    <p class="eyebrow">Il problema</p>
-    <h2 class="section__title">Ti alleni, ma i risultati non arrivano.</h2>
-    <p class="section__lead">
-      Nella maggior parte dei casi non è questione di volontà: è questione di metodo.
-      Ecco cosa blocca davvero le persone che incontro ogni giorno.
-    </p>
+    <div class="section-head">
+      <p class="eyebrow">Il problema</p>
+      <h2 class="section-title" id="problema-title">Ti alleni, ma i risultati non arrivano.</h2>
+      <p class="section-lead">
+        Quasi mai è questione di volontà: è questione di metodo. Questi sono i sei ostacoli
+        che ritrovo praticamente in ogni persona che inizia a lavorare con me.
+      </p>
+    </div>
 
     <div class="grid grid--3">
       <article class="card card--problem">
-        <span class="card__index">01</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-book"/></svg></span>
+        <span class="card__num">01</span>
         <h3>Schede generiche</h3>
-        <p>Programmi scaricati o copiati dal compagno di palestra, che ignorano la tua struttura, la tua mobilità e i tuoi tempi.</p>
+        <p>Programmi scaricati o copiati dal compagno di palestra, che ignorano la tua struttura, la tua mobilità e i tuoi tempi reali.</p>
       </article>
       <article class="card card--problem">
-        <span class="card__index">02</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-calendar"/></svg></span>
+        <span class="card__num">02</span>
         <h3>Zero costanza</h3>
-        <p>Parti carico a gennaio e molli a marzo. Senza un sistema sostenibile la motivazione non basta mai.</p>
+        <p>Parti carico a gennaio e molli a marzo. Senza un sistema sostenibile la motivazione da sola non basta mai.</p>
       </article>
       <article class="card card--problem">
-        <span class="card__index">03</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-chat"/></svg></span>
+        <span class="card__num">03</span>
         <h3>Informazioni contraddittorie</h3>
-        <p>Digiuni, integratori, mode social: troppo rumore e nessuna priorità chiara su cosa fare davvero oggi.</p>
+        <p>Digiuni, integratori, mode social: troppo rumore e nessuna priorità chiara su cosa conviene fare davvero oggi.</p>
       </article>
       <article class="card card--problem">
-        <span class="card__index">04</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span>
+        <span class="card__num">04</span>
         <h3>Dolori e infortuni</h3>
         <p>Tecnica approssimativa e carichi mal gestiti trasformano l'allenamento in un problema invece che in una soluzione.</p>
       </article>
       <article class="card card--problem">
-        <span class="card__index">05</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-nutrition"/></svg></span>
+        <span class="card__num">05</span>
         <h3>Alimentazione scollegata</h3>
-        <p>Ti alleni bene ma mangi a caso, oppure segui diete rigide impossibili da mantenere oltre le due settimane.</p>
+        <p>Ti alleni bene ma mangi a caso, oppure segui diete rigide impossibili da mantenere oltre le prime due settimane.</p>
       </article>
       <article class="card card--problem">
-        <span class="card__index">06</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-chart"/></svg></span>
+        <span class="card__num">06</span>
         <h3>Nessun dato</h3>
-        <p>Senza misurare carichi, progressi e composizione corporea non sai se stai migliorando o solo faticando.</p>
+        <p>Senza misurare carichi, progressi e composizione corporea non sai se stai migliorando o se stai solo facendo fatica.</p>
       </article>
     </div>
   </div>
 </section>
 
-<!-- ============ SOLUZIONE ============ -->
-<section class="section" id="soluzione">
+<!-- =========================================================
+     5. SOLUZIONE
+     ========================================================= -->
+<section class="section section--alt section--line" id="soluzione" aria-labelledby="soluzione-title">
   <div class="container">
     <div class="split">
       <div class="split__text">
-        <p class="eyebrow">La soluzione</p>
-        <h2 class="section__title">Un solo percorso, costruito su di te.</h2>
-        <p class="section__lead">
-          Analizzo la tua situazione di partenza, definiamo insieme un obiettivo concreto
-          e costruisco un programma che si adatta alla tua settimana — non il contrario.
-          Ogni mese rivediamo i numeri e correggiamo la rotta.
-        </p>
+        <div class="section-head section-head--left">
+          <p class="eyebrow">La soluzione</p>
+          <h2 class="section-title" id="soluzione-title">Un solo percorso, costruito su di te.</h2>
+          <p class="section-lead">
+            Analizzo la tua situazione di partenza, definiamo un obiettivo concreto e costruisco
+            un programma che si adatta alla tua settimana — non il contrario. Ogni mese guardiamo
+            i numeri insieme e correggiamo la rotta.
+          </p>
+        </div>
         <ul class="checklist">
-          <li>Valutazione iniziale posturale, funzionale e alimentare</li>
-          <li>Programma di allenamento aggiornato ogni 4 settimane</li>
-          <li>Linee guida nutrizionali sostenibili, senza pesare tutto</li>
-          <li>Video-correzione della tecnica su ogni esercizio chiave</li>
-          <li>Contatto diretto con me, non con un assistente</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Valutazione iniziale posturale, funzionale e alimentare</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Programma di allenamento aggiornato ogni 4 settimane</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Linee guida nutrizionali sostenibili, senza pesare tutto</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Video-correzione della tecnica su ogni esercizio chiave</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Contatto diretto con me, non con un assistente</li>
         </ul>
-        <a href="#pricing" class="btn btn--primary">Vedi i percorsi</a>
+        <a href="#pricing" class="btn btn--primary">Vedi i percorsi<svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
 
       <div class="split__aside">
-        <div class="panel">
-          <h3 class="panel__title">Prima → Dopo il metodo</h3>
-          <div class="compare">
-            <div class="compare__col">
-              <span class="compare__tag compare__tag--before">Prima</span>
-              <ul>
-                <li>Alleno "a sensazione"</li>
-                <li>Risultati altalenanti</li>
-                <li>Dolori ricorrenti</li>
-                <li>Dieta on/off</li>
-              </ul>
-            </div>
-            <div class="compare__col">
-              <span class="compare__tag compare__tag--after">Dopo</span>
-              <ul>
-                <li>Programma progressivo</li>
-                <li>Progressi misurabili</li>
-                <li>Tecnica pulita</li>
-                <li>Abitudini stabili</li>
-              </ul>
-            </div>
+        <div class="compare">
+          <div class="compare__col compare__col--before">
+            <span class="compare__tag">Prima</span>
+            <ul>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg>Mi alleno "a sensazione"</li>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg>Risultati altalenanti</li>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg>Dolori ricorrenti</li>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg>Dieta on/off</li>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-minus"/></svg>Nessun dato da leggere</li>
+            </ul>
+          </div>
+          <div class="compare__col compare__col--after">
+            <span class="compare__tag">Dopo</span>
+            <ul>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Programma progressivo</li>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Progressi misurabili</li>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Tecnica pulita e sicura</li>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Abitudini stabili</li>
+              <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Report mensile chiaro</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -181,81 +254,130 @@
   </div>
 </section>
 
-<!-- ============ SERVIZI / FEATURES ============ -->
-<section class="section section--alt" id="servizi">
+<!-- =========================================================
+     6. SERVIZI / FEATURES (bento)
+     ========================================================= -->
+<section class="section" id="servizi" aria-labelledby="servizi-title">
   <div class="container">
-    <p class="eyebrow">Servizi</p>
-    <h2 class="section__title">Scegli come vuoi lavorare con me.</h2>
-    <p class="section__lead">Tre modalità, stesso metodo. Cambia solo il livello di presenza e di assistenza.</p>
+    <div class="section-head">
+      <p class="eyebrow">Servizi</p>
+      <h2 class="section-title" id="servizi-title">Tutto quello che serve, in un unico percorso.</h2>
+      <p class="section-lead">Stesso metodo, tre modalità di lavoro. Cambia solo quanto sono presente accanto a te.</p>
+    </div>
 
-    <div class="grid grid--3">
-      <article class="card card--feature">
+    <div class="bento">
+      <article class="card">
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-dumbbell"/></svg></span>
         <h3>Personal training 1:1</h3>
-        <p>Sedute individuali in studio o in palestra, con correzione tecnica in tempo reale e programmazione dedicata.</p>
-        <ul class="mini-list">
-          <li>Sedute da 60 minuti</li>
-          <li>Valutazione iniziale inclusa</li>
-          <li>Programma personalizzato</li>
-        </ul>
+        <p>Sedute individuali in studio o in palestra, con correzione tecnica in tempo reale e programmazione dedicata al tuo obiettivo.</p>
+        <div class="bento__media">FOTO / VIDEO SEDUTA — SLOT</div>
       </article>
-      <article class="card card--feature">
+
+      <article class="card">
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-phone-app"/></svg></span>
         <h3>Coaching online</h3>
-        <p>Il percorso completo a distanza: schede, video, check settimanali e supporto continuo dove ti trovi.</p>
-        <ul class="mini-list">
-          <li>App con scheda e video</li>
-          <li>Check settimanale</li>
-          <li>Chat diretta</li>
-        </ul>
+        <p>Il percorso completo a distanza: scheda in app, video di ogni esercizio, check settimanali e supporto continuo ovunque tu sia.</p>
+        <div class="bento__media">SCREENSHOT APP — SLOT</div>
       </article>
-      <article class="card card--feature">
-        <h3>Small group</h3>
-        <p>Allenamento in piccoli gruppi da 3 a 5 persone: stessa qualità tecnica, costo condiviso, più motivazione.</p>
-        <ul class="mini-list">
-          <li>Max 5 persone</li>
-          <li>2 sedute a settimana</li>
-          <li>Ideale per iniziare</li>
-        </ul>
+
+      <article class="card">
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-nutrition"/></svg></span>
+        <h3>Nutrizione applicata</h3>
+        <p>Linee guida alimentari costruite sulle tue abitudini, con la nutrizionista del team quando serve un piano clinico.</p>
+        <div class="bento__media">GRAFICO ABITUDINI — SLOT</div>
       </article>
-      <article class="card card--feature">
-        <h3>Ricomposizione corporea</h3>
-        <p>Percorso mirato per perdere grasso e costruire massa muscolare, con monitoraggio periodico dei parametri.</p>
-      </article>
-      <article class="card card--feature">
-        <h3>Preparazione atletica</h3>
-        <p>Forza, potenza e condizionamento specifici per il tuo sport, integrati con il calendario delle gare.</p>
-      </article>
-      <article class="card card--feature">
-        <h3>Rieducazione al movimento</h3>
-        <p>Mobilità, stabilità e ritorno al carico dopo stop o infortuni, in collaborazione con il tuo fisioterapista.</p>
+
+      <article class="card">
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-chart"/></svg></span>
+        <h3>Monitoraggio dei progressi</h3>
+        <p>Carichi, misure e composizione corporea registrati ogni mese: decisioni basate sui dati, non sulle sensazioni.</p>
+        <div class="bento__media">GRAFICO PROGRESSI — SLOT</div>
       </article>
     </div>
   </div>
 </section>
 
-<!-- ============ COME FUNZIONA ============ -->
-<section class="section" id="come-funziona">
+<!-- =========================================================
+     7. PROGRAMMI / DISCIPLINE
+     ========================================================= -->
+<section class="section section--alt section--line" id="programmi" aria-labelledby="programmi-title">
   <div class="container">
-    <p class="eyebrow">Come funziona</p>
-    <h2 class="section__title">Quattro passi, zero improvvisazione.</h2>
+    <div class="section-head">
+      <p class="eyebrow">Programmi</p>
+      <h2 class="section-title" id="programmi-title">Scegli il percorso in base al tuo obiettivo.</h2>
+      <p class="section-lead">Ogni programma ha struttura, durata e parametri di verifica propri.</p>
+    </div>
+
+    <div class="grid grid--3">
+      <article class="program">
+        <span class="program__tag">12 settimane</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-scale"/></svg></span>
+        <h3>Ricomposizione corporea</h3>
+        <p>Perdere grasso e costruire muscolo insieme, con monitoraggio periodico di peso, misure e plicometria.</p>
+      </article>
+      <article class="program">
+        <span class="program__tag">16 settimane</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-dumbbell"/></svg></span>
+        <h3>Forza e ipertrofia</h3>
+        <p>Progressione sui fondamentali, gestione del volume e tecnica curata esercizio per esercizio.</p>
+      </article>
+      <article class="program">
+        <span class="program__tag">8 settimane</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span>
+        <h3>Ricondizionamento</h3>
+        <p>Per chi riparte da zero o dopo anni di stop: costruiamo la base prima di alzare l'intensità.</p>
+      </article>
+      <article class="program">
+        <span class="program__tag">Su misura</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-shield"/></svg></span>
+        <h3>Rieducazione al movimento</h3>
+        <p>Mobilità, stabilità e ritorno graduale al carico dopo un infortunio, in accordo con il tuo fisioterapista.</p>
+      </article>
+      <article class="program">
+        <span class="program__tag">Stagionale</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-target"/></svg></span>
+        <h3>Preparazione atletica</h3>
+        <p>Forza, potenza e condizionamento specifici per il tuo sport, integrati con il calendario delle gare.</p>
+      </article>
+      <article class="program">
+        <span class="program__tag">Continuativo</span>
+        <span class="card__icon" aria-hidden="true"><svg class="icon"><use href="#i-users"/></svg></span>
+        <h3>Small group</h3>
+        <p>Gruppi da 3 a 5 persone: stessa qualità tecnica, costo condiviso e molta più motivazione.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     8. COME FUNZIONA
+     ========================================================= -->
+<section class="section" id="come-funziona" aria-labelledby="metodo-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Come funziona</p>
+      <h2 class="section-title" id="metodo-title">Quattro passi, zero improvvisazione.</h2>
+      <p class="section-lead">Dal primo contatto alla prima revisione passano in media dieci giorni.</p>
+    </div>
 
     <ol class="steps">
-      <li class="step">
-        <span class="step__num">1</span>
+      <li class="step step--active">
+        <span class="step__num" aria-hidden="true">1</span>
         <h3>Call conoscitiva</h3>
-        <p>30 minuti gratuiti per capire il tuo punto di partenza, gli obiettivi e il tempo reale che hai a disposizione.</p>
+        <p>30 minuti gratuiti per capire il tuo punto di partenza, l'obiettivo e il tempo reale che hai a disposizione.</p>
       </li>
       <li class="step">
-        <span class="step__num">2</span>
-        <h3>Valutazione</h3>
-        <p>Test di mobilità, forza e composizione corporea. Raccolgo i dati che serviranno a misurare ogni progresso.</p>
+        <span class="step__num" aria-hidden="true">2</span>
+        <h3>Valutazione iniziale</h3>
+        <p>Test di mobilità, forza e composizione corporea: raccolgo i dati che serviranno a misurare ogni progresso.</p>
       </li>
       <li class="step">
-        <span class="step__num">3</span>
+        <span class="step__num" aria-hidden="true">3</span>
         <h3>Programma su misura</h3>
         <p>Ricevi allenamento e linee guida alimentari, con video esplicativi e priorità chiare settimana per settimana.</p>
       </li>
       <li class="step">
-        <span class="step__num">4</span>
+        <span class="step__num" aria-hidden="true">4</span>
         <h3>Check e progressione</h3>
         <p>Ogni mese rivediamo numeri e sensazioni, aggiorniamo carichi e volumi e alziamo l'asticella.</p>
       </li>
@@ -263,33 +385,37 @@
   </div>
 </section>
 
-<!-- ============ RISULTATI / CASE STUDY ============ -->
-<section class="section section--dark" id="risultati">
+<!-- =========================================================
+     9. RISULTATI / CASE STUDY
+     ========================================================= -->
+<section class="section section--alt section--line" id="risultati" aria-labelledby="risultati-title">
   <div class="container">
-    <p class="eyebrow">Risultati</p>
-    <h2 class="section__title">Casi reali, numeri reali.</h2>
-    <p class="section__lead">Tre percorsi tra i tanti, raccontati dall'inizio alla fine.</p>
+    <div class="section-head">
+      <p class="eyebrow">Risultati</p>
+      <h2 class="section-title" id="risultati-title">Casi reali, numeri reali.</h2>
+      <p class="section-lead">Tre percorsi raccontati dall'inizio alla fine, con i dati di partenza e di arrivo.</p>
+    </div>
 
     <div class="grid grid--3">
       <article class="case">
-        <div class="case__media" data-media-slot>FOTO / SLOT</div>
+        <div class="case__media" data-media-slot>FOTO CASE STUDY — SLOT</div>
         <div class="case__body">
-          <h3>Marco, 34 anni — Ricomposizione</h3>
           <p class="case__meta">6 mesi · Coaching online</p>
+          <h3>Marco, 34 anni — Ricomposizione</h3>
           <p>Partiva da sedentarietà totale e mal di schiena ricorrente. Abbiamo costruito la base di forza prima di toccare il deficit calorico.</p>
           <div class="case__kpis">
             <div><strong>-11 kg</strong><span>massa grassa</span></div>
             <div><strong>+4 kg</strong><span>massa magra</span></div>
-            <div><strong>3x</strong><span>settimana</span></div>
+            <div><strong>3x</strong><span>a settimana</span></div>
           </div>
         </div>
       </article>
 
       <article class="case">
-        <div class="case__media" data-media-slot>FOTO / SLOT</div>
+        <div class="case__media" data-media-slot>FOTO CASE STUDY — SLOT</div>
         <div class="case__body">
-          <h3>Giulia, 28 anni — Forza</h3>
           <p class="case__meta">8 mesi · Personal training 1:1</p>
+          <h3>Giulia, 28 anni — Forza</h3>
           <p>Obiettivo: smettere di avere paura dei pesi. Percorso tecnico sui fondamentali e progressione graduale dei carichi.</p>
           <div class="case__kpis">
             <div><strong>+40 kg</strong><span>squat</span></div>
@@ -300,15 +426,15 @@
       </article>
 
       <article class="case">
-        <div class="case__media" data-media-slot>FOTO / SLOT</div>
+        <div class="case__media" data-media-slot>FOTO CASE STUDY — SLOT</div>
         <div class="case__body">
+          <p class="case__meta">5 mesi · Rieducazione</p>
           <h3>Luca, 41 anni — Ritorno al carico</h3>
-          <p class="case__meta">5 mesi · Rieducazione al movimento</p>
           <p>Dopo un'ernia discale è tornato ad allenarsi in sicurezza, lavorando prima su mobilità e controllo del core.</p>
           <div class="case__kpis">
             <div><strong>-90%</strong><span>episodi di dolore</span></div>
             <div><strong>+18 kg</strong><span>panca</span></div>
-            <div><strong>4x</strong><span>settimana</span></div>
+            <div><strong>4x</strong><span>a settimana</span></div>
           </div>
         </div>
       </article>
@@ -316,79 +442,165 @@
   </div>
 </section>
 
-<!-- ============ TESTIMONIANZE ============ -->
-<section class="section section--alt" id="testimonianze">
+<!-- =========================================================
+     10. TRASFORMAZIONI
+     ========================================================= -->
+<section class="section" id="trasformazioni" aria-labelledby="trasf-title">
   <div class="container">
-    <p class="eyebrow">Testimonianze</p>
-    <h2 class="section__title">Cosa dicono le persone che seguo.</h2>
+    <div class="section-head">
+      <p class="eyebrow">Trasformazioni</p>
+      <h2 class="section-title" id="trasf-title">Prima e dopo, senza ritocchi.</h2>
+      <p class="section-lead">Stessa luce, stessa posa, stesso orario. Le foto arrivano dai percorsi conclusi, pubblicate con consenso.</p>
+    </div>
 
-    <div class="grid grid--3">
-      <figure class="quote">
-        <blockquote>"Per la prima volta ho capito <em>perché</em> stavo facendo ogni esercizio. È cambiato tutto: la costanza è arrivata da sola."</blockquote>
-        <figcaption><span class="avatar" data-media-slot></span><span><strong>Sara M.</strong><small>Coaching online · 9 mesi</small></span></figcaption>
+    <div class="grid grid--4">
+      <figure class="transform">
+        <div class="transform__pair">
+          <div class="transform__img" data-media-slot>PRIMA</div>
+          <div class="transform__img" data-media-slot>DOPO</div>
+        </div>
+        <figcaption class="transform__caption"><strong>Andrea, 37</strong>5 mesi · -9 kg</figcaption>
       </figure>
-      <figure class="quote">
-        <blockquote>"Mi allenavo da anni senza risultati. In sei mesi ho ottenuto più di quanto avessi fatto nei precedenti cinque."</blockquote>
-        <figcaption><span class="avatar" data-media-slot></span><span><strong>Andrea T.</strong><small>Personal training 1:1 · 6 mesi</small></span></figcaption>
+      <figure class="transform">
+        <div class="transform__pair">
+          <div class="transform__img" data-media-slot>PRIMA</div>
+          <div class="transform__img" data-media-slot>DOPO</div>
+        </div>
+        <figcaption class="transform__caption"><strong>Sara, 31</strong>7 mesi · +5 kg massa magra</figcaption>
       </figure>
-      <figure class="quote">
-        <blockquote>"La cosa che apprezzo di più è la disponibilità: scrivo, ricevo risposta, e non mi sento mai lasciata sola."</blockquote>
-        <figcaption><span class="avatar" data-media-slot></span><span><strong>Elena R.</strong><small>Small group · 1 anno</small></span></figcaption>
+      <figure class="transform">
+        <div class="transform__pair">
+          <div class="transform__img" data-media-slot>PRIMA</div>
+          <div class="transform__img" data-media-slot>DOPO</div>
+        </div>
+        <figcaption class="transform__caption"><strong>Davide, 44</strong>9 mesi · -14 kg</figcaption>
       </figure>
-      <figure class="quote">
-        <blockquote>"Dopo l'infortunio pensavo di dover smettere. Oggi sollevo più di prima e senza dolore."</blockquote>
-        <figcaption><span class="avatar" data-media-slot></span><span><strong>Luca B.</strong><small>Rieducazione · 5 mesi</small></span></figcaption>
-      </figure>
-      <figure class="quote">
-        <blockquote>"Zero diete assurde. Piccoli cambiamenti sostenibili che, sommati, hanno fatto la differenza."</blockquote>
-        <figcaption><span class="avatar" data-media-slot></span><span><strong>Martina C.</strong><small>Coaching online · 4 mesi</small></span></figcaption>
-      </figure>
-      <figure class="quote">
-        <blockquote>"Programmazione seria e attenzione alla tecnica. Si vede subito che dietro c'è competenza vera."</blockquote>
-        <figcaption><span class="avatar" data-media-slot></span><span><strong>Davide P.</strong><small>Preparazione atletica · 7 mesi</small></span></figcaption>
+      <figure class="transform">
+        <div class="transform__pair">
+          <div class="transform__img" data-media-slot>PRIMA</div>
+          <div class="transform__img" data-media-slot>DOPO</div>
+        </div>
+        <figcaption class="transform__caption"><strong>Elena, 26</strong>6 mesi · postura e forza</figcaption>
       </figure>
     </div>
   </div>
 </section>
 
-<!-- ============ CHI SONO / TEAM ============ -->
-<section class="section" id="chi-sono">
+<!-- =========================================================
+     11. TESTIMONIANZE
+     ========================================================= -->
+<section class="section section--alt section--line" id="testimonianze" aria-labelledby="testi-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Testimonianze</p>
+      <h2 class="section-title" id="testi-title">Cosa dicono le persone che seguo.</h2>
+      <p class="section-lead">Recensioni raccolte al termine dei percorsi, pubblicate integralmente.</p>
+    </div>
+
+    <div class="grid grid--3">
+      <figure class="quote">
+        <div>
+          <div class="quote__stars" role="img" aria-label="Valutazione 5 stelle su 5">
+            <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
+          </div>
+          <blockquote>"Per la prima volta ho capito perché stavo facendo ogni esercizio. È cambiato tutto: la costanza è arrivata da sola."</blockquote>
+        </div>
+        <figcaption><span class="avatar" data-media-slot aria-hidden="true">FOTO</span><span><strong>Sara M.</strong><small>Coaching online · 9 mesi</small></span></figcaption>
+      </figure>
+
+      <figure class="quote">
+        <div>
+          <div class="quote__stars" role="img" aria-label="Valutazione 5 stelle su 5">
+            <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
+          </div>
+          <blockquote>"Mi allenavo da anni senza risultati. In sei mesi ho ottenuto più di quanto avessi fatto nei cinque precedenti."</blockquote>
+        </div>
+        <figcaption><span class="avatar" data-media-slot aria-hidden="true">FOTO</span><span><strong>Andrea T.</strong><small>Personal training 1:1 · 6 mesi</small></span></figcaption>
+      </figure>
+
+      <figure class="quote">
+        <div>
+          <div class="quote__stars" role="img" aria-label="Valutazione 5 stelle su 5">
+            <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
+          </div>
+          <blockquote>"La cosa che apprezzo di più è la disponibilità: scrivo, ricevo risposta, e non mi sento mai lasciata sola."</blockquote>
+        </div>
+        <figcaption><span class="avatar" data-media-slot aria-hidden="true">FOTO</span><span><strong>Elena R.</strong><small>Small group · 1 anno</small></span></figcaption>
+      </figure>
+
+      <figure class="quote">
+        <div>
+          <div class="quote__stars" role="img" aria-label="Valutazione 5 stelle su 5">
+            <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
+          </div>
+          <blockquote>"Dopo l'infortunio pensavo di dover smettere. Oggi sollevo più di prima e senza dolore."</blockquote>
+        </div>
+        <figcaption><span class="avatar" data-media-slot aria-hidden="true">FOTO</span><span><strong>Luca B.</strong><small>Rieducazione · 5 mesi</small></span></figcaption>
+      </figure>
+
+      <figure class="quote">
+        <div>
+          <div class="quote__stars" role="img" aria-label="Valutazione 5 stelle su 5">
+            <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
+          </div>
+          <blockquote>"Zero diete assurde. Piccoli cambiamenti sostenibili che, sommati, hanno fatto tutta la differenza."</blockquote>
+        </div>
+        <figcaption><span class="avatar" data-media-slot aria-hidden="true">FOTO</span><span><strong>Martina C.</strong><small>Coaching online · 4 mesi</small></span></figcaption>
+      </figure>
+
+      <figure class="quote">
+        <div>
+          <div class="quote__stars" role="img" aria-label="Valutazione 5 stelle su 5">
+            <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>
+          </div>
+          <blockquote>"Programmazione seria e attenzione maniacale alla tecnica. Si vede subito che dietro c'è competenza vera."</blockquote>
+        </div>
+        <figcaption><span class="avatar" data-media-slot aria-hidden="true">FOTO</span><span><strong>Davide P.</strong><small>Preparazione atletica · 7 mesi</small></span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     12. CHI SONO / TEAM
+     ========================================================= -->
+<section class="section" id="chi-sono" aria-labelledby="chisono-title">
   <div class="container">
     <div class="split split--reverse">
       <div class="split__aside">
-        <div class="portrait" data-media-slot>FOTO RITRATTO / SLOT</div>
+        <div class="portrait" data-media-slot>FOTO RITRATTO — SLOT</div>
       </div>
+
       <div class="split__text">
-        <p class="eyebrow">Chi sono</p>
-        <h2 class="section__title">Riky Falco, personal trainer.</h2>
-        <p class="section__lead">
-          Da otto anni aiuto persone comuni a costruire un rapporto stabile con l'allenamento.
-          Non sono interessato ai risultati lampo: mi interessa che tra cinque anni tu ti stia
-          ancora allenando, meglio di oggi.
-        </p>
+        <div class="section-head section-head--left">
+          <p class="eyebrow">Chi sono</p>
+          <h2 class="section-title" id="chisono-title">Riky Falco, personal trainer.</h2>
+          <p class="section-lead">
+            Da otto anni aiuto persone comuni a costruire un rapporto stabile con l'allenamento.
+            Non mi interessano i risultati lampo: mi interessa che fra cinque anni tu ti stia
+            ancora allenando, e meglio di oggi.
+          </p>
+        </div>
         <ul class="checklist">
-          <li>Laurea in Scienze Motorie</li>
-          <li>Certificazione Strength &amp; Conditioning</li>
-          <li>Specializzazione in rieducazione funzionale</li>
-          <li>Formazione continua in nutrizione applicata allo sport</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Laurea in Scienze Motorie</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Certificazione Strength &amp; Conditioning</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Specializzazione in rieducazione funzionale</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Formazione continua in nutrizione applicata allo sport</li>
         </ul>
 
-        <h3 class="subhead">Il team</h3>
+        <h3 style="font-size:20px;margin-bottom:16px">Il team</h3>
         <div class="team">
           <div class="team__member">
-            <span class="avatar avatar--lg" data-media-slot></span>
-            <strong>Nome Cognome</strong>
-            <small>Nutrizionista</small>
+            <span class="avatar avatar--lg" data-media-slot aria-hidden="true">FOTO</span>
+            <strong>Nome Cognome</strong><small>Nutrizionista</small>
           </div>
           <div class="team__member">
-            <span class="avatar avatar--lg" data-media-slot></span>
-            <strong>Nome Cognome</strong>
-            <small>Fisioterapista</small>
+            <span class="avatar avatar--lg" data-media-slot aria-hidden="true">FOTO</span>
+            <strong>Nome Cognome</strong><small>Fisioterapista</small>
           </div>
           <div class="team__member">
-            <span class="avatar avatar--lg" data-media-slot></span>
-            <strong>Nome Cognome</strong>
-            <small>Trainer small group</small>
+            <span class="avatar avatar--lg" data-media-slot aria-hidden="true">FOTO</span>
+            <strong>Nome Cognome</strong><small>Trainer small group</small>
           </div>
         </div>
       </div>
@@ -396,179 +608,400 @@
   </div>
 </section>
 
-<!-- ============ PRICING / OFFERTA ============ -->
-<section class="section section--alt" id="pricing">
+<!-- =========================================================
+     13. CERTIFICAZIONI E GARANZIE
+     ========================================================= -->
+<section class="section section--alt section--line" id="certificazioni" aria-labelledby="cert-title">
   <div class="container">
-    <p class="eyebrow">Percorsi</p>
-    <h2 class="section__title">Scegli il livello di supporto.</h2>
-    <p class="section__lead">Tutti i percorsi includono valutazione iniziale e programma personalizzato. Nessun vincolo di rinnovo automatico.</p>
+    <div class="section-head">
+      <p class="eyebrow">Garanzie</p>
+      <h2 class="section-title" id="cert-title">Competenze verificabili, impegni chiari.</h2>
+    </div>
 
-    <div class="grid grid--3 pricing">
+    <div class="grid grid--4">
+      <div class="cert"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg><span><strong>Scienze Motorie</strong><small>Laurea magistrale</small></span></div>
+      <div class="cert"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg><span><strong>Assicurazione RC</strong><small>Copertura professionale</small></span></div>
+      <div class="cert"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><span><strong>BLSD</strong><small>Certificazione in corso di validità</small></span></div>
+      <div class="cert"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span><strong>Nessun vincolo</strong><small>Disdici quando vuoi</small></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     14. DOVE ALLENO / ORARI
+     ========================================================= -->
+<section class="section" id="dove" aria-labelledby="dove-title">
+  <div class="container">
+    <div class="split">
+      <div class="split__text">
+        <div class="section-head section-head--left">
+          <p class="eyebrow">Dove alleno</p>
+          <h2 class="section-title" id="dove-title">Studio attrezzato, orari flessibili.</h2>
+          <p class="section-lead">
+            Sedute in presenza nello studio di Via Esempio 00, oppure nella tua palestra
+            se preferisci. Online, ovunque tu sia.
+          </p>
+        </div>
+
+        <table class="schedule">
+          <caption>Disponibilità settimanale per le sedute in presenza</caption>
+          <thead>
+            <tr><th scope="col">Giorno</th><th scope="col">Orari</th><th scope="col">Disponibilità</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Lunedì – Giovedì</th><td>07:00 – 21:00</td><td>Ampia</td></tr>
+            <tr><th scope="row">Venerdì</th><td>07:00 – 18:00</td><td>Media</td></tr>
+            <tr><th scope="row">Sabato</th><td>08:00 – 13:00</td><td>Limitata</td></tr>
+            <tr><th scope="row">Domenica</th><td>Chiuso</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="split__aside">
+        <div class="map-slot" data-media-slot>MAPPA / FOTO STUDIO — SLOT</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     15. APP / AREA RISERVATA
+     ========================================================= -->
+<section class="section section--alt section--line" id="app" aria-labelledby="app-title">
+  <div class="container">
+    <div class="split">
+      <div class="split__aside">
+        <div class="app-slot" data-media-slot>MOCKUP APP — SLOT</div>
+      </div>
+      <div class="split__text">
+        <div class="section-head section-head--left">
+          <p class="eyebrow">Area riservata</p>
+          <h2 class="section-title" id="app-title">La tua scheda sempre in tasca.</h2>
+          <p class="section-lead">
+            Ogni percorso include l'accesso all'app: allenamento del giorno, video di ogni esercizio,
+            registro dei carichi, misure e chat diretta con me.
+          </p>
+        </div>
+        <ul class="checklist">
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-video"/></svg>Video tutorial per ogni esercizio</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-chart"/></svg>Storico di carichi, serie e ripetizioni</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-chat"/></svg>Chat diretta e invio video per la correzione tecnica</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"/></svg>Promemoria delle sedute e dei check mensili</li>
+        </ul>
+        <div class="store-badges">
+          <a href="#" class="store-badge"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-download"/></svg>App Store</a>
+          <a href="#" class="store-badge"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-download"/></svg>Google Play</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     16. PRICING
+     ========================================================= -->
+<section class="section" id="pricing" aria-labelledby="pricing-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Percorsi e prezzi</p>
+      <h2 class="section-title" id="pricing-title">Scegli il livello di supporto.</h2>
+      <p class="section-lead">Tutti i percorsi includono valutazione iniziale, programma personalizzato e accesso all'app. Nessun rinnovo automatico.</p>
+    </div>
+
+    <div style="display:flex;justify-content:center">
+      <div class="billing-toggle" role="group" aria-label="Periodo di fatturazione">
+        <button type="button" id="billMonthly" aria-pressed="true">Mensile</button>
+        <button type="button" id="billQuarterly" aria-pressed="false">Trimestrale <small>−15%</small></button>
+      </div>
+    </div>
+
+    <div class="grid grid--3">
       <article class="plan">
         <h3 class="plan__name">Start</h3>
-        <p class="plan__price"><strong>€ 89</strong><span>/ mese</span></p>
-        <p class="plan__desc">Per chi vuole iniziare con un programma serio e autonomia di gestione.</p>
+        <p class="plan__desc">Per chi vuole iniziare con un programma serio, gestendosi in autonomia.</p>
+        <p class="plan__price"><strong data-price-monthly="€ 89" data-price-quarterly="€ 76">€ 89</strong><span>/ mese</span></p>
         <ul class="mini-list">
-          <li>Scheda aggiornata ogni 6 settimane</li>
-          <li>Video tecnici degli esercizi</li>
-          <li>Check mensile via messaggio</li>
-          <li>Linee guida alimentari generali</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Scheda aggiornata ogni 6 settimane</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Video tecnici degli esercizi</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Check mensile via messaggio</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Linee guida alimentari generali</li>
         </ul>
-        <a href="#cta-finale" class="btn btn--ghost btn--block">Scegli Start</a>
+        <a href="#contatti" class="btn btn--ghost btn--block">Scegli Start</a>
       </article>
 
       <article class="plan plan--featured">
         <span class="plan__badge">Il più scelto</span>
         <h3 class="plan__name">Coaching</h3>
-        <p class="plan__price"><strong>€ 159</strong><span>/ mese</span></p>
         <p class="plan__desc">Il percorso completo online, con assistenza continua e revisione costante.</p>
+        <p class="plan__price"><strong data-price-monthly="€ 159" data-price-quarterly="€ 135">€ 159</strong><span>/ mese</span></p>
         <ul class="mini-list">
-          <li>Scheda aggiornata ogni 4 settimane</li>
-          <li>Video-correzione della tecnica</li>
-          <li>Check settimanale</li>
-          <li>Piano nutrizionale personalizzato</li>
-          <li>Chat diretta con me</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Scheda aggiornata ogni 4 settimane</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Video-correzione della tecnica</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Check settimanale</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Piano nutrizionale personalizzato</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Chat diretta con me</li>
         </ul>
-        <a href="#cta-finale" class="btn btn--primary btn--block">Scegli Coaching</a>
+        <a href="#contatti" class="btn btn--primary btn--block">Scegli Coaching</a>
       </article>
 
       <article class="plan">
         <h3 class="plan__name">1:1 Premium</h3>
-        <p class="plan__price"><strong>€ 320</strong><span>/ mese</span></p>
         <p class="plan__desc">Sedute individuali in presenza più tutto il supporto del percorso Coaching.</p>
+        <p class="plan__price"><strong data-price-monthly="€ 320" data-price-quarterly="€ 272">€ 320</strong><span>/ mese</span></p>
         <ul class="mini-list">
-          <li>8 sedute individuali al mese</li>
-          <li>Programmazione dedicata</li>
-          <li>Valutazioni periodiche complete</li>
-          <li>Coordinamento con nutrizionista</li>
-          <li>Priorità di risposta</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>8 sedute individuali al mese</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Programmazione dedicata</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Valutazioni periodiche complete</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Coordinamento con la nutrizionista</li>
+          <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Priorità di risposta</li>
         </ul>
-        <a href="#cta-finale" class="btn btn--ghost btn--block">Scegli Premium</a>
+        <a href="#contatti" class="btn btn--ghost btn--block">Scegli Premium</a>
       </article>
     </div>
 
-    <p class="pricing__note">Possibilità di pagamento trimestrale con sconto. Prima call sempre gratuita e senza impegno.</p>
+    <p class="pricing-note">Prima call sempre gratuita e senza impegno. Pagamento trimestrale scontato del 15%.</p>
   </div>
 </section>
 
-<!-- ============ FAQ ============ -->
-<section class="section" id="faq">
+<!-- =========================================================
+     17. LEAD MAGNET
+     ========================================================= -->
+<section class="section section--alt section--line" id="guida" aria-labelledby="guida-title">
+  <div class="container">
+    <div class="lead">
+      <div>
+        <p class="eyebrow">Risorsa gratuita</p>
+        <h2 id="guida-title">La guida ai primi 30 giorni di allenamento.</h2>
+        <p>Struttura settimanale, esercizi base, errori da evitare e la lista della spesa. PDF di 18 pagine, gratuito.</p>
+      </div>
+      <form class="inline-form" id="leadForm" novalidate>
+        <label class="sr-only" for="leadEmail">La tua email</label>
+        <input type="email" id="leadEmail" name="email" placeholder="La tua email" autocomplete="email" required>
+        <button type="submit" class="btn btn--primary">Scarica la guida</button>
+        <p class="form__status" id="leadStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     18. BLOG / RISORSE
+     ========================================================= -->
+<section class="section" id="blog" aria-labelledby="blog-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Risorse</p>
+      <h2 class="section-title" id="blog-title">Dal blog.</h2>
+      <p class="section-lead">Articoli pratici su allenamento, nutrizione e recupero. Nessuna scorciatoia, solo cose che funzionano.</p>
+    </div>
+
+    <div class="grid grid--3">
+      <article class="post">
+        <div class="post__media" data-media-slot>COPERTINA — SLOT</div>
+        <div class="post__body">
+          <p class="post__meta">Allenamento · 6 min di lettura</p>
+          <h3>Quante volte allenarsi davvero a settimana</h3>
+          <p>Frequenza, volume e recupero: come scegliere la struttura giusta per il tempo che hai.</p>
+          <a class="post__link" href="#">Leggi l'articolo<svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+      </article>
+      <article class="post">
+        <div class="post__media" data-media-slot>COPERTINA — SLOT</div>
+        <div class="post__body">
+          <p class="post__meta">Nutrizione · 8 min di lettura</p>
+          <h3>Proteine: quante ne servono per davvero</h3>
+          <p>Cosa dice la ricerca, come distribuirle nella giornata e perché non servono integratori costosi.</p>
+          <a class="post__link" href="#">Leggi l'articolo<svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+      </article>
+      <article class="post">
+        <div class="post__media" data-media-slot>COPERTINA — SLOT</div>
+        <div class="post__body">
+          <p class="post__meta">Recupero · 5 min di lettura</p>
+          <h3>Il sonno è parte dell'allenamento</h3>
+          <p>Perché dormire male azzera metà dei tuoi progressi, e tre abitudini per rimettere a posto le notti.</p>
+          <a class="post__link" href="#">Leggi l'articolo<svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     19. FAQ
+     ========================================================= -->
+<section class="section section--alt section--line" id="faq" aria-labelledby="faq-title">
   <div class="container container--narrow">
-    <p class="eyebrow">FAQ</p>
-    <h2 class="section__title">Domande frequenti.</h2>
+    <div class="section-head">
+      <p class="eyebrow">FAQ</p>
+      <h2 class="section-title" id="faq-title">Domande frequenti.</h2>
+    </div>
 
     <div class="faq">
-      <details class="faq__item">
+      <details class="faq__item" name="faq">
         <summary>Devo essere già allenato per iniziare?</summary>
         <p>No. La maggior parte delle persone che seguo parte da zero o dopo anni di stop. Il programma parte dal tuo livello reale, non da quello ideale.</p>
       </details>
-      <details class="faq__item">
+      <details class="faq__item" name="faq">
         <summary>Serve una palestra attrezzata?</summary>
-        <p>No. Costruisco il programma sull'attrezzatura che hai davvero a disposizione: palestra, home gym o anche solo corpo libero e qualche elastico.</p>
+        <p>No. Costruisco il programma sull'attrezzatura che hai davvero: palestra, home gym, oppure corpo libero e qualche elastico.</p>
       </details>
-      <details class="faq__item">
+      <details class="faq__item" name="faq">
         <summary>Quanto tempo devo dedicare ogni settimana?</summary>
-        <p>Si parte da tre sedute da 45-60 minuti. Se hai meno tempo, adattiamo volume e frequenza: meglio due sedute costanti che cinque saltate.</p>
+        <p>Si parte da tre sedute da 45-60 minuti. Se hai meno tempo adattiamo volume e frequenza: meglio due sedute costanti che cinque saltate.</p>
       </details>
-      <details class="faq__item">
+      <details class="faq__item" name="faq">
         <summary>Il piano alimentare è incluso?</summary>
         <p>Nei percorsi Coaching e Premium ricevi linee guida nutrizionali personalizzate. Per esigenze cliniche specifiche lavoro insieme alla nutrizionista del team.</p>
       </details>
-      <details class="faq__item">
+      <details class="faq__item" name="faq">
         <summary>In quanto tempo vedrò i primi risultati?</summary>
-        <p>Forza e qualità del movimento migliorano già nelle prime 4 settimane. I cambiamenti visibili di composizione corporea arrivano generalmente tra il secondo e il terzo mese.</p>
+        <p>Forza e qualità del movimento migliorano già nelle prime 4 settimane. I cambiamenti visibili di composizione corporea arrivano di norma tra il secondo e il terzo mese.</p>
       </details>
-      <details class="faq__item">
+      <details class="faq__item" name="faq">
         <summary>Posso disdire quando voglio?</summary>
         <p>Sì. Non ci sono rinnovi automatici né penali: il percorso continua solo finché ha senso per te.</p>
       </details>
-      <details class="faq__item">
+      <details class="faq__item" name="faq">
         <summary>Ho avuto un infortunio, posso allenarmi?</summary>
         <p>Nella maggior parte dei casi sì, con le dovute cautele. Dopo la valutazione decido se procedere direttamente o coordinarmi prima con il tuo fisioterapista.</p>
+      </details>
+      <details class="faq__item" name="faq">
+        <summary>Come funzionano i pagamenti?</summary>
+        <p>Bonifico o carta, con fattura elettronica. Il pagamento trimestrale anticipato ha uno sconto del 15%.</p>
       </details>
     </div>
   </div>
 </section>
 
-<!-- ============ CTA FINALE ============ -->
-<section class="cta-final" id="cta-finale">
+<!-- =========================================================
+     20. CTA FINALE / CONTATTI
+     ========================================================= -->
+<section class="cta" id="contatti" aria-labelledby="cta-title">
   <div class="container container--narrow">
-    <h2 class="cta-final__title">Il momento giusto non arriva. Si sceglie.</h2>
-    <p class="cta-final__sub">
+    <p class="eyebrow">Iniziamo</p>
+    <h2 class="cta__title" id="cta-title">Il momento giusto non arriva. Si sceglie.</h2>
+    <p class="cta__sub">
       Prenota una call conoscitiva gratuita di 30 minuti: capiamo insieme da dove partire
       e se il mio metodo è adatto a te. Nessun obbligo, nessuna vendita forzata.
     </p>
 
-    <form class="cta-form" id="ctaForm" novalidate>
-      <div class="cta-form__row">
-        <label class="field">
-          <span>Nome</span>
-          <input type="text" name="nome" placeholder="Il tuo nome" required>
-        </label>
-        <label class="field">
-          <span>Email</span>
-          <input type="email" name="email" placeholder="nome@email.it" required>
-        </label>
+    <form class="form" id="ctaForm" novalidate>
+      <div class="form__row">
+        <div class="field" id="fieldNome">
+          <label for="nome">Nome e cognome</label>
+          <input type="text" id="nome" name="nome" autocomplete="name" placeholder="Mario Rossi" required aria-describedby="errNome">
+          <span class="field__error" id="errNome"></span>
+        </div>
+        <div class="field" id="fieldEmail">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="mario@email.it" required aria-describedby="errEmail">
+          <span class="field__error" id="errEmail"></span>
+        </div>
       </div>
-      <label class="field">
-        <span>Obiettivo principale</span>
-        <select name="obiettivo">
-          <option>Perdere grasso</option>
-          <option>Aumentare massa muscolare</option>
-          <option>Migliorare forza e performance</option>
-          <option>Tornare ad allenarmi dopo uno stop</option>
-          <option>Altro</option>
-        </select>
+
+      <div class="form__row">
+        <div class="field">
+          <label for="telefono">Telefono <span style="color:var(--text-dim)">(facoltativo)</span></label>
+          <input type="tel" id="telefono" name="telefono" autocomplete="tel" placeholder="+39 000 000 0000">
+        </div>
+        <div class="field">
+          <label for="obiettivo">Obiettivo principale</label>
+          <select id="obiettivo" name="obiettivo">
+            <option>Perdere grasso</option>
+            <option>Aumentare massa muscolare</option>
+            <option>Migliorare forza e performance</option>
+            <option>Tornare ad allenarmi dopo uno stop</option>
+            <option>Rieducazione dopo un infortunio</option>
+            <option>Altro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="messaggio">Raccontami in breve la tua situazione</label>
+        <textarea id="messaggio" name="messaggio" rows="4" placeholder="Da quanto ti alleni, quanto tempo hai a settimana, eventuali infortuni..."></textarea>
+      </div>
+
+      <label class="consent" for="privacy">
+        <input type="checkbox" id="privacy" name="privacy" required>
+        <span>Ho letto l'<a href="#" style="color:var(--accent)">informativa privacy</a> e acconsento al trattamento dei miei dati per essere ricontattato.</span>
       </label>
-      <label class="field">
-        <span>Raccontami in breve la tua situazione</span>
-        <textarea name="messaggio" rows="4" placeholder="Da quanto ti alleni, che tempo hai, eventuali infortuni..."></textarea>
-      </label>
-      <button type="submit" class="btn btn--primary btn--block">Prenota la call gratuita</button>
-      <p class="cta-form__note">Rispondo personalmente entro 24 ore lavorative.</p>
-      <p class="cta-form__feedback" id="formFeedback" role="status"></p>
+
+      <button type="submit" class="btn btn--primary btn--block" id="ctaSubmit">Prenota la call gratuita</button>
+      <p class="form__note">Rispondo personalmente entro 24 ore lavorative.</p>
+      <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
     </form>
   </div>
 </section>
 
 </main>
 
-<!-- ============ FOOTER ============ -->
+<!-- =========================================================
+     21. NEWSLETTER + 22. FOOTER
+     ========================================================= -->
 <footer class="footer">
-  <div class="container footer__inner">
-    <div class="footer__brand">
-      <a href="#hero" class="logo">RIKY<span>FALCO</span></a>
-      <p>Personal training, preparazione atletica e rieducazione al movimento. Online e in presenza.</p>
+  <div class="container">
+
+    <div class="newsletter">
+      <div>
+        <h3>Un'email al mese, zero spam.</h3>
+        <p>Un consiglio pratico su allenamento o alimentazione, e i posti liberi del mese.</p>
+      </div>
+      <form class="inline-form" id="newsForm" novalidate>
+        <label class="sr-only" for="newsEmail">La tua email per la newsletter</label>
+        <input type="email" id="newsEmail" name="email" placeholder="nome@email.it" autocomplete="email" required>
+        <button type="submit" class="btn btn--primary">Iscriviti</button>
+        <p class="form__status" id="newsStatus" role="status" aria-live="polite"></p>
+      </form>
     </div>
 
-    <div class="footer__col">
-      <h4>Sito</h4>
-      <a href="#servizi">Servizi</a>
-      <a href="#come-funziona">Come funziona</a>
-      <a href="#risultati">Risultati</a>
-      <a href="#pricing">Prezzi</a>
-      <a href="#faq">FAQ</a>
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <a href="#hero" class="logo" aria-label="Riky Falco, torna su">
+          <span class="logo__mark" aria-hidden="true"><svg class="icon"><use href="#i-bolt"/></svg></span>
+          RIKY<span>FALCO</span>
+        </a>
+        <p>Personal training, preparazione atletica e rieducazione al movimento. Online e in presenza.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg class="icon" aria-hidden="true"><use href="#i-ig"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg class="icon" aria-hidden="true"><use href="#i-tt"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg class="icon" aria-hidden="true"><use href="#i-yt"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg class="icon" aria-hidden="true"><use href="#i-in"/></svg></a>
+        </div>
+      </div>
+
+      <nav class="footer__col" aria-label="Sezioni del sito">
+        <h4>Sito</h4>
+        <a href="#servizi">Servizi</a>
+        <a href="#programmi">Programmi</a>
+        <a href="#come-funziona">Metodo</a>
+        <a href="#risultati">Risultati</a>
+        <a href="#pricing">Prezzi</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="footer__col">
+        <h4>Contatti</h4>
+        <a href="mailto:info@rikyfalco.it"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-mail"/></svg>info@rikyfalco.it</a>
+        <a href="tel:+390000000000"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-phone"/></svg>+39 000 000 0000</a>
+        <span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-pin"/></svg>Via Esempio 00, Città</span>
+        <span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-clock"/></svg>Lun–Sab, 07:00–21:00</span>
+      </div>
+
+      <div class="footer__col">
+        <h4>Risorse</h4>
+        <a href="#guida">Guida gratuita</a>
+        <a href="#blog">Blog</a>
+        <a href="#app">Area riservata</a>
+        <a href="#dove">Dove alleno</a>
+      </div>
     </div>
 
-    <div class="footer__col">
-      <h4>Contatti</h4>
-      <a href="mailto:info@rikyfalco.it">info@rikyfalco.it</a>
-      <a href="tel:+390000000000">+39 000 000 0000</a>
-      <span>Via Esempio 00, Città</span>
+    <div class="footer__bottom">
+      <span>© <span id="year">2026</span> Riky Falco — P.IVA 00000000000. Tutti i diritti riservati.</span>
+      <span><a href="#">Privacy</a> · <a href="#">Cookie</a> · <a href="#">Termini</a></span>
     </div>
-
-    <div class="footer__col">
-      <h4>Social</h4>
-      <a href="#">Instagram</a>
-      <a href="#">TikTok</a>
-      <a href="#">YouTube</a>
-      <a href="#">LinkedIn</a>
-    </div>
-  </div>
-
-  <div class="container footer__bottom">
-    <small>© <span id="year">2026</span> Riky Falco — P.IVA 00000000000. Tutti i diritti riservati.</small>
-    <small><a href="#">Privacy</a> · <a href="#">Cookie</a> · <a href="#">Termini</a></small>
   </div>
 </footer>
 
