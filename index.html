@@ -95,10 +95,23 @@
 <section class="hero" id="hero" aria-labelledby="hero-title">
 
   <!-- SLOT 3D: sostituire il contenuto con canvas / iframe / video -->
+  <!--
+    SLOT MEDIA HERO — animazione a scorrimento (video scrubbing)
+    Metti il tuo file in assets/video/hero.mp4 e togli il commento al <video>.
+    Il video non va in autoplay: e' lo scroll a muovere currentTime.
+    Encoding consigliato: H.264, keyframe ogni 1-2 frame (-g 1), 6-10 s, <8 MB.
+  -->
   <div class="hero__stage" id="hero3d" data-3d-slot>
+    <!--
+    <video id="heroVideo" class="hero__video" muted playsinline preload="auto"
+           disablepictureinpicture poster="assets/video/hero-poster.jpg">
+      <source src="assets/video/hero.mp4" type="video/mp4">
+      <source src="assets/video/hero.webm" type="video/webm">
+    </video>
+    -->
     <div class="hero__slot">
-      <strong>Slot animazione 3D</strong>
-      <small>canvas · iframe · video — scroll-driven, progress 0 → 1</small>
+      <strong>Slot animazione a scorrimento</strong>
+      <small>video scrubbing · sequenza immagini · canvas 3D — progress 0 &rarr; 1</small>
     </div>
   </div>
 
@@ -119,6 +132,8 @@
       <li><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg>Assistenza continua</li>
     </ul>
   </div>
+
+  <div class="hero__progress" aria-hidden="true"><i></i></div>
 </section>
 
 <!-- =========================================================

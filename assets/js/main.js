@@ -9,6 +9,9 @@
   var $ = function (sel, ctx) { return (ctx || document).querySelector(sel); };
   var $$ = function (sel, ctx) { return Array.prototype.slice.call((ctx || document).querySelectorAll(sel)); };
 
+  var reduceMotion = window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   /* ---------------------------------------------------------
      Header: stato "scrolled"
      --------------------------------------------------------- */
@@ -69,10 +72,52 @@
     if (Math.abs(p - lastProgress) < 0.001) return;
     lastProgress = p;
     hero.style.setProperty('--hero-progress', p.toFixed(4));
+    scrubTo(p);
     stage.dispatchEvent(new CustomEvent('hero3d:progress', {
       detail: { progress: p },
       bubbles: true
     }));
+  }
+
+  /* ---------------------------------------------------------
+     HERO — video a scorrimento (scrubbing)
+     Il video non va mai in play: lo scroll imposta currentTime.
+     L'aggiornamento avviene dentro il rAF gia' esistente, con
+     interpolazione dolce per evitare scatti sui frame pesanti.
+     --------------------------------------------------------- */
+  var video = $('#heroVideo');
+  var videoReady = false;
+  var targetTime = 0;
+  var currentTime = 0;
+  var scrubbing = false;
+
+  if (video) {
+    video.pause();
+    video.addEventListener('loadedmetadata', function () {
+      videoReady = isFinite(video.duration) && video.duration > 0;
+    });
+  }
+
+  function scrubFrame() {
+    if (!videoReady) { scrubbing = false; return; }
+    currentTime += (targetTime - currentTime) * 0.12;   // easing
+    if (Math.abs(targetTime - currentTime) < 0.005) {
+      currentTime = targetTime;
+      scrubbing = false;
+    }
+    try { video.currentTime = currentTime; } catch (err) { scrubbing = false; return; }
+    if (scrubbing) window.requestAnimationFrame(scrubFrame);
+  }
+
+  function scrubTo(progress) {
+    if (!videoReady) return;
+    targetTime = progress * video.duration;
+    if (reduceMotion) {                                  // niente easing
+      currentTime = targetTime;
+      try { video.currentTime = currentTime; } catch (err) {}
+      return;
+    }
+    if (!scrubbing) { scrubbing = true; window.requestAnimationFrame(scrubFrame); }
   }
 
   /* ---------------------------------------------------------
