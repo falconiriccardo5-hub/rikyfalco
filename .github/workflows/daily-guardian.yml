@@ -1,0 +1,92 @@
+name: Daily guardian
+
+on:
+  schedule:
+    # 05:40 UTC — after the Vercel cron at 06:00 Europe/Rome, before the morning report.
+    - cron: "40 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  health:
+    name: health check
+    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.probe.outputs.status }}
+    steps:
+      - name: probe /api/health
+        id: probe
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          set -uo pipefail
+          if [ -z "${APP_URL:-}" ]; then
+            echo "::error::La variabile di repository APP_URL non è impostata (es. https://rf-coaching.vercel.app)."
+            exit 1
+          fi
+          code=$(curl -sS -o health.json -w '%{http_code}' --max-time 30 "$APP_URL/api/health" || echo 000)
+          echo "HTTP $code"
+          cat health.json || true
+          echo "status=$code" >> "$GITHUB_OUTPUT"
+          test "$code" = "200"
+      - name: upload health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report
+          path: health.json
+          if-no-files-found: ignore
+
+  build:
+    name: build still green
+    uses: ./.github/workflows/ci.yml
+
+  offsite-backup:
+    name: off-site snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - name: fetch snapshot
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -uo pipefail
+          if [ -z "${APP_URL:-}" ] || [ -z "${CRON_SECRET:-}" ]; then
+            echo "::warning::APP_URL o CRON_SECRET non configurati: backup off-site saltato."
+            exit 0
+          fi
+          code=$(curl -sS -o snapshot.json -w '%{http_code}' --max-time 90 \
+            -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/backup/snapshot" || echo 000)
+          if [ "$code" != "200" ]; then
+            echo "::error::Lo snapshot ha risposto $code"
+            exit 1
+          fi
+          python3 -c "import json,sys; json.load(open('snapshot.json'))" || { echo "::error::snapshot non valido"; exit 1; }
+          echo "snapshot ok ($(wc -c < snapshot.json) byte)"
+      - name: commit to backups branch
+        if: hashFiles('snapshot.json') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          day=$(date -u +%Y-%m-%d)
+          git clone --depth 1 --branch backups \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" archive 2>/dev/null || {
+              mkdir archive && cd archive && git init -q && git checkout -qb backups
+              git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+              cd ..
+            }
+          mkdir -p "archive/snapshots"
+          gzip -9 -c snapshot.json > "archive/snapshots/${day}.json.gz"
+          cd archive
+          # Keep a rolling year of daily snapshots.
+          ls -1 snapshots/*.json.gz | sort | head -n -365 | xargs -r rm --
+          git config user.name "rf-coaching guardian"
+          git config user.email "noreply@anthropic.com"
+          git add -A
+          git diff --cached --quiet && { echo "nessuna modifica"; exit 0; }
+          git commit -q -m "Snapshot off-site ${day}"
+          git push -u origin backups
