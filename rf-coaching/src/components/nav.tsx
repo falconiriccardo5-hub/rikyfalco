@@ -12,15 +12,15 @@ const MAIN = [
   { href: "/payments", label: "Pagamenti", icon: CreditCard },
   { href: "/calendar", label: "Calendario", icon: CalendarDays },
   { href: "/notifications", label: "Notifiche", icon: Bell },
+  { href: "/messages", label: "Messaggi", icon: MessageSquare },
+  { href: "/reports", label: "Report", icon: BarChart3 },
 ];
 const ADMIN = [
-  { href: "/messages", label: "Messaggi da inviare", icon: MessageSquare },
-  { href: "/reports", label: "Report mensile", icon: BarChart3 },
   { href: "/activity", label: "Attività", icon: Activity },
   { href: "/backup", label: "Backup", icon: HardDriveDownload },
   { href: "/settings", label: "Impostazioni", icon: Settings },
 ];
-export function Sidebar({ unread, name, signOut }: { unread: number; name: string; signOut: () => Promise<void> }) {
+export function Sidebar({ unread, name, signOut, clients }: { unread: number; name: string; signOut: () => Promise<void>; clients: PaletteClient[] }) {
   const path = usePathname();
   const item = (it: (typeof MAIN)[number]) => {
     const active = path.startsWith(it.href);
@@ -46,9 +46,10 @@ export function Sidebar({ unread, name, signOut }: { unread: number; name: strin
           <span className="label block !text-[10px] !tracking-[.3em] text-accent-2">Coaching</span>
         </span>
       </Link>
-      <Link href="/clients/new" className="press mb-6 flex h-10 items-center justify-center gap-2 rounded-full bg-fg text-sm font-medium text-bg transition hover:shadow-[0_0_30px_-4px_rgba(167,139,250,.8)]">
+      <Link href="/clients/new" className="press mb-3 flex h-10 items-center justify-center gap-2 rounded-full bg-fg text-sm font-medium text-bg transition hover:shadow-[0_0_30px_-4px_rgba(167,139,250,.8)]">
         <Plus size={16} /> Nuovo cliente
       </Link>
+      <div className="mb-6"><CommandPalette clients={clients} variant="box" /></div>
       <nav className="space-y-1">{MAIN.map(item)}</nav>
       <p className="label mt-8 mb-2 px-3 text-dim">Admin</p>
       <nav className="space-y-1">{ADMIN.map(item)}</nav>

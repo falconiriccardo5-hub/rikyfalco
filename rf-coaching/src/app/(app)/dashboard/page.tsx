@@ -51,15 +51,21 @@ export default async function Dashboard() {
   return (
     <div className="space-y-10">
       <section className="rise relative overflow-hidden rounded-[28px] border hairline px-6 py-7 sm:px-8">
-        <PurplePlanet className="absolute -top-10 -right-24 size-[320px] sm:-right-16 sm:size-[380px]" />
-        <div className="relative max-w-[62%] sm:max-w-none">
+        {/* il pianeta imposta position:relative al suo interno: va avvolto per poterlo appoggiare sopra la card */}
+        <div className="pointer-events-none absolute -top-14 -right-20 size-[340px] sm:-top-24 sm:-right-10 sm:size-[520px]">
+          <PurplePlanet className="size-full" />
+        </div>
+        <div className="relative max-w-[66%] sm:max-w-[72%]">
           <p className="label mb-3">
             {new Date().toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Rome" })}
           </p>
-          <h1 className="text-[38px] leading-[1.05] font-medium tracking-[-0.04em] sm:text-[46px]">
-            {greet},<br />{first}.
-          </h1>
-          <div className="mt-6 flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <h1 className="text-[38px] leading-[1.05] font-medium tracking-[-0.04em] sm:text-[46px]">
+              {greet}, {first}.
+            </h1>
+            <RiccardoMage />
+          </div>
+          <div className="mt-7 flex flex-wrap gap-2.5">
             {chips.map((c) => (
               <Link key={c.label} href={c.href} className="press rounded-full border border-line bg-white/[.05] px-4 py-2.5 text-[15px] backdrop-blur-md transition hover:border-line-strong">
                 {c.label}
@@ -67,7 +73,6 @@ export default async function Dashboard() {
             ))}
           </div>
         </div>
-        <RiccardoMage className="absolute top-5 right-[36%] sm:right-[44%]" />
       </section>
 
       <section>

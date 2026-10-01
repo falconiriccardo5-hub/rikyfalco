@@ -17,7 +17,7 @@ const ACTIONS = [
 ];
 
 /** Ricerca rapida: apre con l'icona nell'intestazione o con ⌘K / Ctrl+K. */
-export function CommandPalette({ clients }: { clients: PaletteClient[] }) {
+export function CommandPalette({ clients, variant = "icon" }: { clients: PaletteClient[]; variant?: "icon" | "box" }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const input = useRef<HTMLInputElement>(null);
@@ -47,9 +47,18 @@ export function CommandPalette({ clients }: { clients: PaletteClient[] }) {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} aria-label="Cerca" className="press grid size-9 place-items-center rounded-full text-muted transition hover:bg-white/5 hover:text-fg">
-        <Search size={20} strokeWidth={1.7} />
-      </button>
+      {variant === "box" ? (
+        <button onClick={() => setOpen(true)}
+          className="press flex h-10 w-full items-center gap-2.5 rounded-xl border border-line bg-white/[.03] px-3 text-left text-sm text-muted transition hover:border-line-strong hover:text-fg">
+          <Search size={16} strokeWidth={1.7} />
+          <span className="flex-1">Cerca</span>
+          <span className="label !text-[10px] !tracking-normal">⌘K</span>
+        </button>
+      ) : (
+        <button onClick={() => setOpen(true)} aria-label="Cerca" className="press grid size-9 place-items-center rounded-full text-muted transition hover:bg-white/5 hover:text-fg">
+          <Search size={20} strokeWidth={1.7} />
+        </button>
+      )}
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[12vh]" style={{ animation: "fade .2s var(--ease-out-soft)" }}>
