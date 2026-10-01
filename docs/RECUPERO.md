@@ -22,7 +22,7 @@ sempre anche su GitHub, e per tornare indietro basta il ramo o il tag.
 
 ## Dove cercare, in ordine
 
-1. **GitHub** — `github.com/falconiriccardo5-hub/rikyfalco`, rami e pull request.
+1. **GitHub** — `github.com/Riky1498/rikyfalco`, rami e pull request.
    È la fonte buona. Guarda anche le PR chiuse e i rami `claude/*`.
 2. **Deployment Vercel** — ogni deployment conserva i file sorgente caricati.
    Dalla dashboard: progetto → *Deployments* → scegli la data → *Source*.
@@ -43,7 +43,8 @@ sempre anche su GitHub, e per tornare indietro basta il ramo o il tag.
 
 | Cosa | Valore |
 |---|---|
-| Repository | `falconiriccardo5-hub/rikyfalco` |
+| Repository buono | `Riky1498/rikyfalco` (collegato a Vercel) |
+| Copia di sicurezza | `falconiriccardo5-hub/rikyfalco` (non modificare) |
 | Progetto Vercel | `rf-coaching` (team `riky4`) |
 | Deployment del 26/09 | `dpl_CnzhLqCSwGbYqbL8wobu1Bf86B1K` |
 | Ramo della ricostruzione | `claude/eloquent-bell-37d1x4` (PR #4) |

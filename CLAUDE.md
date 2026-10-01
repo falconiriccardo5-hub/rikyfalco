@@ -3,6 +3,15 @@
 Repository di Riccardo Falconi. Contiene l'app gestionale **RF Coaching** e le
 skill di Claude Code.
 
+> ## Il repository buono è `Riky1498/rikyfalco`
+>
+> È quello collegato a Vercel (team `riky4`, progetto `rf-coaching`), quindi è
+> l'unico da cui nasce l'app pubblicata. **Lavora solo lì.**
+>
+> `falconiriccardo5-hub/rikyfalco` è l'originale da cui è nato il fork: resta
+> come copia di sicurezza e non va più modificato. Vercel non riesce a vederlo,
+> perché può accedere solo ai repository dell'account GitHub `Riky1498`.
+
 ## Dove sta cosa
 
 ```
