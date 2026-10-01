@@ -28,45 +28,71 @@ export function allowedEmails(env: Env): string[] {
   return (env.ALLOWED_EMAILS || '').split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
 }
 
-/** Restituisce l'email autenticata oppure null. */
-export async function authenticate(req: Request, env: Env): Promise<string | null> {
+export type AuthResult = { email: string } | { email: null; reason: string };
+
+const deny = (reason: string): AuthResult => ({ email: null, reason });
+
+/**
+ * Restituisce l'email autenticata oppure il motivo del rifiuto. Il motivo descrive solo
+ * il token ricevuto (che appartiene a chi sta facendo login) e mai i valori dei secret.
+ */
+export async function authenticate(req: Request, env: Env): Promise<AuthResult> {
   const url = new URL(req.url);
   if (env.DEV_BYPASS_AUTH === 'true' && (url.hostname === 'localhost' || url.hostname === '127.0.0.1')) {
-    return allowedEmails(env)[0] ?? 'dev@localhost';
+    return { email: allowedEmails(env)[0] ?? 'dev@localhost' };
   }
-  if (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD) return null;
+  // Tollera i valori incollati con spazi, https:// o l'intero indirizzo JWKS
+  const teamDomain = (env.ACCESS_TEAM_DOMAIN || '').trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  const accessAud = (env.ACCESS_AUD || '').trim();
+  if (!teamDomain || !accessAud) {
+    return deny('Sul Worker mancano i secret ACCESS_TEAM_DOMAIN e/o ACCESS_AUD.');
+  }
 
   const token = req.headers.get('cf-access-jwt-assertion') ?? getCookie(req, 'CF_Authorization');
-  if (!token) return null;
+  if (!token) return deny('Nessun token di Cloudflare Access: il login di Access non è attivo su questo indirizzo.');
   const parts = token.split('.');
-  if (parts.length !== 3) return null;
+  if (parts.length !== 3) return deny('Token di Cloudflare Access non valido.');
 
   try {
     const header = JSON.parse(new TextDecoder().decode(b64urlToBytes(parts[0])));
     const payload = JSON.parse(new TextDecoder().decode(b64urlToBytes(parts[1])));
-    if (header.alg !== 'RS256') return null;
+    if (header.alg !== 'RS256') return deny('Token di Cloudflare Access non valido (algoritmo).');
 
-    let keys = await getKeys(env.ACCESS_TEAM_DOMAIN);
-    if (!keys.has(header.kid)) keys = await getKeys(env.ACCESS_TEAM_DOMAIN, true); // rotazione chiavi
+    // Questi controlli vengono prima della firma solo per dare un messaggio utile:
+    // l'accesso è concesso soltanto se più sotto anche la firma risulta valida.
+    if (payload.iss !== `https://${teamDomain}`) {
+      const issHost = typeof payload.iss === 'string' ? payload.iss.replace(/^https:\/\//, '') : '?';
+      return deny(`ACCESS_TEAM_DOMAIN non corrisponde. Il login arriva da: ${issHost}`);
+    }
+    const aud: string[] = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
+    if (!aud.includes(accessAud)) {
+      return deny(`ACCESS_AUD non corrisponde. AUD del login: ${aud.join(', ')}`);
+    }
+
+    let keys: Map<string, CryptoKey>;
+    try {
+      keys = await getKeys(teamDomain);
+      if (!keys.has(header.kid)) keys = await getKeys(teamDomain, true); // rotazione chiavi
+    } catch {
+      return deny(`Impossibile scaricare le chiavi da https://${teamDomain}/cdn-cgi/access/certs: controlla ACCESS_TEAM_DOMAIN.`);
+    }
     const key = keys.get(header.kid);
-    if (!key) return null;
+    if (!key) return deny('Il token non è firmato con le chiavi di questo team Access.');
 
     const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64urlToBytes(parts[2]),
       new TextEncoder().encode(`${parts[0]}.${parts[1]}`));
-    if (!ok) return null;
+    if (!ok) return deny('Firma del token non valida.');
 
     const now = Math.floor(Date.now() / 1000);
-    if (typeof payload.exp !== 'number' || payload.exp < now) return null;
-    if (typeof payload.nbf === 'number' && payload.nbf > now + 60) return null;
-    if (payload.iss !== `https://${env.ACCESS_TEAM_DOMAIN}`) return null;
-    const aud: string[] = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
-    if (!aud.includes(env.ACCESS_AUD)) return null;
+    if (typeof payload.exp !== 'number' || payload.exp < now) return deny('Login scaduto: ricarica la pagina.');
+    if (typeof payload.nbf === 'number' && payload.nbf > now + 60) return deny('Token non ancora valido.');
 
     const email = String(payload.email || '').toLowerCase();
-    if (!email || !allowedEmails(env).includes(email)) return null;
-    return email;
+    if (!email) return deny('Il login non contiene un indirizzo email.');
+    if (!allowedEmails(env).includes(email)) return deny(`L'email ${email} non è in ALLOWED_EMAILS.`);
+    return { email };
   } catch {
-    return null;
+    return deny('Token di Cloudflare Access non leggibile.');
   }
 }
 

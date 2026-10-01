@@ -24,16 +24,20 @@ export function currentPrograms(programs: ProgramRow[]) {
 }
 export async function loadOverview(sb: SupabaseClient) {
   const today = todayISO();
-  const [programs, payments, appts] = await Promise.all([
+  const [programs, payments, appts, past] = await Promise.all([
     sb.from("program_overview").select("*").is("archived_at", null),
     sb.from("payment_overview").select("*").neq("status", "pagato").order("due_date"),
     sb.from("appointments").select("id,client_id,starts_at,ends_at,type,notes,clients(first_name,last_name)")
       .gte("starts_at", today + "T00:00:00").lt("starts_at", addDaysISO(today, 8) + "T00:00:00").order("starts_at"),
+    // ultima lezione per cliente, mostrata nelle tessere della Dashboard
+    sb.from("appointments").select("client_id,starts_at")
+      .gte("starts_at", addDaysISO(today, -120) + "T00:00:00").lt("starts_at", today + "T00:00:00").order("starts_at", { ascending: false }),
   ]);
   return {
     programs: (programs.data ?? []) as ProgramRow[],
     openPayments: (payments.data ?? []) as PaymentRow[],
     appointments: (appts.data ?? []) as unknown as { id: string; client_id: string; starts_at: string; ends_at: string; type: string; notes: string | null; clients: { first_name: string; last_name: string } | null }[],
+    pastAppointments: (past.data ?? []) as { client_id: string | null; starts_at: string }[],
     today,
   };
 }

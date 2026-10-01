@@ -1,16 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Phone, Cake, ChevronLeft } from "lucide-react";
+import { Phone, Cake, ChevronLeft, MessageCircle } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
 import type { ClientRow, PaymentRow, ProgramRow } from "@/server/queries";
 import { Avatar, Badge, Card, SectionLabel, Empty, Progress, cx } from "@/components/ui";
 import { describe, SOURCE, type AuditRow } from "@/lib/audit";
+import { waLink } from "@/lib/whatsapp";
 import { eur, fmtDate, fmtDateLong, fmtDateTime, fmtTime, fmtDay, daysLabel, todayISO, DURATION_LABEL, TYPE_LABEL, PROGRAM_STATUS, PAYMENT_STATUS, METHOD_LABEL } from "@/lib/format";
 import { NewAppointment, EditAppointment } from "@/components/appointments";
 import { emailConfigured } from "@/server/integrations/email";
 import { VISIT_KIND_LABEL, VISIT_STATE, VISIT_STATUS, progress, type VisitAnswers } from "@/lib/visit-template";
 import type { VisitOverviewRow } from "@/server/visits";
-import { NewVisit, ClientLink } from "../../visite/widgets";
+import { NewVisit, ClientLink, ClientAreaLink } from "../../visite/widgets";
 import { EditClient, SendEmail, ClientDanger, EditProgram, NewProgram, Lessons, PayButton, UndoPay, AddPayment, DeletePayment } from "./widgets";
 export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -54,6 +55,13 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         </div>
         <div className="flex flex-wrap gap-2">
           {client.phone && <a href={`tel:${client.phone.replace(/\s/g, "")}`} className="press inline-flex h-11 items-center gap-2 rounded-full border border-line px-4 text-sm hover:bg-white/5"><Phone size={15} /> Chiama</a>}
+          {waLink(client.phone, `Ciao ${client.first_name}!`) && (
+            <a href={waLink(client.phone, `Ciao ${client.first_name}!`)!} target="_blank" rel="noreferrer"
+              className="press inline-flex h-11 items-center gap-2 rounded-full border border-ok/30 px-4 text-sm text-ok hover:bg-ok/10">
+              <MessageCircle size={15} /> WhatsApp
+            </a>
+          )}
+          <ClientAreaLink clientId={client.id} />
           <SendEmail clientId={client.id} email={client.email} subject={tpl.data?.subject ?? ""} body={tpl.data?.body ?? ""} configured={emailConfigured()} />
           <EditClient client={client} />
         </div>

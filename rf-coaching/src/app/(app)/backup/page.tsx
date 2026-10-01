@@ -15,7 +15,7 @@ export default async function BackupPage() {
   const drive = gs.connected && gs.drive;
   return (
     <>
-      <PageHeader eyebrow="Backup e recovery" title="Backup"><BackupNow /></PageHeader>
+      <PageHeader eyebrow="Backup e recovery" title="Backup"><BackupNow drive={drive} /></PageHeader>
       <section className="rise rise-1 mb-10 grid gap-3 sm:grid-cols-3">
         <Card className={cx("p-5 sm:col-span-2", last?.status === "errore" && "glow")}>
           <p className="label">Ultimo backup</p>
@@ -33,8 +33,25 @@ export default async function BackupPage() {
         </Card>
         <Card className="p-5">
           <p className="label">Google Drive</p>
-          <p className="mt-5 text-lg">{drive ? "Collegato" : "Google Drive non configurato"}</p>
-          <p className="mt-1 text-sm text-muted">{drive ? gs.email : "I backup restano nel database. Collega Google da Impostazioni."}</p>
+          {drive ? (
+            <>
+              <p className="mt-5 flex items-center gap-2 text-lg"><span className="size-2 rounded-full bg-ok shadow-[0_0_8px_rgba(74,222,128,.8)]" /> Collegato</p>
+              <p className="mt-1 truncate text-sm text-muted">{gs.email}</p>
+              <p className="mt-4 border-t hairline pt-4 text-[13px] leading-relaxed text-muted">
+                Ogni backup scrive su Drive, in <span className="text-fg">Riccardo Falconi Coaching</span>:
+                i <span className="text-fg">CSV</span> di clienti, percorsi, pagamenti, appuntamenti e visite in una
+                cartella con la data, e il file JSON per il ripristino dentro <span className="text-fg">Backups</span>.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="mt-5 text-lg">Non collegato</p>
+              <p className="mt-1 text-sm text-muted">Senza Drive i backup restano solo nel database.</p>
+              <a href="/api/google/connect" className="press mt-5 inline-flex h-10 items-center rounded-full border border-line px-4 text-[13px] transition hover:bg-white/5">
+                Collega Google Drive
+              </a>
+            </>
+          )}
         </Card>
       </section>
       <section className="rise rise-2 mb-10">
