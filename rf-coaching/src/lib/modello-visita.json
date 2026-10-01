@@ -1,0 +1,1725 @@
+{
+  "name": "Modello visita",
+  "version": 1,
+  "intervalDays": 60,
+  "kinds": {
+    "iniziale": {
+      "title": "Visita iniziale (anamnesi)",
+      "sections": [
+        {
+          "id": "dati",
+          "title": "Dati personali",
+          "who": "cliente",
+          "fields": [
+            {
+              "id": "data_nascita",
+              "label": "Data di nascita",
+              "type": "date",
+              "who": "cliente"
+            },
+            {
+              "id": "genere",
+              "label": "Genere",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Femminile",
+                "Maschile",
+                "Non identificato"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "anamnesi",
+          "title": "Anamnesi",
+          "who": "cliente",
+          "fields": [
+            {
+              "id": "conoscenza",
+              "label": "Come sei venut* a conoscenza del mio studio?",
+              "type": "multiselect",
+              "who": "cliente",
+              "options": [
+                "Social network",
+                "Amici",
+                "Google",
+                "Sito web",
+                "Altro"
+              ],
+              "notes": true
+            },
+            {
+              "id": "conoscenza_dettaglio",
+              "label": "Approfondisci domanda precedente (nome amici o social di riferimento)",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "conoscenza"
+            },
+            {
+              "id": "obiettivo",
+              "label": "Qual è il tuo obiettivo?",
+              "type": "textarea",
+              "who": "cliente"
+            },
+            {
+              "id": "alimentazione_sana",
+              "label": "Segui già una alimentazione salutare?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "recall24",
+              "label": "Quali sono le tue abitudini alimentari giornaliere (Recall 24)",
+              "type": "textarea",
+              "who": "cliente",
+              "hint": "Colazione, pranzo, cena, spuntini"
+            },
+            {
+              "id": "pasti_extra",
+              "label": "Quante volte ti capita di mangiare pasti fuori dalla routine (compreso alcol) in una settimana?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                ">5"
+              ],
+              "notes": true
+            },
+            {
+              "id": "dopo_cena",
+              "label": "Ti capita di mangiare degli alimenti anche dopo cena?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "dolci_dopo_cena",
+              "label": "Ti capita di mangiare alimenti dolci dopo cena?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "frutta_verdura",
+              "label": "Mangi frutta e verdura?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "frutta_verdura_dettaglio",
+              "label": "Approfondisci domanda precedente (es. esclusioni o altro)",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "frutta_verdura"
+            },
+            {
+              "id": "acqua",
+              "label": "Quanta acqua bevi durante il giorno?",
+              "type": "text",
+              "who": "cliente"
+            }
+          ]
+        },
+        {
+          "id": "salute",
+          "title": "Salute",
+          "who": "cliente",
+          "fields": [
+            {
+              "id": "allergie",
+              "label": "Sono presenti allergie-intolleranze (certificate)?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "allergie_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "allergie"
+            },
+            {
+              "id": "gonfiore",
+              "label": "Problemi di gonfiore, reflusso, tosse o acidità?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "gonfiore_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "gonfiore"
+            },
+            {
+              "id": "esami_sangue",
+              "label": "Hai svolto degli esami del sangue nell'ultimo anno?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "esami_alterati",
+              "label": "Erano presenti valori alterati (*)?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "esami_voci",
+              "label": "Se sì, su quale voce?",
+              "type": "multiselect",
+              "who": "cliente",
+              "options": [
+                "Colesterolo",
+                "Trigliceridi",
+                "HDL",
+                "LDL",
+                "Glicemia",
+                "Vitamina D"
+              ]
+            },
+            {
+              "id": "esami_altro",
+              "label": "Specifica altro",
+              "type": "text",
+              "who": "cliente"
+            },
+            {
+              "id": "chirurgia",
+              "label": "Ti sei sottopost* a chirurgia estetica?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "chirurgia_cosa",
+              "label": "Se sì, cosa?",
+              "type": "text",
+              "who": "cliente"
+            },
+            {
+              "id": "patologie",
+              "label": "Sono presenti patologie diagnosticate?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "patologie_dettaglio",
+              "label": "Approfondimento domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "patologie"
+            },
+            {
+              "id": "amenorrea",
+              "label": "Problematiche a livello di amenorrea?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "infortuni_passati",
+              "label": "Hai subito infortuni in passato?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "infortuni_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "infortuni_passati"
+            },
+            {
+              "id": "sonno_8h",
+              "label": "Riesci a dormire 8 ore a notte?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "sonno_8h_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "sonno_8h"
+            },
+            {
+              "id": "addormentarsi",
+              "label": "Riesci ad addormentarti subito?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "addormentarsi_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "addormentarsi"
+            },
+            {
+              "id": "sonno_continuo",
+              "label": "Riesci a mantenere il sonno durante la notte?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "sonno_continuo_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "sonno_continuo"
+            },
+            {
+              "id": "dolore",
+              "label": "Senti qualche tipologia di dolore nella vita quotidiana o in determinati esercizi?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "dolore_dettaglio",
+              "label": "Approfondimento domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "dolore"
+            },
+            {
+              "id": "farmaci",
+              "label": "Assumi farmaci?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "farmaci_dettaglio",
+              "label": "Approfondimento domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "farmaci"
+            },
+            {
+              "id": "terapie_ormonali",
+              "label": "Assumi terapie ormonali?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "terapie_ormonali_tipo",
+              "label": "Approfondimento domanda precedente",
+              "type": "select",
+              "who": "cliente",
+              "detailOf": "terapie_ormonali",
+              "options": [
+                "Pillola generale",
+                "Mini pillola",
+                "Pillola combinata"
+              ]
+            },
+            {
+              "id": "integratori",
+              "label": "Assumi integratori?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "integratori_quali",
+              "label": "Quali integratori?",
+              "type": "multiselect",
+              "who": "cliente",
+              "detailOf": "integratori",
+              "options": [
+                "Proteine in polvere",
+                "Creatina",
+                "EAA",
+                "Berberina",
+                "Probiotico",
+                "Magnesio",
+                "Ashwagandha",
+                "Melatonina",
+                "Zinco",
+                "Omega 3",
+                "Psillo",
+                "Multivitaminico",
+                "Vitamina C",
+                "Enzimi",
+                "Bromelina",
+                "Glutammina",
+                "Altro"
+              ]
+            },
+            {
+              "id": "salute_altro",
+              "label": "Altro",
+              "type": "textarea",
+              "who": "cliente"
+            }
+          ]
+        },
+        {
+          "id": "stile_vita",
+          "title": "Stile di vita",
+          "who": "cliente",
+          "fields": [
+            {
+              "id": "lavoro",
+              "label": "Che lavoro svolgi?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Tante ore sedut*",
+                "A volte sedut* a volte in piedi",
+                "Sempre in piedi"
+              ],
+              "notes": true
+            },
+            {
+              "id": "passi",
+              "label": "Quanti passi fai al giorno?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "0/5000",
+                "7000/10000",
+                ">10000"
+              ],
+              "notes": true
+            },
+            {
+              "id": "pesi_passato",
+              "label": "Ti sei già allenat* in passato con i pesi?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "tipo_allenamento",
+              "label": "Che tipologia di allenamento svolgevi?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Monofrequenza",
+                "Multifrequenza",
+                "Basso volume",
+                "Alto volume",
+                "Non sa"
+              ]
+            },
+            {
+              "id": "professionisti",
+              "label": "Hai già avuto in passato percorsi con professionisti?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "professionista",
+              "label": "Se sì, con quale professionista?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Personal trainer",
+                "Nutrizionista",
+                "Personal trainer + nutrizione"
+              ]
+            },
+            {
+              "id": "allenamenti_settimana",
+              "label": "Quanti allenamenti a settimana puoi sostenere?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "1 + 1 PT",
+                "2 + 1 PT",
+                "3 + 1 PT",
+                "1 + 2 PT",
+                "2 + 2 PT",
+                "3 + 2 PT"
+              ]
+            },
+            {
+              "id": "note_cliente",
+              "label": "Note aggiuntive",
+              "type": "textarea",
+              "who": "cliente"
+            }
+          ]
+        },
+        {
+          "id": "misure",
+          "title": "Misure",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "peso",
+              "label": "Peso",
+              "type": "number",
+              "who": "coach",
+              "unit": "kg",
+              "step": 0.1
+            },
+            {
+              "id": "bf",
+              "label": "BF %",
+              "type": "number",
+              "who": "coach",
+              "unit": "%",
+              "step": 0.1
+            },
+            {
+              "id": "mg",
+              "label": "MG (massa grassa)",
+              "type": "computed",
+              "who": "coach",
+              "unit": "kg",
+              "formula": "bf * peso / 100"
+            },
+            {
+              "id": "mm",
+              "label": "MM (massa magra)",
+              "type": "computed",
+              "who": "coach",
+              "unit": "kg",
+              "formula": "peso - mg"
+            }
+          ]
+        },
+        {
+          "id": "osservazioni",
+          "title": "Osservazioni personali (postura)",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "piede_appoggio_dx",
+              "label": "Appoggio del piede dx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Piatto tutto",
+                "Appoggio più esterno",
+                "Appoggio più interno",
+                "Conca elevata",
+                "Normale"
+              ]
+            },
+            {
+              "id": "piede_appoggio_sx",
+              "label": "Appoggio del piede sx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Piatto tutto",
+                "Appoggio più esterno",
+                "Appoggio più interno",
+                "Conca elevata",
+                "Normale"
+              ]
+            },
+            {
+              "id": "piede_posizione_dx",
+              "label": "Posizione del piede dx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Intraruotato",
+                "Extraruotato",
+                "In asse"
+              ]
+            },
+            {
+              "id": "piede_posizione_sx",
+              "label": "Posizione del piede sx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Intraruotato",
+                "Extraruotato",
+                "In asse"
+              ]
+            },
+            {
+              "id": "caviglia_dx",
+              "label": "Caviglia dx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Collassa verso l'interno",
+                "Collassa verso l'esterno",
+                "In asse"
+              ]
+            },
+            {
+              "id": "caviglia_sx",
+              "label": "Caviglia sx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Collassa verso l'interno",
+                "Collassa verso l'esterno",
+                "In asse"
+              ]
+            },
+            {
+              "id": "ginocchio_dx",
+              "label": "Ginocchio dx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Intraruotato",
+                "Extraruotato",
+                "In asse"
+              ]
+            },
+            {
+              "id": "ginocchio_sx",
+              "label": "Ginocchio sx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Intraruotato",
+                "Extraruotato",
+                "In asse"
+              ]
+            },
+            {
+              "id": "bacino",
+              "label": "Bacino",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Switch verso sx",
+                "Switch verso dx",
+                "In asse",
+                "Ruota in senso orario",
+                "Ruota in senso antiorario"
+              ]
+            },
+            {
+              "id": "glutei",
+              "label": "Glutei",
+              "type": "multiselect",
+              "who": "coach",
+              "options": [
+                "Sx più piccolo del dx",
+                "Dx più piccolo del sx",
+                "Gluteo forma a pera",
+                "Gluteo forma a mela",
+                "Cuscinetto gluteo basso",
+                "Cellulite importante",
+                "Infiammazione"
+              ]
+            },
+            {
+              "id": "trapezio_dx",
+              "label": "Trapezio dx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Normale",
+                "Ipertono"
+              ]
+            },
+            {
+              "id": "trapezio_sx",
+              "label": "Trapezio sx",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Normale",
+                "Ipertono"
+              ]
+            },
+            {
+              "id": "note_osservazioni",
+              "label": "Note aggiuntive",
+              "type": "textarea",
+              "who": "coach"
+            }
+          ]
+        },
+        {
+          "id": "piano",
+          "title": "Piano iniziale",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "cho",
+              "label": "CHO",
+              "type": "number",
+              "who": "coach",
+              "unit": "g"
+            },
+            {
+              "id": "prot",
+              "label": "Prot",
+              "type": "number",
+              "who": "coach",
+              "unit": "g"
+            },
+            {
+              "id": "fat",
+              "label": "Fat",
+              "type": "number",
+              "who": "coach",
+              "unit": "g"
+            },
+            {
+              "id": "kcal",
+              "label": "Kcal",
+              "type": "computed",
+              "who": "coach",
+              "unit": "kcal",
+              "formula": "cho * 4 + prot * 4 + fat * 9"
+            },
+            {
+              "id": "kcal_kg",
+              "label": "Kcal/kg",
+              "type": "computed",
+              "who": "coach",
+              "unit": "kcal/kg",
+              "formula": "kcal / peso"
+            },
+            {
+              "id": "fase",
+              "label": "Fase attuale",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Dimagrimento",
+                "Aumento peso",
+                "Ricomposizione corporea",
+                "Studio TDEE"
+              ]
+            },
+            {
+              "id": "metodologia",
+              "label": "Metodologia",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Taglio lineare",
+                "ON-OFF",
+                "2 Refeed",
+                "3 Refeed",
+                "Bifasica",
+                "Trifasica",
+                "Risalita lineare"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "appunti",
+          "title": "Appunti personali",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "obiettivo_iniziale",
+              "label": "Quale sarà l'obiettivo iniziale?",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Dimagrimento",
+                "Aumento peso",
+                "Ricomposizione corporea",
+                "Studio TDEE",
+                "Rinforzo muscolare",
+                "Risolvere un problema"
+              ]
+            },
+            {
+              "id": "obiettivo_iniziale_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "coach",
+              "detailOf": "obiettivo_iniziale"
+            },
+            {
+              "id": "integratori_consigliati",
+              "label": "Ho consigliato integratori?",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": false
+            },
+            {
+              "id": "integratori_consigliati_quali",
+              "label": "Se sì, quali integratori?",
+              "type": "multiselect",
+              "who": "coach",
+              "options": [
+                "Proteine in polvere",
+                "Creatina",
+                "EAA",
+                "Berberina",
+                "Probiotico",
+                "Magnesio",
+                "Ashwagandha",
+                "Melatonina",
+                "Zinco",
+                "Omega 3",
+                "Psillo",
+                "Multivitaminico",
+                "Vitamina C",
+                "Enzimi",
+                "Bromelina",
+                "Glutammina",
+                "Altro"
+              ]
+            },
+            {
+              "id": "obiettivo_mesociclo",
+              "label": "Quale sarà l'obiettivo del prossimo mesociclo?",
+              "type": "textarea",
+              "who": "coach"
+            }
+          ]
+        },
+        {
+          "id": "area_personale",
+          "title": "Area personale (voto da 1 a 5)",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "adesione",
+              "label": "Adesione al piano 🫡",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Adesione scarsa",
+              "high": "Massima"
+            },
+            {
+              "id": "costanza",
+              "label": "Costanza 📈",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Non costante",
+              "high": "Costante"
+            },
+            {
+              "id": "performance",
+              "label": "Performance 🏋🏻‍♀️",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Scarsa",
+              "high": "Ottima"
+            },
+            {
+              "id": "condizione_voto",
+              "label": "Condizione 🍑",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Nessun risultato",
+              "high": "Miglioramento visibile ad occhio nudo",
+              "hint": "3 = miglioramento visibile dai dati"
+            },
+            {
+              "id": "infortuni",
+              "label": "Problemi/infortuni 🏥",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Infortunio presente",
+              "high": "Nessun infortunio",
+              "hint": "3 = leggero fastidio"
+            },
+            {
+              "id": "stress_voto",
+              "label": "Stress 🧠",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Tanto",
+              "high": "Assente",
+              "hint": "Dato da riprendere dalle risposte del cliente"
+            },
+            {
+              "id": "note_persona",
+              "label": "Note/appunti personali sulla persona 💬",
+              "type": "textarea",
+              "who": "coach"
+            }
+          ],
+          "radar": [
+            "adesione",
+            "costanza",
+            "performance",
+            "condizione_voto",
+            "infortuni",
+            "stress_voto"
+          ]
+        },
+        {
+          "id": "obiettivi",
+          "title": "Obiettivi e piano d'azione",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "primi_obiettivi",
+              "label": "🎯 Primi obiettivi",
+              "type": "textarea",
+              "who": "coach"
+            },
+            {
+              "id": "note_obiettivi",
+              "label": "📌 Note",
+              "type": "textarea",
+              "who": "coach"
+            },
+            {
+              "id": "piano_azione",
+              "label": "🔸 Piano di azione",
+              "type": "textarea",
+              "who": "coach"
+            }
+          ]
+        }
+      ]
+    },
+    "check": {
+      "title": "Check / monitoraggio",
+      "sections": [
+        {
+          "id": "misure",
+          "title": "Misure",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "split",
+              "label": "Split",
+              "type": "text",
+              "who": "coach"
+            },
+            {
+              "id": "peso",
+              "label": "Peso",
+              "type": "number",
+              "who": "coach",
+              "unit": "kg",
+              "step": 0.1
+            },
+            {
+              "id": "bf",
+              "label": "BF %",
+              "type": "number",
+              "who": "coach",
+              "unit": "%",
+              "step": 0.1
+            },
+            {
+              "id": "mg",
+              "label": "MG (massa grassa)",
+              "type": "computed",
+              "who": "coach",
+              "unit": "kg",
+              "formula": "bf * peso / 100"
+            },
+            {
+              "id": "mm",
+              "label": "MM (massa magra)",
+              "type": "computed",
+              "who": "coach",
+              "unit": "kg",
+              "formula": "peso - mg"
+            }
+          ]
+        },
+        {
+          "id": "salute_attuale",
+          "title": "Salute attuale",
+          "who": "cliente",
+          "fields": [
+            {
+              "id": "patologie_attuali",
+              "label": "Patologie",
+              "type": "multiselect",
+              "who": "cliente",
+              "options": [
+                "Intolleranza al glutine",
+                "Intolleranza al lattosio",
+                "Celiachia",
+                "Favismo",
+                "Ipertensione",
+                "PCOS",
+                "GERD",
+                "Gastrite",
+                "Nessuna"
+              ]
+            },
+            {
+              "id": "terapia",
+              "label": "Terapia farmacologica",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "No",
+                "Pillola contraccettiva",
+                "Pillola combinata",
+                "Mini pillola",
+                "Diuretico",
+                "Nessuna"
+              ]
+            },
+            {
+              "id": "integrazione",
+              "label": "Integrazione assunta",
+              "type": "multiselect",
+              "who": "cliente",
+              "options": [
+                "Proteine in polvere",
+                "Creatina",
+                "EAA",
+                "Berberina",
+                "Probiotico",
+                "Magnesio",
+                "Ashwagandha",
+                "Melatonina",
+                "Zinco",
+                "Omega 3",
+                "Psillo",
+                "Multivitaminico",
+                "Vitamina C",
+                "Enzimi",
+                "Bromelina",
+                "Glutammina",
+                "Altro"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "aderenza",
+          "title": "Aderenza",
+          "who": "cliente",
+          "fields": [
+            {
+              "id": "protocollo",
+              "label": "Come è andato questo protocollo?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Bene",
+                "Insomma",
+                "Male"
+              ],
+              "notes": true
+            },
+            {
+              "id": "protocollo_causa",
+              "label": "Se \"insomma\" o \"male\", la causa è stata",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Allenamento",
+                "Alimentazione",
+                "Costanza",
+                "Fattori terzi"
+              ]
+            },
+            {
+              "id": "protocollo_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "protocollo_causa"
+            },
+            {
+              "id": "piano_seguito",
+              "label": "Hai seguito il piano di allenamento previsto per queste settimane?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No",
+                "Parzialmente"
+              ],
+              "notes": true
+            },
+            {
+              "id": "piano_seguito_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "piano_seguito"
+            },
+            {
+              "id": "consigli_alimentari",
+              "label": "Hai trovato difficile seguire i consigli alimentari?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No",
+                "Con qualche sgarro di troppo"
+              ],
+              "notes": true
+            },
+            {
+              "id": "pasti_extra",
+              "label": "Quanti pasti extra ti sei concess* durante la settimana?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "1",
+                "2",
+                "3",
+                "4",
+                ">5"
+              ]
+            },
+            {
+              "id": "pasti_extra_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "pasti_extra"
+            },
+            {
+              "id": "aderenza_note",
+              "label": "Note aggiuntive",
+              "type": "textarea",
+              "who": "cliente"
+            }
+          ]
+        },
+        {
+          "id": "protocollo_allenamento",
+          "title": "Protocollo allenamento",
+          "who": "cliente",
+          "fields": [
+            {
+              "id": "allenamento_difficile",
+              "label": "Hai trovato difficile seguire il protocollo di allenamento?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No",
+                "A volte"
+              ],
+              "notes": true
+            },
+            {
+              "id": "allenamento_difficile_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "allenamento_difficile"
+            },
+            {
+              "id": "gruppo_meno",
+              "label": "Qual è il gruppo muscolare che ti piace allenare meno?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Gambe",
+                "Parte alta",
+                "Polpacci",
+                "Glutei",
+                "Ischio crurali",
+                "Quadricipiti",
+                "Addominali",
+                "Dorsali",
+                "Bicipiti",
+                "Tricipiti",
+                "Spalle",
+                "Petto"
+              ]
+            },
+            {
+              "id": "gruppo_piu",
+              "label": "Qual è il gruppo muscolare che ti piace allenare di più?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Gambe",
+                "Parte alta",
+                "Polpacci",
+                "Glutei",
+                "Ischio crurali",
+                "Quadricipiti",
+                "Addominali",
+                "Dorsali",
+                "Bicipiti",
+                "Tricipiti",
+                "Spalle",
+                "Petto"
+              ]
+            },
+            {
+              "id": "esercizio_meno",
+              "label": "Qual è l'esercizio della scheda attuale che ti piace meno?",
+              "type": "text",
+              "who": "cliente"
+            },
+            {
+              "id": "progredisci_meno",
+              "label": "Riesci lo stesso a progredire?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "esercizio_piu",
+              "label": "Qual è l'esercizio della scheda attuale che ti piace di più?",
+              "type": "text",
+              "who": "cliente"
+            },
+            {
+              "id": "progredisci_piu",
+              "label": "Riesci a progredire?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "fastidio_muscolare",
+              "label": "C'è qualche movimento o esercizio che ti crea fastidio o dolore muscolare?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "fastidio_muscolare_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "fastidio_muscolare"
+            },
+            {
+              "id": "dolore_articolare",
+              "label": "C'è qualche esercizio dove senti dolore articolare?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "dolore_articolare_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "dolore_articolare"
+            },
+            {
+              "id": "stanchezza_mentale",
+              "label": "C'è qualche esercizio che ti dà stanchezza mentale?",
+              "type": "select",
+              "who": "cliente",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": true
+            },
+            {
+              "id": "stanchezza_mentale_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "cliente",
+              "detailOf": "stanchezza_mentale"
+            },
+            {
+              "id": "protocollo_note",
+              "label": "Note aggiuntive",
+              "type": "textarea",
+              "who": "cliente"
+            }
+          ]
+        },
+        {
+          "id": "dati_benessere",
+          "title": "Dati (voto da 1 a 5)",
+          "who": "cliente",
+          "fields": [
+            {
+              "id": "condizione",
+              "label": "Condizione",
+              "type": "score",
+              "who": "cliente",
+              "min": 1,
+              "max": 5,
+              "low": "Pessima",
+              "high": "Ottima"
+            },
+            {
+              "id": "durezza",
+              "label": "Durezza muscolare",
+              "type": "score",
+              "who": "cliente",
+              "min": 1,
+              "max": 5,
+              "low": "Molle",
+              "high": "Duro",
+              "hint": "Se tiri i muscoli e ti tocchi, ti senti duro o molle?"
+            },
+            {
+              "id": "wc",
+              "label": "WC",
+              "type": "score",
+              "who": "cliente",
+              "min": 1,
+              "max": 5,
+              "low": "Non scaricato da qualche giorno",
+              "high": "Ottimo",
+              "hint": "3 = scaricato ma non al 100%"
+            },
+            {
+              "id": "gonfiore",
+              "label": "Sensazione di gonfiore generale o di addome",
+              "type": "score",
+              "who": "cliente",
+              "min": 1,
+              "max": 5,
+              "low": "Gonfio",
+              "high": "Completamente sgonfio / dry"
+            },
+            {
+              "id": "totale_fisico",
+              "label": "Totale condizione fisica",
+              "type": "computed",
+              "who": "cliente",
+              "formula": "condizione + durezza + wc + gonfiore",
+              "unit": "/20"
+            },
+            {
+              "id": "stress",
+              "label": "Stress",
+              "type": "score",
+              "who": "cliente",
+              "min": 1,
+              "max": 5,
+              "low": "Tanto",
+              "high": "Assente"
+            },
+            {
+              "id": "sonno",
+              "label": "Qualità e quantità del sonno",
+              "type": "score",
+              "who": "cliente",
+              "min": 1,
+              "max": 5,
+              "low": "Poco",
+              "high": "Tanto"
+            },
+            {
+              "id": "fame",
+              "label": "Fame",
+              "type": "score",
+              "who": "cliente",
+              "min": 1,
+              "max": 5,
+              "low": "Tanta",
+              "high": "Poca"
+            },
+            {
+              "id": "energia",
+              "label": "Energia",
+              "type": "score",
+              "who": "cliente",
+              "min": 1,
+              "max": 5,
+              "low": "A terra",
+              "high": "Tanta"
+            },
+            {
+              "id": "totale_benessere",
+              "label": "Totale benessere",
+              "type": "computed",
+              "who": "cliente",
+              "formula": "stress + sonno + fame + energia",
+              "unit": "/20"
+            },
+            {
+              "id": "dati_note",
+              "label": "Note aggiuntive",
+              "type": "textarea",
+              "who": "cliente"
+            }
+          ]
+        },
+        {
+          "id": "piano",
+          "title": "Macro",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "cho",
+              "label": "CHO",
+              "type": "number",
+              "who": "coach",
+              "unit": "g"
+            },
+            {
+              "id": "prot",
+              "label": "Prot",
+              "type": "number",
+              "who": "coach",
+              "unit": "g"
+            },
+            {
+              "id": "fat",
+              "label": "Fat",
+              "type": "number",
+              "who": "coach",
+              "unit": "g"
+            },
+            {
+              "id": "kcal",
+              "label": "Kcal",
+              "type": "computed",
+              "who": "coach",
+              "unit": "kcal",
+              "formula": "cho * 4 + prot * 4 + fat * 9"
+            },
+            {
+              "id": "kcal_kg",
+              "label": "Kcal/kg",
+              "type": "computed",
+              "who": "coach",
+              "unit": "kcal/kg",
+              "formula": "kcal / peso"
+            },
+            {
+              "id": "fase",
+              "label": "Fase attuale",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Dimagrimento",
+                "Aumento peso",
+                "Ricomposizione corporea",
+                "Studio TDEE"
+              ]
+            },
+            {
+              "id": "metodologia",
+              "label": "Metodologia",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Taglio lineare",
+                "ON-OFF",
+                "2 Refeed",
+                "3 Refeed",
+                "Bifasica",
+                "Trifasica",
+                "Risalita lineare"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "appunti",
+          "title": "Appunti personali",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "obiettivo_raggiunto",
+              "label": "Abbiamo raggiunto l'obiettivo prefissato nel precedente mesociclo?",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": false
+            },
+            {
+              "id": "obiettivo_raggiunto_dettaglio",
+              "label": "Approfondisci domanda precedente",
+              "type": "textarea",
+              "who": "coach",
+              "detailOf": "obiettivo_raggiunto"
+            },
+            {
+              "id": "integratori_consigliati",
+              "label": "Ho consigliato integratori?",
+              "type": "select",
+              "who": "coach",
+              "options": [
+                "Si",
+                "No"
+              ],
+              "notes": false
+            },
+            {
+              "id": "integratori_consigliati_quali",
+              "label": "Se sì, quali integratori?",
+              "type": "multiselect",
+              "who": "coach",
+              "options": [
+                "Proteine in polvere",
+                "Creatina",
+                "EAA",
+                "Berberina",
+                "Probiotico",
+                "Magnesio",
+                "Ashwagandha",
+                "Melatonina",
+                "Zinco",
+                "Omega 3",
+                "Psillo",
+                "Multivitaminico",
+                "Vitamina C",
+                "Enzimi",
+                "Bromelina",
+                "Glutammina",
+                "Altro"
+              ]
+            },
+            {
+              "id": "obiettivo_mesociclo",
+              "label": "Quale sarà l'obiettivo del prossimo mesociclo?",
+              "type": "textarea",
+              "who": "coach"
+            }
+          ]
+        },
+        {
+          "id": "area_personale",
+          "title": "Area personale (voto da 1 a 5)",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "adesione",
+              "label": "Adesione al piano 🫡",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Adesione scarsa",
+              "high": "Massima"
+            },
+            {
+              "id": "costanza",
+              "label": "Costanza 📈",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Non costante",
+              "high": "Costante"
+            },
+            {
+              "id": "performance",
+              "label": "Performance 🏋🏻‍♀️",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Scarsa",
+              "high": "Ottima"
+            },
+            {
+              "id": "condizione_voto",
+              "label": "Condizione 🍑",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Nessun risultato",
+              "high": "Miglioramento visibile ad occhio nudo",
+              "hint": "3 = miglioramento visibile dai dati"
+            },
+            {
+              "id": "infortuni",
+              "label": "Problemi/infortuni 🏥",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Infortunio presente",
+              "high": "Nessun infortunio",
+              "hint": "3 = leggero fastidio"
+            },
+            {
+              "id": "stress_voto",
+              "label": "Stress 🧠",
+              "type": "score",
+              "who": "coach",
+              "min": 1,
+              "max": 5,
+              "low": "Tanto",
+              "high": "Assente",
+              "hint": "Dato da riprendere dalle risposte del cliente"
+            },
+            {
+              "id": "note_persona",
+              "label": "Note/appunti personali sulla persona 💬",
+              "type": "textarea",
+              "who": "coach"
+            }
+          ],
+          "radar": [
+            "adesione",
+            "costanza",
+            "performance",
+            "condizione_voto",
+            "infortuni",
+            "stress_voto"
+          ]
+        },
+        {
+          "id": "obiettivi",
+          "title": "Obiettivi e piano d'azione",
+          "who": "coach",
+          "fields": [
+            {
+              "id": "primi_obiettivi",
+              "label": "🎯 Primi obiettivi",
+              "type": "textarea",
+              "who": "coach"
+            },
+            {
+              "id": "note_obiettivi",
+              "label": "📌 Note",
+              "type": "textarea",
+              "who": "coach"
+            },
+            {
+              "id": "piano_azione",
+              "label": "🔸 Piano di azione",
+              "type": "textarea",
+              "who": "coach"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
