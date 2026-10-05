@@ -3,13 +3,13 @@ import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } fr
 import { armPoints } from "../../character/Character";
 import { fontFamily } from "../../fonts";
 import { clamp, controlledRep, isBlinking, REST_ANGLE, TOP_ANGLE } from "../anim";
-import { Caption, Captions, useSpeech } from "../Captions";
+import { Captions, useSpeech } from "../Captions";
+import { Sfx, VoiceTrack } from "../audio";
+import { TIMING } from "../timing";
 import { Backdrop, Camera, GREEN, PlacedCharacter, ViewChip, YELLOW, toStage } from "../ui";
 
-const CAPTIONS: Caption[] = [
-  { from: 4, to: 80, text: "Di lato si vede: il braccio NON sale dritto di lato…" },
-  { from: 82, to: 165, text: "…ma leggermente IN AVANTI" },
-];
+const T = TIMING.side;
+const CAPTIONS = T.captions;
 
 const PLACE = { x: 470, footY: 1640, width: 600 };
 const REP = { up: 50, hold: 14, down: 60, rest: 10 };
@@ -17,7 +17,7 @@ const REP = { up: 50, hold: 14, down: 60, rest: 10 };
 export const SideScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const speech = useSpeech(CAPTIONS);
+  const speech = useSpeech(T.lines);
   const angle = frame < 12 ? REST_ANGLE : controlledRep(frame - 12, REP);
   const zoom = interpolate(frame, [0, 165], [1.12, 1.0]);
   const cx = interpolate(frame, [0, 165], [600, 540]);
@@ -109,6 +109,10 @@ export const SideScene: React.FC = () => {
       </Camera>
       <ViewChip label="VISTA LATERALE" />
       <Captions captions={CAPTIONS} />
+      <VoiceTrack lines={T.lines} />
+      <Sfx name="whoosh" at={0} volume={0.45} />
+      <Sfx name="chip" at={4} volume={0.4} />
+      <Sfx name="pop2" at={95} volume={0.45} />
     </AbsoluteFill>
   );
 };

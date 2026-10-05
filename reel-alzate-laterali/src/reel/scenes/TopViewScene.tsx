@@ -2,13 +2,13 @@ import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { fontFamily } from "../../fonts";
 import { clamp } from "../anim";
-import { Caption, Captions } from "../Captions";
+import { Captions } from "../Captions";
+import { Sfx, VoiceTrack } from "../audio";
+import { TIMING } from "../timing";
 import { Backdrop, Camera, GREEN, INK, RED, ViewChip } from "../ui";
 
-const CAPTIONS: Caption[] = [
-  { from: 4, to: 70, text: "Vista dall'alto: NON sul piano frontale…" },
-  { from: 72, to: 150, text: "…ma 20-30° in avanti: il PIANO SCAPOLARE" },
-];
+const T = TIMING.top;
+const CAPTIONS = T.captions;
 
 const CX = 540;
 const CY = 960;
@@ -190,6 +190,12 @@ export const TopViewScene: React.FC = () => {
       </div>
       <ViewChip label="VISTA DALL'ALTO" />
       <Captions captions={CAPTIONS} />
+      <VoiceTrack lines={T.lines} />
+      <Sfx name="whoosh" at={0} volume={0.45} />
+      <Sfx name="chip" at={4} volume={0.4} />
+      <Sfx name="drop" at={6} volume={0.3} />
+      <Sfx name="rise" at={62} volume={0.5} />
+      <Sfx name="badge" at={100} volume={0.5} />
     </AbsoluteFill>
   );
 };

@@ -3,13 +3,13 @@ import { AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoCon
 import { armPoints } from "../../character/Character";
 import { fontFamily } from "../../fonts";
 import { clamp, isBlinking } from "../anim";
-import { Caption, Captions, useSpeech } from "../Captions";
+import { Captions, useSpeech } from "../Captions";
+import { Sfx, VoiceTrack } from "../audio";
+import { TIMING } from "../timing";
 import { Backdrop, Camera, INK, PlacedCharacter, RED, toStage } from "../ui";
 
-const CAPTIONS: Caption[] = [
-  { from: 6, to: 92, text: "Se le fai male rischi una lesione alla CUFFIA DEI ROTATORI" },
-  { from: 116, to: 210, text: "SETTIMANE di stop tra visite, farmaci e fisioterapia" },
-];
+const T = TIMING.risk;
+const CAPTIONS = T.captions;
 
 const PLACE = { x: 540, footY: 1640, width: 600 };
 
@@ -60,7 +60,7 @@ const CARDS = [
 export const RiskScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const speech = useSpeech(CAPTIONS);
+  const speech = useSpeech(T.lines);
 
   const shoulder = toStage(armPoints("front", 1, 0, 0).shoulder, PLACE);
   const zoomIn = interpolate(frame, [0, 40], [1, 1.9], { ...clamp, easing: Easing.inOut(Easing.cubic) });
@@ -185,6 +185,16 @@ export const RiskScene: React.FC = () => {
         })}
       </div>
       <Captions captions={CAPTIONS} accent="#FF6B5E" />
+      <VoiceTrack lines={T.lines} />
+      <Sfx name="riser" at={0} volume={0.45} />
+      <Sfx name="heart" at={20} volume={0.5} />
+      <Sfx name="crack" at={30} volume={0.7} />
+      <Sfx name="heart" at={47} volume={0.5} />
+      <Sfx name="heart" at={74} volume={0.5} />
+      <Sfx name="whoosh" at={96} volume={0.35} />
+      {CARDS.map((c) => (
+        <Sfx key={c.label} name="pop" at={c.at} volume={0.45} />
+      ))}
     </AbsoluteFill>
   );
 };

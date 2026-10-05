@@ -3,20 +3,20 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { armPoints } from "../../character/Character";
 import { fontFamily } from "../../fonts";
 import { clamp, controlledRep, isBlinking, REST_ANGLE, TOP_ANGLE } from "../anim";
-import { Caption, Captions, useSpeech } from "../Captions";
+import { Captions, useSpeech } from "../Captions";
+import { Sfx, VoiceTrack } from "../audio";
+import { TIMING } from "../timing";
 import { ArcArrow, Backdrop, Camera, GREEN, PlacedCharacter, ViewChip, toStage } from "../ui";
 
-const CAPTIONS: Caption[] = [
-  { from: 4, to: 78, text: "Manubri in mano, braccia lungo i fianchi" },
-  { from: 80, to: 165, text: "Sali fino all'altezza delle SPALLE, non oltre" },
-];
+const T = TIMING.front;
+const CAPTIONS = T.captions;
 
 const PLACE = { x: 540, footY: 1640, width: 600 };
 const REP = { up: 45, hold: 14, down: 55, rest: 10 };
 
 export const FrontScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const speech = useSpeech(CAPTIONS);
+  const speech = useSpeech(T.lines);
   const angle = frame < 20 ? REST_ANGLE : controlledRep(frame - 20, REP);
   const zoom = interpolate(frame, [0, 165], [1, 1.08]);
   const k = (angle - REST_ANGLE) / (TOP_ANGLE - REST_ANGLE);
@@ -67,6 +67,10 @@ export const FrontScene: React.FC = () => {
       </Camera>
       <ViewChip label="VISTA FRONTALE" />
       <Captions captions={CAPTIONS} />
+      <VoiceTrack lines={T.lines} />
+      <Sfx name="whoosh" at={0} volume={0.45} />
+      <Sfx name="chip" at={4} volume={0.4} />
+      <Sfx name="pop2" at={58} volume={0.35} />
     </AbsoluteFill>
   );
 };

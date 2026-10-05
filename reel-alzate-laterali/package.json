@@ -8,6 +8,7 @@
   "dependencies": {
     "@remotion/cli": "4.0.532",
     "@remotion/fonts": "4.0.532",
+    "@remotion/media": "4.0.532",
     "@remotion/transitions": "4.0.532",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -25,6 +26,7 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "voice": "python3 scripts/voice.py"
   }
 }

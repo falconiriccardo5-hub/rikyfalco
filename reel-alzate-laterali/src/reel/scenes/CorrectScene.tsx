@@ -3,18 +3,18 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { armPoints } from "../../character/Character";
 import { fontFamily } from "../../fonts";
 import { clamp, controlledPhase, controlledRep, REST_ANGLE, TOP_ANGLE } from "../anim";
-import { Caption, Captions } from "../Captions";
+import { Captions } from "../Captions";
+import { Sfx, VoiceTrack } from "../audio";
+import { TIMING } from "../timing";
 import { Backdrop, Camera, GREEN, INK, PlacedCharacter, Stamp, ViewChip, toStage } from "../ui";
 
-const CAPTIONS: Caption[] = [
-  { from: 6, to: 78, text: "GIUSTO: sali LENTO e controllato" },
-  { from: 80, to: 145, text: "fino all'altezza delle SPALLE…" },
-  { from: 147, to: 225, text: "…poi FRENA la discesa" },
-];
+const T = TIMING.correct;
+const CAPTIONS = T.captions;
 
 const PLACE = { x: 540, footY: 1660, width: 560 };
 const REP = { up: 50, hold: 14, down: 78, rest: 12 };
 const START = 20;
+const CYCLE = REP.up + REP.hold + REP.down + REP.rest;
 
 const PHASE_LABEL = {
   up: "SALI LENTO",
@@ -86,6 +86,17 @@ export const CorrectScene: React.FC = () => {
         </div>
       </div>
       <Captions captions={CAPTIONS} accent="#69DB7C" />
+      <VoiceTrack lines={T.lines} />
+      <Sfx name="whoosh" at={0} volume={0.45} />
+      <Sfx name="chip" at={4} volume={0.4} />
+      <Sfx name="good" at={6} volume={0.5} />
+      {Array.from({ length: Math.ceil((T.duration - START) / CYCLE) }).flatMap((_, n) => {
+        const c = START + n * CYCLE;
+        const down = c + REP.up + REP.hold;
+        return [c, c + REP.up / 2, down, down + REP.down / 3, down + (2 * REP.down) / 3]
+          .filter((at) => at < T.duration)
+          .map((at) => <Sfx key={at} name="tick" at={Math.round(at)} volume={0.35} />);
+      })}
     </AbsoluteFill>
   );
 };

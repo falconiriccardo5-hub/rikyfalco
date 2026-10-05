@@ -3,10 +3,13 @@ import { AbsoluteFill, Easing, interpolate, random, spring, useCurrentFrame, use
 import { Character } from "../../character/Character";
 import { fontFamily } from "../../fonts";
 import { clamp, isBlinking } from "../anim";
-import { Caption, Captions, useSpeech } from "../Captions";
+import { Captions, useSpeech } from "../Captions";
+import { Sfx, VoiceTrack } from "../audio";
+import { TIMING } from "../timing";
 import { Backdrop, Camera, INK, PlacedCharacter, YELLOW } from "../ui";
 
-const CAPTIONS: Caption[] = [{ from: 4, to: 135, text: "SEGUIMI per altri consigli come questo!" }];
+const T = TIMING.outro;
+const CAPTIONS = T.captions;
 
 export const HANDLE = "@RiccardoFalconi_coach";
 
@@ -29,7 +32,7 @@ const Cursor: React.FC = () => (
 export const OutroScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const speech = useSpeech(CAPTIONS);
+  const speech = useSpeech(T.lines);
 
   const card = spring({ frame: frame - 2, fps, config: { damping: 12, stiffness: 140 } });
   const followed = frame >= CLICK;
@@ -161,6 +164,11 @@ export const OutroScene: React.FC = () => {
         </div>
       ) : null}
       <Captions captions={CAPTIONS} />
+      <VoiceTrack lines={T.lines} />
+      <Sfx name="whoosh" at={0} volume={0.45} />
+      <Sfx name="card" at={2} volume={0.45} />
+      <Sfx name="click" at={CLICK} volume={0.7} />
+      <Sfx name="celebrate" at={CLICK + 2} volume={0.5} />
     </AbsoluteFill>
   );
 };

@@ -2,12 +2,15 @@ import React from "react";
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { fontFamily } from "../fonts";
 import { clamp, talkAmount } from "./anim";
+import type { TimedLine } from "./timing";
 
 export type Caption = {
   readonly from: number;
   readonly to: number;
   /** Words written in UPPERCASE are highlighted */
   readonly text: string;
+  /** Frames of spoken audio, used to pace the word reveal */
+  readonly speak?: number;
 };
 
 const isKeyword = (w: string) => {
@@ -15,13 +18,15 @@ const isKeyword = (w: string) => {
   return letters.length > 1 && letters === letters.toUpperCase();
 };
 
-/** Mouth state for the character while captions are being spoken. */
-export const useSpeech = (captions: readonly Caption[]) => {
+/** Mouth state driven by the loudness envelope of the voiceover. */
+export const useSpeech = (lines: readonly TimedLine[]) => {
   const frame = useCurrentFrame();
-  const active = captions.find((c) => frame >= c.from && frame < c.to - 8);
-  return active
-    ? { mouth: "talk" as const, talk: talkAmount(frame) }
-    : { mouth: "smile" as const, talk: 0 };
+  const line = lines.find((l) => frame >= l.start && frame < l.end);
+  if (!line) return { mouth: "smile" as const, talk: 0 };
+  const i = frame - line.start;
+  const v = line.env.length ? (line.env[i] ?? 0) : talkAmount(frame);
+  const smooth = line.env.length ? (v + (line.env[i - 1] ?? v)) / 2 : v;
+  return { mouth: "talk" as const, talk: Math.min(1, smooth * 1.1) };
 };
 
 export const Captions: React.FC<{
@@ -35,7 +40,7 @@ export const Captions: React.FC<{
   if (!c) return null;
   const words = c.text.split(" ");
   const local = frame - c.from;
-  const revealSpan = Math.min((c.to - c.from) * 0.6, words.length * 6);
+  const revealSpan = c.speak ? c.speak * 0.85 : Math.min((c.to - c.from) * 0.6, words.length * 6);
   const enter = spring({ frame: local, fps, config: { damping: 14, stiffness: 180 } });
   const exit = interpolate(frame, [c.to - 6, c.to], [1, 0], clamp);
 

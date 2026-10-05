@@ -2,14 +2,13 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { armPoints } from "../../character/Character";
 import { REST_ANGLE, swungRep } from "../anim";
-import { Caption, Captions } from "../Captions";
+import { Captions } from "../Captions";
+import { Sfx, VoiceTrack } from "../audio";
+import { TIMING } from "../timing";
 import { Backdrop, Camera, PlacedCharacter, RED, Stamp, ViewChip, toStage } from "../ui";
 
-const CAPTIONS: Caption[] = [
-  { from: 6, to: 70, text: "ERRORE: lanciare il peso" },
-  { from: 72, to: 140, text: "Slancio col busto e SPALLE alzate" },
-  { from: 142, to: 210, text: "e poi giù a PESO MORTO" },
-];
+const T = TIMING.wrong;
+const CAPTIONS = T.captions;
 
 const PLACE = { x: 540, footY: 1660, width: 560 };
 const START = 18;
@@ -102,6 +101,17 @@ export const WrongScene: React.FC = () => {
       <ViewChip label="VISTA DA DIETRO" />
       <Stamp good={false} label="SBAGLIATO" />
       <Captions captions={CAPTIONS} accent="#FF6B5E" />
+      <VoiceTrack lines={T.lines} />
+      <Sfx name="whoosh" at={0} volume={0.45} />
+      <Sfx name="chip" at={4} volume={0.4} />
+      <Sfx name="thud" at={6} volume={0.6} />
+      <Sfx name="error" at={8} volume={0.45} />
+      {Array.from({ length: Math.ceil((T.duration - START) / 26) }).map((_, k) => (
+        <React.Fragment key={k}>
+          <Sfx name="swish" at={START + k * 26} volume={0.4} />
+          <Sfx name="clank_light" at={START + k * 26 + 14} volume={0.22} />
+        </React.Fragment>
+      ))}
     </AbsoluteFill>
   );
 };

@@ -2,13 +2,13 @@ import React from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { armPoints } from "../../character/Character";
 import { clamp, isBlinking } from "../anim";
-import { Caption, Captions, useSpeech } from "../Captions";
+import { Captions, useSpeech } from "../Captions";
+import { Sfx, VoiceTrack } from "../audio";
+import { TIMING } from "../timing";
 import { Backdrop, Camera, PlacedCharacter, Title, toStage } from "../ui";
 
-const CAPTIONS: Caption[] = [
-  { from: 4, to: 58, text: "Ciao! Sono COACH RIKY" },
-  { from: 60, to: 135, text: "Oggi ti insegno le ALZATE LATERALI fatte bene" },
-];
+const T = TIMING.intro;
+const CAPTIONS = T.captions;
 
 const PLACE = { x: 540, footY: 1640, width: 560 };
 const DROP_START = 72;
@@ -16,7 +16,7 @@ const DROP_END = 90;
 
 export const IntroScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const speech = useSpeech(CAPTIONS);
+  const speech = useSpeech(T.lines);
 
   // close-up on the face, then pull back to full body
   const zoom = interpolate(frame, [0, 50, 85], [1.75, 1.6, 1], {
@@ -72,6 +72,10 @@ export const IntroScene: React.FC = () => {
       </Camera>
       {frame >= 60 ? <Title text="ALZATE LATERALI" sub="fatte BENE" delay={60} top={260} /> : null}
       <Captions captions={CAPTIONS} />
+      <VoiceTrack lines={T.lines} />
+      <Sfx name="pop" at={60} />
+      <Sfx name="swish" at={74} volume={0.35} />
+      <Sfx name="clank" at={DROP_END} volume={0.6} />
     </AbsoluteFill>
   );
 };
