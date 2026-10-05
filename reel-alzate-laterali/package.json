@@ -27,6 +27,7 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "voice": "python3 scripts/voice.py"
+    "voice": "python3 scripts/voice.py",
+    "clone": "python3 scripts/clone.py"
   }
 }
