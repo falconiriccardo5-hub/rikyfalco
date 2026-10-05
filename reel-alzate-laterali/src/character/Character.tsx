@@ -6,6 +6,10 @@ export type CharacterProps = {
   readonly view: View;
   /** Arm elevation in degrees: 0 = arms down, 90 = arms horizontal */
   readonly armAngle?: number;
+  /** Override for the arm on screen-left (front) / far arm (side) */
+  readonly armAngleL?: number;
+  /** Override for the arm on screen-right (front) / near arm (side) */
+  readonly armAngleR?: number;
   /** Plane of elevation in degrees: 0 = frontal plane, 30 = scapular plane */
   readonly armPlane?: number;
   /** 0..1 how much the shoulders are shrugged (wrong execution) */
@@ -64,6 +68,38 @@ const projectArm = (
   return { x: side * lateral, y: down };
 };
 
+const armGeometry = (shoulder: Pt, dir: Pt, bendSign: number) => {
+  const elbow = { x: shoulder.x + dir.x * UPPER, y: shoulder.y + dir.y * UPPER };
+  const bend = deg(8 * bendSign);
+  const fx = dir.x * Math.cos(bend) - dir.y * Math.sin(bend);
+  const fy = dir.x * Math.sin(bend) + dir.y * Math.cos(bend);
+  const hand = { x: elbow.x + fx * FORE, y: elbow.y + fy * FORE };
+  return { elbow, hand };
+};
+
+const shoulderPos = (view: View, side: -1 | 1, shrug: number): Pt => {
+  const y = 276 - shrug * 18;
+  if (view === "side") return { x: side === 1 ? 204 : 196, y };
+  return { x: 200 + side * 60, y };
+};
+
+/** Shoulder and hand positions in the 400x800 character viewBox (before lean). */
+export const armPoints = (
+  view: View,
+  side: -1 | 1,
+  angle: number,
+  plane = 30,
+  shrug = 0,
+) => {
+  const shoulder = shoulderPos(view, side, shrug);
+  const { hand, elbow } = armGeometry(
+    shoulder,
+    projectArm(angle, plane, view, side),
+    view === "side" ? -1 : -side,
+  );
+  return { shoulder, elbow, hand };
+};
+
 const Limb: React.FC<{ from: Pt; to: Pt; width: number; color?: string }> = ({
   from,
   to,
@@ -114,11 +150,7 @@ const Arm: React.FC<{
   // unit direction used for sleeve orientation (fallback: pointing at camera)
   const u = len > 0.05 ? { x: dir.x / len, y: dir.y / len } : { x: 0, y: 1 };
   const n = { x: -u.y, y: u.x };
-  const elbow = { x: shoulder.x + dir.x * UPPER, y: shoulder.y + dir.y * UPPER };
-  const bend = deg(8 * bendSign);
-  const fx = dir.x * Math.cos(bend) - dir.y * Math.sin(bend);
-  const fy = dir.x * Math.sin(bend) + dir.y * Math.cos(bend);
-  const hand = { x: elbow.x + fx * FORE, y: elbow.y + fy * FORE };
+  const { elbow, hand } = armGeometry(shoulder, dir, bendSign);
 
   // oversized sleeve with a rounded shoulder cap
   const outSign = n.x * (shoulder.x - 200) + n.y * (shoulder.y - 400) >= 0 ? 1 : -1;
@@ -465,6 +497,8 @@ export const Character: React.FC<CharacterProps> = (props) => {
   const {
     view,
     armAngle = 6,
+    armAngleL,
+    armAngleR,
     armPlane = 30,
     shrug = 0,
     lean = 0,
@@ -473,6 +507,8 @@ export const Character: React.FC<CharacterProps> = (props) => {
     hairColor = "#111111",
   } = props;
   const shoulderY = 276 - shrug * 18;
+  const angleFor = (s: -1 | 1) =>
+    s === -1 ? (armAngleL ?? armAngle) : (armAngleR ?? armAngle);
 
   const alert = (x: number) =>
     shoulderAlert > 0 ? (
@@ -487,7 +523,7 @@ export const Character: React.FC<CharacterProps> = (props) => {
       <>
         <Arm
           shoulder={{ x: 196, y: shoulderY }}
-          dir={projectArm(armAngle, armPlane, view, -1)}
+          dir={projectArm(angleFor(-1), armPlane, view, -1)}
           bendSign={-1}
           view={view}
           dumbbells={dumbbells}
@@ -502,7 +538,7 @@ export const Character: React.FC<CharacterProps> = (props) => {
         {alert(204)}
         <Arm
           shoulder={{ x: 204, y: shoulderY }}
-          dir={projectArm(armAngle, armPlane, view, 1)}
+          dir={projectArm(angleFor(1), armPlane, view, 1)}
           bendSign={-1}
           view={view}
           dumbbells={dumbbells}
@@ -524,7 +560,7 @@ export const Character: React.FC<CharacterProps> = (props) => {
           <Arm
             key={s}
             shoulder={{ x: 200 + s * 60, y: shoulderY }}
-            dir={projectArm(armAngle, armPlane, view, s as -1 | 1)}
+            dir={projectArm(angleFor(s as -1 | 1), armPlane, view, s as -1 | 1)}
             bendSign={-s}
             view={view}
             dumbbells={dumbbells}
