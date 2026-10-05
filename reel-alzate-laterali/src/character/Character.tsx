@@ -1,11 +1,9 @@
 import React from "react";
 
-export type CharacterStyle = "cartoon" | "white" | "sketch";
 export type View = "front" | "side" | "back";
 
 export type CharacterProps = {
   readonly view: View;
-  readonly variant?: CharacterStyle;
   /** Arm elevation in degrees: 0 = arms down, 90 = arms horizontal */
   readonly armAngle?: number;
   /** Plane of elevation in degrees: 0 = frontal plane, 30 = scapular plane */
@@ -19,94 +17,39 @@ export type CharacterProps = {
   /** 0..1 open amount when mouth = talk */
   readonly talk?: number;
   readonly blink?: boolean;
-  /** Pencil wobble seed for sketch style */
-  readonly seed?: number;
-  /** Highlight shoulder (rotator cuff) in red */
+  /** 0..1 red highlight on the shoulder (rotator cuff) */
   readonly shoulderAlert?: number;
+  readonly hairColor?: string;
 };
 
-type Palette = {
-  skin: string;
-  skinShade: string;
-  hair: string;
-  hairShade: string;
-  shirt: string;
-  shirtShade: string;
-  shorts: string;
-  shoe: string;
-  shoeAccent: string;
-  line: string;
-  lineW: number;
-  eye: string;
-  blush: string;
-  dumbbell: string;
-  dumbbellLight: string;
+export const COLORS = {
+  line: "#111111",
+  skin: "#FFFFFF",
+  skinShade: "#ECECEC",
+  shirt: "#141414",
+  shirtFold: "#3A3A3A",
+  denim: "#4F78AE",
+  denimShade: "#3E6396",
+  denimStitch: "#9DBBE0",
+  shoe: "#FFFFFF",
+  sole: "#E9E9E9",
+  dumbbell: "#2A2A2A",
+  dumbbellLight: "#6E6E6E",
+  paper: "#F6F4EF",
 };
 
-export const PALETTES: Record<CharacterStyle, Palette> = {
-  cartoon: {
-    skin: "#F7C9A3",
-    skinShade: "#E9AE84",
-    hair: "#7A4A2B",
-    hairShade: "#5C3520",
-    shirt: "#FF5A36",
-    shirtShade: "#E2421F",
-    shorts: "#1F2A44",
-    shoe: "#FFFFFF",
-    shoeAccent: "#FF5A36",
-    line: "#1B1F2E",
-    lineW: 5,
-    eye: "#1B1F2E",
-    blush: "#FF8C7A",
-    dumbbell: "#2C3142",
-    dumbbellLight: "#596079",
-  },
-  white: {
-    skin: "#FFFFFF",
-    skinShade: "#DDE3EE",
-    hair: "#FFFFFF",
-    hairShade: "#DDE3EE",
-    shirt: "#FFFFFF",
-    shirtShade: "#DDE3EE",
-    shorts: "#F1F4F9",
-    shoe: "#FFFFFF",
-    shoeAccent: "#DDE3EE",
-    line: "#B9C3D6",
-    lineW: 2,
-    eye: "#16204A",
-    blush: "transparent",
-    dumbbell: "#16204A",
-    dumbbellLight: "#3B4A86",
-  },
-  sketch: {
-    skin: "#F6DCC4",
-    skinShade: "#EBC4A3",
-    hair: "#8A5A3B",
-    hairShade: "#6E432A",
-    shirt: "#A9D2EE",
-    shirtShade: "#86BCE0",
-    shorts: "#4E5A70",
-    shoe: "#FBF7EE",
-    shoeAccent: "#A9D2EE",
-    line: "#2E2A26",
-    lineW: 3.5,
-    eye: "#2E2A26",
-    blush: "#F2A49A",
-    dumbbell: "#3D3A36",
-    dumbbellLight: "#6B665F",
-  },
-};
-
-const UPPER = 100;
-const FORE = 92;
+const C = COLORS;
+const LW = 4.5;
+const UPPER = 98;
+const FORE = 90;
 
 const deg = (d: number) => (d * Math.PI) / 180;
 
 type Pt = { x: number; y: number };
 
 /**
- * Projects the 3D arm direction onto the 2D screen for a given view.
- * side: -1 = character's right arm, +1 = character's left arm
+ * Projects the 3D arm direction onto the screen for a given view.
+ * side: -1 = arm that appears on screen-left in front view, +1 = screen-right
  */
 const projectArm = (
   theta: number,
@@ -117,27 +60,24 @@ const projectArm = (
   const lateral = Math.sin(deg(theta)) * Math.cos(deg(plane));
   const forward = Math.sin(deg(theta)) * Math.sin(deg(plane));
   const down = Math.cos(deg(theta));
-  if (view === "front") return { x: side * lateral, y: down };
-  if (view === "back") return { x: -side * lateral, y: down };
-  // side view: character faces screen-right
-  return { x: forward, y: down };
+  if (view === "side") return { x: forward, y: down };
+  return { x: side * lateral, y: down };
 };
 
-const Limb: React.FC<{
-  from: Pt;
-  to: Pt;
-  width: number;
-  color: string;
-  p: Palette;
-}> = ({ from, to, width, color, p }) => (
+const Limb: React.FC<{ from: Pt; to: Pt; width: number; color?: string }> = ({
+  from,
+  to,
+  width,
+  color = C.skin,
+}) => (
   <>
     <line
       x1={from.x}
       y1={from.y}
       x2={to.x}
       y2={to.y}
-      stroke={p.line}
-      strokeWidth={width + p.lineW * 2}
+      stroke={C.line}
+      strokeWidth={width + LW * 2}
       strokeLinecap="round"
     />
     <line
@@ -152,133 +92,114 @@ const Limb: React.FC<{
   </>
 );
 
-const hexPoints = (cx: number, cy: number, r: number, rot = 0) =>
+const hexPoints = (cx: number, cy: number, r: number) =>
   Array.from({ length: 6 })
     .map((_, i) => {
-      const a = deg(60 * i + rot);
+      const a = deg(60 * i);
       return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`;
     })
     .join(" ");
 
+/* ---------------- arm ---------------- */
+
 const Arm: React.FC<{
   shoulder: Pt;
   dir: Pt;
-  side: -1 | 1;
+  bendSign: number;
   view: View;
-  p: Palette;
   dumbbells: boolean;
   far?: boolean;
-}> = ({ shoulder, dir, side, view, p, dumbbells, far }) => {
-  const elbow = {
-    x: shoulder.x + dir.x * UPPER,
-    y: shoulder.y + dir.y * UPPER,
-  };
-  // slight elbow bend, bending toward the body midline / forward
-  const bend = deg(view === "side" ? -10 : 10 * side * (view === "back" ? -1 : 1));
+}> = ({ shoulder, dir, bendSign, view, dumbbells, far }) => {
+  const len = Math.hypot(dir.x, dir.y);
+  // unit direction used for sleeve orientation (fallback: pointing at camera)
+  const u = len > 0.05 ? { x: dir.x / len, y: dir.y / len } : { x: 0, y: 1 };
+  const n = { x: -u.y, y: u.x };
+  const elbow = { x: shoulder.x + dir.x * UPPER, y: shoulder.y + dir.y * UPPER };
+  const bend = deg(8 * bendSign);
   const fx = dir.x * Math.cos(bend) - dir.y * Math.sin(bend);
   const fy = dir.x * Math.sin(bend) + dir.y * Math.cos(bend);
   const hand = { x: elbow.x + fx * FORE, y: elbow.y + fy * FORE };
-  const sleeveEnd = {
-    x: shoulder.x + dir.x * UPPER * 0.48,
-    y: shoulder.y + dir.y * UPPER * 0.48,
-  };
-  const skin = far ? p.skinShade : p.skin;
-  const shirt = far ? p.shirtShade : p.shirt;
+
+  // oversized sleeve with a rounded shoulder cap
+  const outSign = n.x * (shoulder.x - 200) + n.y * (shoulder.y - 400) >= 0 ? 1 : -1;
+  const no = { x: n.x * outSign, y: n.y * outSign };
+  const sl = Math.max(len, 0.4) * 60;
+  const s1 = { x: shoulder.x + u.x * sl, y: shoulder.y + u.y * sl };
+  const at = (b: Pt, k: number, j: number) => `${b.x + no.x * k + u.x * j},${b.y + no.y * k + u.y * j}`;
+  const sleeve = `M ${at(shoulder, -22, 16)} Q ${at(shoulder, -4, -26)} ${at(shoulder, 24, -2)} L ${at(s1, 25, 0)} Q ${at(s1, 0, 5)} ${at(s1, -22, 0)} Z`;
+
+  const skin = far ? C.skinShade : C.skin;
 
   const dumbbell = !dumbbells ? null : view === "side" ? (
     <g>
-      <line
-        x1={hand.x - 38}
-        y1={hand.y}
-        x2={hand.x + 38}
-        y2={hand.y}
-        stroke={p.line}
-        strokeWidth={10 + p.lineW}
-        strokeLinecap="round"
-      />
-      <line
-        x1={hand.x - 38}
-        y1={hand.y}
-        x2={hand.x + 38}
-        y2={hand.y}
-        stroke={p.dumbbellLight}
-        strokeWidth={8}
-        strokeLinecap="round"
+      <Limb
+        from={{ x: hand.x - 36, y: hand.y }}
+        to={{ x: hand.x + 36, y: hand.y }}
+        width={6}
+        color={C.dumbbellLight}
       />
       {[-1, 1].map((s) => (
         <rect
           key={s}
-          x={hand.x + s * 34 - 11}
-          y={hand.y - 24}
-          width={22}
-          height={48}
+          x={hand.x + s * 33 - 10}
+          y={hand.y - 22}
+          width={20}
+          height={44}
           rx={5}
-          fill={p.dumbbell}
-          stroke={p.line}
-          strokeWidth={p.lineW}
+          fill={C.dumbbell}
+          stroke={C.line}
+          strokeWidth={LW}
         />
       ))}
     </g>
   ) : (
     <g>
       <polygon
-        points={hexPoints(hand.x, hand.y + 2, 24, 0)}
-        fill={p.dumbbell}
-        stroke={p.line}
-        strokeWidth={p.lineW}
+        points={hexPoints(hand.x, hand.y + 3, 22)}
+        fill={C.dumbbell}
+        stroke={C.line}
+        strokeWidth={LW}
         strokeLinejoin="round"
       />
-      <circle cx={hand.x} cy={hand.y + 2} r={9} fill={p.dumbbellLight} />
+      <circle cx={hand.x} cy={hand.y + 3} r={8} fill={C.dumbbellLight} />
     </g>
   );
 
   return (
     <g>
-      <Limb from={elbow} to={hand} width={24} color={skin} p={p} />
-      <Limb from={shoulder} to={elbow} width={29} color={skin} p={p} />
-      <Limb from={shoulder} to={sleeveEnd} width={40} color={shirt} p={p} />
-      {view === "side" ? dumbbell : null}
-      <circle
-        cx={hand.x}
-        cy={hand.y}
-        r={15}
-        fill={skin}
-        stroke={p.line}
-        strokeWidth={p.lineW}
+      <Limb from={elbow} to={hand} width={15} color={skin} />
+      <Limb from={shoulder} to={elbow} width={16} color={skin} />
+      <path
+        d={sleeve}
+        fill={C.shirt}
+        stroke={C.line}
+        strokeWidth={LW}
+        strokeLinejoin="round"
       />
+      {view === "side" ? dumbbell : null}
+      <circle cx={hand.x} cy={hand.y} r={11} fill={skin} stroke={C.line} strokeWidth={LW} />
       {view !== "side" ? dumbbell : null}
     </g>
   );
 };
 
-/* ---------------- heads ---------------- */
+/* ---------------- face parts ---------------- */
 
-const Eyes: React.FC<{ xs: number[]; y: number; p: Palette; blink: boolean }> = ({
-  xs,
-  y,
-  p,
-  blink,
-}) => (
-  <>
-    {xs.map((x) =>
-      blink ? (
-        <path
-          key={x}
-          d={`M ${x - 8} ${y} Q ${x} ${y + 5} ${x + 8} ${y}`}
-          stroke={p.eye}
-          strokeWidth={4}
-          fill="none"
-          strokeLinecap="round"
-        />
-      ) : (
-        <g key={x}>
-          <ellipse cx={x} cy={y} rx={7.5} ry={10} fill={p.eye} />
-          <circle cx={x + 2.5} cy={y - 3.5} r={2.8} fill="#fff" />
-        </g>
-      ),
-    )}
-  </>
-);
+const Eye: React.FC<{ x: number; y: number; blink: boolean }> = ({ x, y, blink }) =>
+  blink ? (
+    <path
+      d={`M ${x - 11} ${y + 2} Q ${x} ${y + 9} ${x + 11} ${y + 2}`}
+      stroke={C.line}
+      strokeWidth={4.5}
+      fill="none"
+      strokeLinecap="round"
+    />
+  ) : (
+    <g>
+      <ellipse cx={x} cy={y} rx={10.5} ry={14.5} fill={C.line} />
+      <circle cx={x + 3.5} cy={y - 5} r={3.6} fill="#fff" />
+    </g>
+  );
 
 const mouthPath = (
   mouth: CharacterProps["mouth"],
@@ -291,326 +212,275 @@ const mouthPath = (
     return `M ${cx - w} ${y + 6} Q ${cx - w / 2} ${y - 2} ${cx} ${y + 4} Q ${cx + w / 2} ${y + 10} ${cx + w} ${y + 2}`;
   if (mouth === "open" || mouth === "talk") {
     const o = mouth === "open" ? 1 : talk;
-    return `M ${cx - w} ${y} Q ${cx} ${y + 4 + o * 16} ${cx + w} ${y} Q ${cx} ${y + 2 + o * 4} ${cx - w} ${y} Z`;
+    return `M ${cx - w} ${y} Q ${cx} ${y + 4 + o * 18} ${cx + w} ${y} Q ${cx} ${y + 2 + o * 4} ${cx - w} ${y} Z`;
   }
-  return `M ${cx - w} ${y} Q ${cx} ${y + 14} ${cx + w} ${y}`;
+  return `M ${cx - w} ${y} Q ${cx + 2} ${y + 13} ${cx + w} ${y - 4}`;
 };
 
-const HeadFront: React.FC<{ p: Palette; props: CharacterProps }> = ({
-  p,
+const Mouth: React.FC<{ props: CharacterProps; cx: number; y: number; w: number }> = ({
   props,
+  cx,
+  y,
+  w,
 }) => {
-  const closed = props.mouth === "talk" || props.mouth === "open";
+  const filled = props.mouth === "talk" || props.mouth === "open";
   return (
-    <g>
-      {/* ears */}
-      {[136, 264].map((x) => (
-        <ellipse
-          key={x}
-          cx={x}
-          cy={152}
-          rx={11}
-          ry={17}
-          fill={p.skin}
-          stroke={p.line}
-          strokeWidth={p.lineW}
-        />
-      ))}
-      {/* face */}
-      <path
-        d="M 140 120 Q 140 70 200 70 Q 260 70 260 120 L 260 160 Q 258 212 200 214 Q 142 212 140 160 Z"
-        fill={p.skin}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-        strokeLinejoin="round"
-      />
-      {/* hair: short, slightly spiky */}
-      <path
-        d="M 134 146 Q 126 104 146 82 L 140 60 L 166 70 L 170 40 L 194 60 L 206 30 L 222 58 L 244 40 L 246 70 L 268 64 L 258 88 Q 274 108 266 146 Q 258 118 246 108 Q 232 120 212 110 Q 196 122 178 112 Q 158 120 146 112 Q 138 124 134 146 Z"
-        fill={p.hair}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M 172 74 L 182 62 M 210 64 L 216 52 M 236 72 L 242 62"
-        stroke={p.hairShade}
-        strokeWidth={4}
-        strokeLinecap="round"
-      />
-      {/* brows */}
-      <path
-        d="M 164 130 Q 176 123 188 128 M 212 128 Q 224 123 236 130"
-        stroke={p.hairShade === "#DDE3EE" ? p.eye : p.hairShade}
-        strokeWidth={6}
-        fill="none"
-        strokeLinecap="round"
-      />
-      <Eyes xs={[176, 224]} y={152} p={p} blink={Boolean(props.blink)} />
-      {/* nose */}
-      <path
-        d="M 198 162 Q 204 172 196 176"
-        stroke={p.skinShade === "#DDE3EE" ? p.line : p.skinShade}
-        strokeWidth={4}
-        fill="none"
-        strokeLinecap="round"
-      />
-      {/* blush */}
-      <circle cx={158} cy={176} r={11} fill={p.blush} opacity={0.35} />
-      <circle cx={242} cy={176} r={11} fill={p.blush} opacity={0.35} />
-      {/* mouth */}
-      <path
-        d={mouthPath(props.mouth, props.talk ?? 0, 200, 188, 16)}
-        stroke={p.eye}
-        strokeWidth={4.5}
-        fill={closed ? "#7A2E2E" : "none"}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </g>
+    <path
+      d={mouthPath(props.mouth, props.talk ?? 0, cx, y, w)}
+      stroke={C.line}
+      strokeWidth={4}
+      fill={filled ? "#5B1F1F" : "none"}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
   );
 };
 
-const HeadBack: React.FC<{ p: Palette }> = ({ p }) => (
+const Ear: React.FC<{ x: number; y: number; flip?: boolean }> = ({ x, y, flip }) => (
   <g>
-    {[136, 264].map((x) => (
-      <ellipse
-        key={x}
-        cx={x}
-        cy={152}
-        rx={11}
-        ry={17}
-        fill={p.skin}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-      />
-    ))}
+    <ellipse cx={x} cy={y} rx={15} ry={19} fill={C.skin} stroke={C.line} strokeWidth={LW} />
     <path
-      d="M 140 120 Q 140 70 200 70 Q 260 70 260 120 L 260 160 Q 258 212 200 214 Q 142 212 140 160 Z"
-      fill={p.skin}
-      stroke={p.line}
-      strokeWidth={p.lineW}
-    />
-    <path
-      d="M 136 160 Q 124 104 146 82 L 140 60 L 166 70 L 170 40 L 194 60 L 206 30 L 222 58 L 244 40 L 246 70 L 268 64 L 258 88 Q 276 110 264 160 Q 258 190 236 196 Q 220 186 200 192 Q 180 186 164 196 Q 142 190 136 160 Z"
-      fill={p.hair}
-      stroke={p.line}
-      strokeWidth={p.lineW}
-      strokeLinejoin="round"
-    />
-    <path
-      d="M 180 120 L 186 106 M 214 128 L 220 112 M 200 160 L 204 146 M 236 150 L 242 136 M 162 150 L 166 136"
-      stroke={p.hairShade}
-      strokeWidth={4}
+      d={flip ? `M ${x + 5} ${y - 8} Q ${x - 6} ${y} ${x + 4} ${y + 9}` : `M ${x - 5} ${y - 8} Q ${x + 6} ${y} ${x - 4} ${y + 9}`}
+      stroke={C.line}
+      strokeWidth={3}
+      fill="none"
       strokeLinecap="round"
     />
   </g>
 );
 
-const HeadSide: React.FC<{ p: Palette; props: CharacterProps }> = ({
-  p,
-  props,
-}) => {
-  const closed = props.mouth === "talk" || props.mouth === "open";
-  return (
-    <g>
-      <path
-        d="M 146 124 Q 146 70 202 70 Q 252 70 258 118 L 262 134 Q 276 150 262 158 Q 262 200 230 212 Q 200 220 176 206 Q 150 190 146 160 Z"
-        fill={p.skin}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-        strokeLinejoin="round"
-      />
-      {/* hair from the side */}
-      <path
-        d="M 140 168 Q 128 110 150 84 L 138 70 L 166 70 L 160 44 L 188 60 L 196 32 L 216 58 L 236 40 L 240 70 L 262 66 L 254 92 Q 262 104 262 116 Q 244 106 228 112 Q 212 104 200 118 Q 190 132 192 150 Q 176 140 168 158 Q 160 172 140 168 Z"
-        fill={p.hair}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M 168 80 L 176 66 M 204 70 L 210 56 M 158 120 L 164 106"
-        stroke={p.hairShade}
-        strokeWidth={4}
-        strokeLinecap="round"
-      />
-      {/* ear */}
-      <ellipse
-        cx={182}
-        cy={158}
-        rx={11}
-        ry={17}
-        fill={p.skin}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-      />
-      <path
-        d="M 228 128 Q 238 122 250 126"
-        stroke={p.hairShade === "#DDE3EE" ? p.eye : p.hairShade}
-        strokeWidth={6}
-        fill="none"
-        strokeLinecap="round"
-      />
-      <Eyes xs={[238]} y={150} p={p} blink={Boolean(props.blink)} />
-      <circle cx={232} cy={178} r={10} fill={p.blush} opacity={0.35} />
-      <path
-        d={mouthPath(props.mouth, props.talk ?? 0, 248, 190, 10)}
-        stroke={p.eye}
-        strokeWidth={4.5}
-        fill={closed ? "#7A2E2E" : "none"}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </g>
-  );
-};
+const HAIR_STRANDS = "#4A4A4A";
 
-/* ---------------- body ---------------- */
+/* ---------------- heads ---------------- */
 
-const Legs: React.FC<{ p: Palette; view: View }> = ({ p, view }) => {
-  if (view === "side") {
-    return (
-      <g>
-        <Limb from={{ x: 194, y: 520 }} to={{ x: 190, y: 742 }} width={34} color={p.skinShade} p={p} />
-        <Limb from={{ x: 206, y: 520 }} to={{ x: 206, y: 742 }} width={34} color={p.skin} p={p} />
-        {[0, 1].map((i) => (
-          <path
-            key={i}
-            d={`M ${178 + i * 12} 742 L ${222 + i * 12} 742 Q ${252 + i * 12} 750 ${254 + i * 12} 772 L ${176 + i * 12} 772 Q ${170 + i * 12} 756 ${178 + i * 12} 742 Z`}
-            fill={i === 0 ? p.shoeAccent : p.shoe}
-            stroke={p.line}
-            strokeWidth={p.lineW}
-            strokeLinejoin="round"
-          />
-        ))}
-      </g>
-    );
-  }
-  return (
-    <g>
-      <Limb from={{ x: 176, y: 520 }} to={{ x: 172, y: 742 }} width={34} color={p.skin} p={p} />
-      <Limb from={{ x: 224, y: 520 }} to={{ x: 228, y: 742 }} width={34} color={p.skin} p={p} />
-      {[-1, 1].map((s) => {
-        const cx = 200 + s * 30;
-        return (
-          <g key={s}>
-            <path
-              d={`M ${cx - 24} 772 Q ${cx - 26} 742 ${cx} 738 Q ${cx + 26} 742 ${cx + 24} 772 Z`}
-              fill={p.shoe}
-              stroke={p.line}
-              strokeWidth={p.lineW}
-              strokeLinejoin="round"
-            />
-            <path
-              d={`M ${cx - 22} 762 L ${cx + 22} 762`}
-              stroke={p.shoeAccent}
-              strokeWidth={6}
-            />
-          </g>
-        );
-      })}
-    </g>
-  );
-};
+const HEAD = "M 200 72 C 252 72 276 110 276 156 C 276 206 244 236 200 236 C 156 236 124 206 124 156 C 124 110 148 72 200 72 Z";
 
-const TorsoFront: React.FC<{ p: Palette; view: View; shrug: number }> = ({
-  p,
-  view,
-  shrug,
-}) => {
-  const sy = 240 - shrug * 16;
-  return (
-    <g>
-      {/* neck */}
-      <rect x={182} y={196} width={36} height={52} rx={10} fill={p.skinShade} stroke={p.line} strokeWidth={p.lineW} />
-      {/* traps when shrugging */}
-      <path
-        d={`M 150 ${sy + 4} Q 175 ${226 - shrug * 26} 186 ${222 - shrug * 6} L 214 ${222 - shrug * 6} Q 225 ${226 - shrug * 26} 250 ${sy + 4} Z`}
-        fill={view === "back" ? p.shirt : p.shirt}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-        strokeLinejoin="round"
-      />
-      <path
-        d={`M 136 ${sy + 2} Q 200 ${sy - 10} 264 ${sy + 2} Q 280 ${sy + 14} 276 ${sy + 34} Q 262 350 248 448 L 152 448 Q 138 350 124 ${sy + 34} Q 120 ${sy + 14} 136 ${sy + 2} Z`}
-        fill={p.shirt}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-        strokeLinejoin="round"
-      />
-      {view === "front" ? (
-        <>
-          <path
-            d={`M 180 ${sy - 4} Q 200 ${sy + 22} 220 ${sy - 4}`}
-            fill={p.skinShade}
-            stroke={p.line}
-            strokeWidth={p.lineW}
-            strokeLinejoin="round"
-          />
-          {/* small chest logo */}
-          <path d="M 222 300 l 10 -10 l 10 10 l -10 10 z" fill="#fff" opacity={p.shirt === "#FFFFFF" ? 0 : 0.9} />
-        </>
-      ) : (
-        <>
-          {/* shoulder blades hint */}
-          <path
-            d={`M 160 ${sy + 40} Q 172 ${sy + 80} 186 ${sy + 96} M 240 ${sy + 40} Q 228 ${sy + 80} 214 ${sy + 96}`}
-            stroke={p.shirtShade}
-            strokeWidth={4}
-            fill="none"
-            strokeLinecap="round"
-          />
-        </>
-      )}
-      {/* shorts */}
-      <path
-        d="M 150 440 L 250 440 L 262 540 L 208 540 L 200 486 L 192 540 L 138 540 Z"
-        fill={p.shorts}
-        stroke={p.line}
-        strokeWidth={p.lineW}
-        strokeLinejoin="round"
-      />
-    </g>
-  );
-};
-
-const TorsoSide: React.FC<{ p: Palette; shrug: number }> = ({ p, shrug }) => (
+const HeadFront: React.FC<{ props: CharacterProps; hair: string }> = ({ props, hair }) => (
   <g>
-    <rect x={184} y={196} width={34} height={52} rx={10} fill={p.skinShade} stroke={p.line} strokeWidth={p.lineW} />
+    <Ear x={126} y={170} />
+    <Ear x={274} y={170} flip />
+    <path d={HEAD} fill={C.skin} stroke={C.line} strokeWidth={LW} />
+    {/* messy hair, fringe swept to the left */}
     <path
-      d={`M 170 ${240 - shrug * 14} Q 200 ${226 - shrug * 14} 232 ${240 - shrug * 10} Q 252 300 242 360 Q 236 410 234 448 L 168 448 Q 160 380 164 320 Q 160 270 170 ${240 - shrug * 14} Z`}
-      fill={p.shirt}
-      stroke={p.line}
-      strokeWidth={p.lineW}
+      d="M 134 186 C 116 152 114 124 122 104 L 100 110 C 110 90 122 78 138 70 L 126 52 C 148 50 160 48 172 52 C 186 34 208 28 228 32 L 236 14 C 246 28 252 34 258 42 L 282 38 C 278 52 280 62 284 72 L 300 82 C 290 92 286 104 280 120 L 278 140 C 272 116 262 100 248 94 C 236 100 222 102 210 96 C 198 114 178 124 156 122 C 150 136 140 160 134 186 Z"
+      fill={hair}
+      stroke={C.line}
+      strokeWidth={LW}
       strokeLinejoin="round"
     />
     <path
-      d="M 166 440 L 236 440 L 240 540 L 164 540 Z"
-      fill={p.shorts}
-      stroke={p.line}
-      strokeWidth={p.lineW}
+      d="M 150 92 C 168 80 190 74 212 70 M 168 108 C 186 100 200 90 210 76 M 236 56 C 248 64 258 74 264 90 M 136 120 C 140 104 146 94 156 86"
+      stroke={HAIR_STRANDS}
+      strokeWidth={3}
+      fill="none"
+      strokeLinecap="round"
+    />
+    {/* brows */}
+    <path
+      d="M 164 146 Q 176 134 190 142 M 214 140 Q 228 132 240 144"
+      stroke={C.line}
+      strokeWidth={4}
+      fill="none"
+      strokeLinecap="round"
+    />
+    <Eye x={178} y={170} blink={Boolean(props.blink)} />
+    <Eye x={226} y={170} blink={Boolean(props.blink)} />
+    <Mouth props={props} cx={206} y={202} w={18} />
+  </g>
+);
+
+const HeadBack: React.FC<{ hair: string }> = ({ hair }) => (
+  <g>
+    <Ear x={126} y={170} flip />
+    <Ear x={274} y={170} />
+    <path d={HEAD} fill={C.skin} stroke={C.line} strokeWidth={LW} />
+    <path
+      d="M 128 186 C 114 152 114 124 122 104 L 100 110 C 110 90 122 78 138 70 L 126 52 C 148 50 160 48 172 52 C 186 34 208 28 228 32 L 236 14 C 246 28 252 34 258 42 L 282 38 C 278 52 280 62 284 72 L 300 82 C 290 92 286 104 280 120 C 282 150 278 176 268 196 Q 250 204 236 198 Q 220 210 202 204 Q 184 210 168 200 Q 150 206 140 194 Z"
+      fill={hair}
+      stroke={C.line}
+      strokeWidth={LW}
       strokeLinejoin="round"
+    />
+    <path
+      d="M 160 100 C 180 120 190 150 186 180 M 214 92 C 226 120 230 150 222 184 M 250 100 C 258 126 260 150 252 178 M 142 130 C 150 150 154 168 150 188"
+      stroke={HAIR_STRANDS}
+      strokeWidth={3}
+      fill="none"
+      strokeLinecap="round"
     />
   </g>
 );
 
+const HeadSide: React.FC<{ props: CharacterProps; hair: string }> = ({ props, hair }) => (
+  <g>
+    <path
+      d="M 196 72 C 248 72 276 108 278 150 C 286 160 284 170 278 176 C 274 210 246 236 204 236 C 160 236 128 206 128 158 C 128 110 150 72 196 72 Z"
+      fill={C.skin}
+      stroke={C.line}
+      strokeWidth={LW}
+    />
+    <path
+      d="M 132 196 C 116 168 114 128 130 100 L 110 96 C 124 82 138 74 152 70 L 146 50 C 166 50 178 50 188 54 C 204 36 226 32 246 38 L 256 22 C 262 36 266 44 270 54 L 292 58 C 284 70 282 80 282 92 C 270 88 258 92 248 102 C 236 98 222 104 214 116 C 202 122 196 136 196 152 C 184 144 170 150 166 166 C 160 184 150 194 132 196 Z"
+      fill={hair}
+      stroke={C.line}
+      strokeWidth={LW}
+      strokeLinejoin="round"
+    />
+    <path
+      d="M 150 96 C 172 82 200 72 228 66 M 140 130 C 150 112 164 100 182 92 M 154 170 C 160 150 168 136 180 126"
+      stroke={HAIR_STRANDS}
+      strokeWidth={3}
+      fill="none"
+      strokeLinecap="round"
+    />
+    <Ear x={188} y={174} />
+    <path d="M 232 140 Q 244 132 256 140" stroke={C.line} strokeWidth={4} fill="none" strokeLinecap="round" />
+    <Eye x={244} y={166} blink={Boolean(props.blink)} />
+    <Mouth props={props} cx={254} y={204} w={12} />
+  </g>
+);
+
+/* ---------------- body ---------------- */
+
+const Sneaker: React.FC<{ cx: number; front: boolean }> = ({ cx, front }) => (
+  <g>
+    <path
+      d={`M ${cx - 32} 778 Q ${cx - 36} 748 ${cx - 14} 738 L ${cx + 14} 738 Q ${cx + 36} 748 ${cx + 32} 778 Z`}
+      fill={C.shoe}
+      stroke={C.line}
+      strokeWidth={LW}
+      strokeLinejoin="round"
+    />
+    <path d={`M ${cx - 33} 766 L ${cx + 33} 766`} stroke={C.line} strokeWidth={3} />
+    {front ? (
+      <>
+        <path d={`M ${cx - 22} 766 Q ${cx} 752 ${cx + 22} 766`} stroke={C.line} strokeWidth={3} fill="none" />
+        <path
+          d={`M ${cx - 8} 744 L ${cx + 8} 750 M ${cx + 8} 744 L ${cx - 8} 750`}
+          stroke={C.line}
+          strokeWidth={2.5}
+          strokeLinecap="round"
+        />
+      </>
+    ) : null}
+  </g>
+);
+
+const Shorts: React.FC = () => (
+  <g>
+    <path
+      d="M 138 452 L 262 452 L 276 596 L 210 600 L 200 520 L 190 600 L 124 596 Z"
+      fill={C.denim}
+      stroke={C.line}
+      strokeWidth={LW}
+      strokeLinejoin="round"
+    />
+    {/* rolled cuffs */}
+    {[
+      "M 122 588 L 192 592 L 192 614 L 120 610 Z",
+      "M 208 592 L 278 588 L 280 610 L 208 614 Z",
+    ].map((d) => (
+      <path key={d} d={d} fill={C.denimShade} stroke={C.line} strokeWidth={LW} strokeLinejoin="round" />
+    ))}
+    <path
+      d="M 200 462 L 200 520 M 154 466 Q 166 490 180 478 M 246 466 Q 234 490 220 478"
+      stroke={C.denimStitch}
+      strokeWidth={2.5}
+      strokeDasharray="5 5"
+      fill="none"
+    />
+  </g>
+);
+
+const TorsoFront: React.FC<{ view: View; shrug: number }> = ({ view, shrug }) => {
+  const sy = 262 - shrug * 18;
+  return (
+    <g>
+      {/* thin neck */}
+      <Limb from={{ x: 200, y: 226 }} to={{ x: 200, y: sy + 4 }} width={18} />
+      <Shorts />
+      {/* oversized black tee */}
+      <path
+        d={`M 178 ${sy - 4} Q 200 ${sy + 6} 222 ${sy - 4} L 262 ${sy + 4} Q 276 ${sy + 12} 272 ${sy + 34} L 266 470 Q 232 482 200 474 Q 168 482 134 470 L 128 ${sy + 34} Q 124 ${sy + 12} 138 ${sy + 4} Z`}
+        fill={C.shirt}
+        stroke={C.line}
+        strokeWidth={LW}
+        strokeLinejoin="round"
+      />
+      {view === "front" ? (
+        <path
+          d={`M 180 ${sy - 2} Q 200 ${sy + 12} 220 ${sy - 2}`}
+          stroke={C.shirtFold}
+          strokeWidth={3}
+          fill="none"
+        />
+      ) : null}
+      <path
+        d={
+          view === "front"
+            ? "M 160 400 Q 176 430 168 462 M 236 380 Q 246 420 240 460"
+            : `M 166 ${sy + 40} Q 178 ${sy + 76} 190 ${sy + 92} M 234 ${sy + 40} Q 222 ${sy + 76} 210 ${sy + 92}`
+        }
+        stroke={C.shirtFold}
+        strokeWidth={3}
+        fill="none"
+        strokeLinecap="round"
+      />
+    </g>
+  );
+};
+
+const TorsoSide: React.FC<{ shrug: number }> = ({ shrug }) => {
+  const sy = 262 - shrug * 18;
+  return (
+    <g>
+      <Limb from={{ x: 202, y: 226 }} to={{ x: 202, y: sy + 4 }} width={18} />
+      <path
+        d="M 160 452 L 246 452 L 252 596 L 156 596 Z"
+        fill={C.denim}
+        stroke={C.line}
+        strokeWidth={LW}
+        strokeLinejoin="round"
+      />
+      <path
+        d="M 154 588 L 254 588 L 256 612 L 152 612 Z"
+        fill={C.denimShade}
+        stroke={C.line}
+        strokeWidth={LW}
+        strokeLinejoin="round"
+      />
+      <path
+        d={`M 176 ${sy} Q 202 ${sy - 8} 228 ${sy} Q 250 ${sy + 40} 248 470 Q 206 480 160 470 Q 156 ${sy + 40} 176 ${sy} Z`}
+        fill={C.shirt}
+        stroke={C.line}
+        strokeWidth={LW}
+        strokeLinejoin="round"
+      />
+      <path d="M 226 380 Q 236 420 230 462" stroke={C.shirtFold} strokeWidth={3} fill="none" strokeLinecap="round" />
+    </g>
+  );
+};
+
 export const Character: React.FC<CharacterProps> = (props) => {
   const {
     view,
-    variant = "cartoon",
-    armAngle = 8,
+    armAngle = 6,
     armPlane = 30,
     shrug = 0,
     lean = 0,
     dumbbells = true,
-    seed = 1,
     shoulderAlert = 0,
+    hairColor = "#111111",
   } = props;
-  const p = PALETTES[variant];
-  const shoulderY = 262 - shrug * 16;
+  const shoulderY = 276 - shrug * 18;
 
-  const filterId = `pencil-${seed}`;
+  const alert = (x: number) =>
+    shoulderAlert > 0 ? (
+      <g key={x}>
+        <circle cx={x} cy={shoulderY} r={40} fill="#FF2D2D" opacity={shoulderAlert * 0.25} />
+        <circle cx={x} cy={shoulderY} r={24} fill="#FF2D2D" opacity={shoulderAlert * 0.55} />
+      </g>
+    ) : null;
 
   const body =
     view === "side" ? (
@@ -618,81 +488,77 @@ export const Character: React.FC<CharacterProps> = (props) => {
         <Arm
           shoulder={{ x: 196, y: shoulderY }}
           dir={projectArm(armAngle, armPlane, view, -1)}
-          side={-1}
+          bendSign={-1}
           view={view}
-          p={p}
           dumbbells={dumbbells}
           far
         />
-        <Legs p={p} view={view} />
-        <TorsoSide p={p} shrug={shrug} />
-        <HeadSide p={p} props={props} />
-        {shoulderAlert > 0 ? (
-          <circle cx={202} cy={shoulderY} r={34} fill="#FF2D2D" opacity={shoulderAlert * 0.55} />
-        ) : null}
+        <Limb from={{ x: 196, y: 604 }} to={{ x: 194, y: 740 }} width={15} color={C.skinShade} />
+        <Limb from={{ x: 210, y: 604 }} to={{ x: 210, y: 740 }} width={15} />
+        <SideShoe x={170} />
+        <SideShoe x={186} />
+        <TorsoSide shrug={shrug} />
+        <HeadSide props={props} hair={hairColor} />
+        {alert(204)}
         <Arm
-          shoulder={{ x: 202, y: shoulderY }}
+          shoulder={{ x: 204, y: shoulderY }}
           dir={projectArm(armAngle, armPlane, view, 1)}
-          side={1}
+          bendSign={-1}
           view={view}
-          p={p}
           dumbbells={dumbbells}
         />
       </>
     ) : (
       <>
-        <Legs p={p} view={view} />
+        <Limb from={{ x: 166, y: 604 }} to={{ x: 166, y: 742 }} width={15} />
+        <Limb from={{ x: 234, y: 604 }} to={{ x: 234, y: 742 }} width={15} />
+        <Sneaker cx={164} front={view === "front"} />
+        <Sneaker cx={236} front={view === "front"} />
+        <TorsoFront view={view} shrug={shrug} />
+        {view === "front" ? (
+          <HeadFront props={props} hair={hairColor} />
+        ) : (
+          <HeadBack hair={hairColor} />
+        )}
         {[-1, 1].map((s) => (
           <Arm
             key={s}
-            shoulder={{ x: 200 + s * 66, y: shoulderY }}
-            dir={projectArm(
-              armAngle,
-              armPlane,
-              view,
-              (view === "front" ? s : -s) as -1 | 1,
-            )}
-            side={(view === "front" ? s : -s) as -1 | 1}
+            shoulder={{ x: 200 + s * 60, y: shoulderY }}
+            dir={projectArm(armAngle, armPlane, view, s as -1 | 1)}
+            bendSign={-s}
             view={view}
-            p={p}
             dumbbells={dumbbells}
           />
         ))}
-        <TorsoFront p={p} view={view} shrug={shrug} />
-        {view === "front" ? <HeadFront p={p} props={props} /> : <HeadBack p={p} />}
-        {shoulderAlert > 0
-          ? [-1, 1].map((s) => (
-              <circle
-                key={s}
-                cx={200 + s * 66}
-                cy={shoulderY}
-                r={34}
-                fill="#FF2D2D"
-                opacity={shoulderAlert * 0.55}
-              />
-            ))
-          : null}
+        {alert(140)}
+        {alert(260)}
       </>
     );
 
   return (
     <svg viewBox="0 0 400 800" width="100%" height="100%" style={{ overflow: "visible" }}>
-      {variant === "sketch" ? (
-        <defs>
-          <filter id={filterId} x="-10%" y="-10%" width="120%" height="120%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves={3} seed={seed} />
-            <feDisplacementMap in="SourceGraphic" scale={7} />
-          </filter>
-        </defs>
-      ) : null}
-      {/* ground shadow */}
-      <ellipse cx={200} cy={776} rx={110} ry={14} fill="#000" opacity={variant === "white" ? 0.25 : 0.12} />
-      <g
-        transform={`rotate(${-lean} 200 760)`}
-        filter={variant === "sketch" ? `url(#${filterId})` : undefined}
-      >
-        {body}
-      </g>
+      <ellipse cx={200} cy={780} rx={120} ry={13} fill="#000" opacity={0.1} />
+      <g transform={`rotate(${-lean} 200 770)`}>{body}</g>
     </svg>
   );
 };
+
+const SideShoe: React.FC<{ x: number }> = ({ x }) => (
+  <g>
+    <path
+      d={`M ${x} 742 L ${x + 42} 740 Q ${x + 58} 746 ${x + 70} 756 Q ${x + 92} 760 ${x + 92} 778 L ${x - 4} 778 Q ${x - 8} 758 ${x} 742 Z`}
+      fill={C.shoe}
+      stroke={C.line}
+      strokeWidth={LW}
+      strokeLinejoin="round"
+    />
+    <path d={`M ${x - 6} 766 L ${x + 92} 766`} stroke={C.line} strokeWidth={3} />
+    <path d={`M ${x + 66} 766 Q ${x + 74} 756 ${x + 88} 766`} stroke={C.line} strokeWidth={2.5} fill="none" />
+    <path
+      d={`M ${x + 44} 746 L ${x + 52} 752 M ${x + 52} 744 L ${x + 58} 752`}
+      stroke={C.line}
+      strokeWidth={2.5}
+      strokeLinecap="round"
+    />
+  </g>
+);
