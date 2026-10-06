@@ -84,6 +84,7 @@ const clientBase = z.object({
   phone: text(40).regex(/^[+0-9 ()./-]*$/, 'telefono non valido').default(''),
   mode: z.enum(MODES).default('misto'),
   program_months: z.number().int().min(1).max(60).default(12),
+  lessons_target: z.number().int().min(0).max(1000).default(0),
   start_date: dateStr,
   price_total_cents: cents.default(0),
   notes: text(5000).default(''),
@@ -153,8 +154,8 @@ app.post('/api/clients', async (c) => {
   const now = isoNow();
   const end = addDays(addMonths(d.start_date, d.program_months), -1);
   const stmts = [
-    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, start_date, end_date, price_total_cents, notes, created_at, updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.start_date, end, d.price_total_cents, d.notes, now, now),
+    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, created_at, updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, now, now),
     ...insertPayments(c.env, buildPlan(id, d.price_total_cents, plan.installments, plan.first_due_date || d.start_date)),
   ];
   await c.env.DB.batch(stmts);
@@ -180,8 +181,8 @@ app.patch('/api/clients/:id', async (c) => {
   const d = clientBase.partial().parse(await c.req.json());
   const merged = { ...cur, ...Object.fromEntries(Object.entries(d).filter(([, v]) => v !== undefined)) } as ClientRow;
   merged.end_date = addDays(addMonths(merged.start_date, merged.program_months), -1);
-  await run(c.env.DB, `UPDATE clients SET first_name=?, last_name=?, email=?, phone=?, mode=?, program_months=?, start_date=?, end_date=?, price_total_cents=?, notes=?, updated_at=? WHERE id=?`,
-    merged.first_name, merged.last_name, merged.email, merged.phone, merged.mode, merged.program_months, merged.start_date, merged.end_date, merged.price_total_cents, merged.notes, isoNow(), id);
+  await run(c.env.DB, `UPDATE clients SET first_name=?, last_name=?, email=?, phone=?, mode=?, program_months=?, lessons_target=?, start_date=?, end_date=?, price_total_cents=?, notes=?, updated_at=? WHERE id=?`,
+    merged.first_name, merged.last_name, merged.email, merged.phone, merged.mode, merged.program_months, merged.lessons_target, merged.start_date, merged.end_date, merged.price_total_cents, merged.notes, isoNow(), id);
   await logActivity(c.env, actor(c), 'modificato', 'cliente', id, `Modificato ${fullName(merged)}`);
   // Il nome compare negli eventi del calendario: riallinea le sessioni future
   if (d.first_name !== undefined || d.last_name !== undefined) {
@@ -442,8 +443,8 @@ app.post('/api/leads/:id/convert', async (c) => {
   const clientId = uid(); const now = isoNow();
   const end = addDays(addMonths(d.start_date, d.program_months), -1);
   await c.env.DB.batch([
-    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, start_date, end_date, price_total_cents, notes, created_at, updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(clientId, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.start_date, end, d.price_total_cents, d.notes, now, now),
+    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, created_at, updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(clientId, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, now, now),
     c.env.DB.prepare("UPDATE leads SET status='convertito', client_id=?, updated_at=? WHERE id=?").bind(clientId, now, id),
     ...insertPayments(c.env, buildPlan(clientId, d.price_total_cents, plan.installments, plan.first_due_date || d.start_date)),
   ]);

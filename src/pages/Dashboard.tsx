@@ -46,7 +46,7 @@ export default function Dashboard() {
       </SpotCard>
 
       <SectionTitle idx={1} total={2}>I tuoi clienti</SectionTitle>
-      {!data ? <div className="client-grid"><div className="skeleton" style={{ height: 380 }} /></div>
+      {!data ? <div className="client-grid"><div className="skeleton" style={{ height: 260 }} /></div>
         : data.clients.length === 0 ? (
           <div className="card"><Empty>Nessun cliente attivo. <button className="btn btn-sm" style={{ marginLeft: 8 }} onClick={open.client}>Aggiungi il primo</button></Empty></div>
         ) : (

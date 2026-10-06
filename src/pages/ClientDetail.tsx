@@ -55,7 +55,7 @@ export default function ClientDetail() {
 
       <div className="kpis fade-in" style={{ marginBottom: 22 }}>
         <div className="card kpi"><div className="label">Mese</div><div className="val sm">{c.month}<span className="dim"> / {c.program_months}</span></div><div style={{ marginTop: 16 }}><Segments total={c.program_months} current={c.month} /></div></div>
-        <div className="card kpi"><div className="label">Lezioni svolte</div><div className="val sm">{c.lessons_done}</div><div className="note">{c.lessons_missed} saltate · prossima {c.next_session ? `${shortDay(c.next_session.starts_at)} ${time(c.next_session.starts_at)}` : '—'}</div></div>
+        <div className="card kpi"><div className="label">Lezioni svolte</div><div className="val sm">{c.lessons_done}{c.lessons_target > 0 && <span className="dim"> / {c.lessons_target}</span>}</div><div className="note">{c.lessons_missed} saltate · prossima {c.next_session ? `${shortDay(c.next_session.starts_at)} ${time(c.next_session.starts_at)}` : '—'}</div></div>
         <div className="card kpi"><div className="label">Incassato</div><div className="val sm">{euro(paid)}</div><div className="note">su {euro(total)} · {c.payments_paid}/{c.payments_total} rate</div></div>
         <div className={`card kpi ${c.overdue_cents ? 'danger' : ''}`}><div className="label">Scaduto</div><div className="val sm">{euro(c.overdue_cents)}</div><div className="note">{c.overdue_count} rate</div></div>
       </div>

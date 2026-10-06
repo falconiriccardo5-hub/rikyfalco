@@ -5,7 +5,7 @@ import { addDays, daysBetween, isoNow, romeNow } from './time';
 
 export interface ClientRow {
   id: string; first_name: string; last_name: string; email: string; phone: string;
-  mode: 'live' | 'online' | 'misto'; program_months: number; start_date: string; end_date: string;
+  mode: 'live' | 'online' | 'misto'; program_months: number; lessons_target: number; start_date: string; end_date: string;
   price_total_cents: number; notes: string; archived_at: string | null; created_at: string; updated_at: string;
 }
 export interface PaymentRow {
@@ -67,6 +67,7 @@ export async function clientSummaries(env: Env, opts: { id?: string } = {}) {
     const next = ss.find((s) => s.status === 'programmata' && s.starts_at >= nowLocal) ?? null;
     const overdue = ps.filter((p) => paymentState(p, today) === 'scaduto');
     const nextDue = ps.find((p) => !p.paid_at && p.due_date >= today) ?? null;
+    const lastPaid = ps.filter((p) => p.paid_at).sort((a, b) => (a.paid_at! < b.paid_at! ? -1 : 1)).at(-1) ?? null;
     return {
       ...c,
       name: fullName(c),
@@ -82,6 +83,7 @@ export async function clientSummaries(env: Env, opts: { id?: string } = {}) {
       overdue_cents: overdue.reduce((s, p) => s + p.amount_cents, 0),
       oldest_overdue_days: overdue.length ? daysBetween(overdue[0].due_date, today) : 0,
       next_due: nextDue ? { amount_cents: nextDue.amount_cents, due_date: nextDue.due_date } : null,
+      last_payment: lastPaid ? { paid_at: lastPaid.paid_at!, amount_cents: lastPaid.paid_amount_cents ?? lastPaid.amount_cents } : null,
     };
   });
 }

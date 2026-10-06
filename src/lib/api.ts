@@ -39,13 +39,14 @@ export const api = {
 export type Mode = 'live' | 'online' | 'misto';
 export interface ClientSummary {
   id: string; first_name: string; last_name: string; name: string; email: string; phone: string; mode: Mode;
-  program_months: number; start_date: string; end_date: string; price_total_cents: number; notes: string; archived_at: string | null;
+  program_months: number; lessons_target: number; start_date: string; end_date: string; price_total_cents: number; notes: string; archived_at: string | null;
   created_at: string; status: 'attivo' | 'in_scadenza' | 'scaduto' | 'archiviato' | 'non_iniziato'; month: number;
   lessons_done: number; lessons_missed: number;
   last_session: { starts_at: string; kind: string } | null;
   next_session: { id: string; starts_at: string; kind: string } | null;
   payments_total: number; payments_paid: number; overdue_count: number; overdue_cents: number; oldest_overdue_days: number;
   next_due: { amount_cents: number; due_date: string } | null;
+  last_payment: { paid_at: string; amount_cents: number } | null;
 }
 export interface Payment {
   id: string; client_id: string; label: string; amount_cents: number; due_date: string; paid_at: string | null;
