@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api, type ClientSummary, type Lead, type Payment, type Session } from '../lib/api';
 import { addDays, fromCents, METHOD_LABEL, nowRomeLocal, toCents, todayRome } from '../lib/format';
 import { Modal, useAction, useApi } from './ui';
@@ -223,7 +224,7 @@ export function LeadForm({ lead, onClose }: { lead?: Lead; onClose: () => void }
   const [busy, setBusy] = useState(false);
   const act = useAction();
   return (
-    <Modal title={lead ? 'Modifica contatto' : 'Nuova visita'} onClose={onClose}>
+    <Modal title={lead ? 'Modifica contatto' : 'Nuovo contatto'} onClose={onClose}>
       <form className="stack" onSubmit={async (e) => {
         e.preventDefault(); setBusy(true);
         const base = { first_name: v.first_name, last_name: v.last_name, email: v.email, phone: v.phone, source: v.source, notes: v.notes };
@@ -246,6 +247,66 @@ export function LeadForm({ lead, onClose }: { lead?: Lead; onClose: () => void }
         )}
         <label className="field"><span>Note</span><textarea className="textarea" maxLength={5000} {...bind('notes')} /></label>
         <Foot onClose={onClose} busy={busy} label="Salva" />
+      </form>
+    </Modal>
+  );
+}
+
+// ───── Nuova visita: scelta della persona, poi si apre il modulo ─────
+export function NewVisitForm({ onClose }: { onClose: () => void }) {
+  const clients = useApi<ClientSummary[]>('/clients');
+  const leads = useApi<Lead[]>('/leads');
+  const nav = useNavigate();
+  const [mode, setMode] = useState<'existing' | 'new'>('existing');
+  const [who, setWho] = useState('');
+  const { v, bind } = useForm({ first_name: '', last_name: '', phone: '', source: '' });
+  const [busy, setBusy] = useState(false);
+  const act = useAction();
+  const activeClients = (clients.data ?? []).filter((c) => !c.archived_at);
+  const openLeads = (leads.data ?? []).filter((l) => l.status !== 'convertito');
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mode === 'existing') {
+      if (!who) return;
+      const [kind, id] = who.split(':');
+      onClose(); nav(`/visits/form/new?${kind}=${id}`);
+      return;
+    }
+    setBusy(true);
+    const r = await act(() => api.post<{ id: string }>('/leads', { ...v }), 'Contatto salvato');
+    setBusy(false);
+    if (r) { onClose(); nav(`/visits/form/new?lead=${r.id}`); }
+  };
+
+  return (
+    <Modal title="Nuova visita" onClose={onClose}>
+      <form className="stack" onSubmit={submit}>
+        <div className="chips">
+          <button type="button" className={`chip ${mode === 'existing' ? 'active' : ''}`} onClick={() => setMode('existing')}>Cliente o contatto esistente</button>
+          <button type="button" className={`chip ${mode === 'new' ? 'active' : ''}`} onClick={() => setMode('new')}>Persona nuova</button>
+        </div>
+        {mode === 'existing' ? (
+          <label className="field"><span>Per chi è la visita? *</span>
+            <select className="select" required value={who} onChange={(e) => setWho(e.target.value)} autoFocus>
+              <option value="">{clients.data && leads.data ? 'Scegli…' : 'Caricamento…'}</option>
+              {activeClients.length > 0 && <optgroup label="Clienti">{activeClients.map((c) => <option key={c.id} value={`client:${c.id}`}>{c.name}</option>)}</optgroup>}
+              {openLeads.length > 0 && <optgroup label="Contatti">{openLeads.map((l) => <option key={l.id} value={`lead:${l.id}`}>{`${l.first_name} ${l.last_name}`.trim()}</option>)}</optgroup>}
+            </select>
+          </label>
+        ) : (
+          <>
+            <div className="grid-2">
+              <label className="field"><span>Nome *</span><input className="input" required maxLength={80} {...bind('first_name')} autoFocus /></label>
+              <label className="field"><span>Cognome</span><input className="input" maxLength={80} {...bind('last_name')} /></label>
+              <label className="field"><span>Telefono</span><input className="input" type="tel" maxLength={40} {...bind('phone')} /></label>
+              <label className="field"><span>Come ti ha conosciuto</span><input className="input" maxLength={80} placeholder="Instagram, passaparola…" {...bind('source')} /></label>
+            </div>
+            <div className="muted" style={{ fontSize: 13.5 }}>Viene salvata tra i contatti in Visita; quando diventa cliente il modulo passa nella sua scheda.</div>
+          </>
+        )}
+        <div className="muted" style={{ fontSize: 13.5 }}>Alla prima visita si apre l’anamnesi iniziale, dalle successive il check di controllo. Puoi cambiarlo nel modulo.</div>
+        <Foot onClose={onClose} busy={busy} label="Apri il modulo" />
       </form>
     </Modal>
   );

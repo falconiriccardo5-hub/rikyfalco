@@ -474,6 +474,7 @@ app.post('/api/leads/:id/convert', async (c) => {
     c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, created_at, updated_at)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(clientId, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, now, now),
     c.env.DB.prepare("UPDATE leads SET status='convertito', client_id=?, updated_at=? WHERE id=?").bind(clientId, now, id),
+    c.env.DB.prepare('UPDATE visit_forms SET client_id=? WHERE lead_id=? AND client_id IS NULL').bind(clientId, id),
     ...insertPayments(c.env, buildPlan(clientId, d.price_total_cents, plan.installments, plan.first_due_date || d.start_date)),
   ]);
   await logActivity(c.env, actor(c), 'convertito', 'cliente', clientId, `${fullName(d)} è diventato cliente`);
@@ -483,9 +484,81 @@ app.post('/api/leads/:id/convert', async (c) => {
 app.delete('/api/leads/:id', async (c) => {
   const id = c.req.param('id');
   const events = await all<{ gcal_event_id: string }>(c.env.DB, 'SELECT gcal_event_id FROM sessions WHERE lead_id = ? AND gcal_event_id IS NOT NULL', id);
-  await run(c.env.DB, 'DELETE FROM leads WHERE id = ?', id);
+  // I moduli già passati a un cliente restano nella sua scheda; gli altri spariscono con il contatto
+  await c.env.DB.batch([
+    c.env.DB.prepare('DELETE FROM visit_forms WHERE lead_id = ? AND client_id IS NULL').bind(id),
+    c.env.DB.prepare('DELETE FROM leads WHERE id = ?').bind(id),
+  ]);
   await logActivity(c.env, actor(c), 'eliminato', 'visita', id, 'Contatto eliminato');
   c.executionCtx.waitUntil(Promise.all(events.map((e) => google.deleteEvent(c.env, e.gcal_event_id))));
+  return c.json({ ok: true });
+});
+
+// ───────────── API: moduli visita (anamnesi / check) ─────────────
+
+const answerValue = z.union([text(5000), z.array(text(200)).max(40)]);
+const visitFormSchema = z.object({
+  template: z.enum(['anamnesi', 'check']),
+  visit_date: dateStr,
+  answers: z.record(z.string().regex(/^[a-z0-9_]{1,60}$/), answerValue).refine((a) => Object.keys(a).length <= 400, 'troppe risposte').default({}),
+});
+type VisitFormRow = { id: string; client_id: string | null; lead_id: string | null; template: string; visit_date: string; answers: string; created_at: string; updated_at: string; person: string };
+const VISIT_FORM_SELECT = `SELECT f.*, TRIM(COALESCE(c.first_name || ' ' || c.last_name, l.first_name || ' ' || l.last_name, '')) AS person
+  FROM visit_forms f LEFT JOIN clients c ON c.id = f.client_id LEFT JOIN leads l ON l.id = f.lead_id`;
+const TEMPLATE_LABEL: Record<string, string> = { anamnesi: 'Anamnesi iniziale', check: 'Check' };
+const parseForm = ({ answers, ...f }: VisitFormRow) => ({ ...f, answers: JSON.parse(answers || '{}') as Record<string, unknown> });
+
+app.get('/api/visit-forms', async (c) => {
+  const clientId = c.req.query('client_id'); const leadId = c.req.query('lead_id');
+  const rows = clientId ? await all<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} WHERE f.client_id = ? ORDER BY f.visit_date DESC, f.created_at DESC`, clientId)
+    : leadId ? await all<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} WHERE f.lead_id = ? ORDER BY f.visit_date DESC, f.created_at DESC`, leadId)
+    : await all<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} ORDER BY f.visit_date DESC, f.created_at DESC LIMIT 100`);
+  // Le risposte complete servono solo per la scheda e per i suggerimenti "ultima volta"
+  return c.json(rows.map(parseForm));
+});
+
+app.get('/api/visit-forms/:id', async (c) => {
+  const row = await first<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} WHERE f.id = ?`, c.req.param('id'));
+  if (!row) return c.json({ error: 'Modulo non trovato' }, 404);
+  return c.json(parseForm(row));
+});
+
+app.post('/api/visit-forms', async (c) => {
+  const body = await c.req.json();
+  const d = visitFormSchema.parse(body);
+  const who = z.object({ client_id: z.string().max(64).optional(), lead_id: z.string().max(64).optional() }).parse(body);
+  if (!who.client_id === !who.lead_id) return c.json({ error: 'Scegli un cliente oppure un contatto' }, 400);
+  const person = who.client_id
+    ? await first<{ first_name: string; last_name: string }>(c.env.DB, 'SELECT first_name, last_name FROM clients WHERE id = ?', who.client_id)
+    : await first<{ first_name: string; last_name: string; client_id: string | null; status: string }>(c.env.DB, 'SELECT first_name, last_name, client_id, status FROM leads WHERE id = ?', who.lead_id);
+  if (!person) return c.json({ error: who.client_id ? 'Cliente non trovato' : 'Contatto non trovato' }, 404);
+  const id = uid(); const now = isoNow();
+  const stmts = [c.env.DB.prepare('INSERT INTO visit_forms (id, client_id, lead_id, template, visit_date, answers, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)')
+    .bind(id, who.client_id ?? ('client_id' in person ? person.client_id : null), who.lead_id ?? null, d.template, d.visit_date, JSON.stringify(d.answers), now, now)];
+  // Visita compilata per un contatto ancora "da fare" → la consulenza risulta svolta
+  if (who.lead_id) stmts.push(c.env.DB.prepare("UPDATE leads SET status='svolta', updated_at=? WHERE id=? AND status='da_fare'").bind(now, who.lead_id));
+  await c.env.DB.batch(stmts);
+  await logActivity(c.env, actor(c), 'creato', 'visita', id, `${TEMPLATE_LABEL[d.template]} di ${fullName(person)}`);
+  return c.json({ id }, 201);
+});
+
+app.patch('/api/visit-forms/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} WHERE f.id = ?`, id);
+  if (!cur) return c.json({ error: 'Modulo non trovato' }, 404);
+  const d = visitFormSchema.partial().parse(await c.req.json());
+  await run(c.env.DB, 'UPDATE visit_forms SET template=?, visit_date=?, answers=?, updated_at=? WHERE id=?',
+    d.template ?? cur.template, d.visit_date ?? cur.visit_date, d.answers ? JSON.stringify(d.answers) : cur.answers, isoNow(), id);
+  await logActivity(c.env, actor(c), 'modificato', 'visita', id, `${TEMPLATE_LABEL[d.template ?? cur.template]} di ${cur.person}`);
+  return c.json({ ok: true });
+});
+
+app.delete('/api/visit-forms/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} WHERE f.id = ?`, id);
+  if (!cur) return c.json({ error: 'Modulo non trovato' }, 404);
+  await run(c.env.DB, 'DELETE FROM visit_forms WHERE id = ?', id);
+  await logActivity(c.env, actor(c), 'eliminato', 'visita', id, `${TEMPLATE_LABEL[cur.template]} di ${cur.person} del ${cur.visit_date}`);
   return c.json({ ok: true });
 });
 

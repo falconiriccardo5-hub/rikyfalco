@@ -13,6 +13,11 @@ export function demoGet(path: string): unknown {
       .filter((c) => `${c.first_name} ${c.last_name} ${c.email}`.toLowerCase().includes(s));
     return { clients, leads: [] };
   }
+  if (base === '/visit-forms') {
+    const forms = fx['/visit-forms'] as { client_id: string | null; lead_id: string | null }[];
+    const c = q.get('client_id'), l = q.get('lead_id');
+    return structuredClone(forms.filter((f) => (!c || f.client_id === c) && (!l || f.lead_id === l)));
+  }
   if (base === '/sessions') return { sessions: [], events: [], google: { connected: false, reads: false } };
   if (base === '/report') return structuredClone(fx['/report?month=2026-01']);
   throw new Error('Non disponibile nell\'anteprima');

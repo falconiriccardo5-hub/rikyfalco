@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Archive, ArchiveRestore, CalendarPlus, Check, ChevronLeft, Mail, MessageCircle, Pencil, Phone, Plus, RefreshCw, RotateCcw, Trash2, X } from 'lucide-react';
+import { Archive, ArchiveRestore, CalendarPlus, Check, ChevronLeft, ClipboardList, FileText, Mail, MessageCircle, Pencil, Phone, Plus, RefreshCw, RotateCcw, Trash2, X } from 'lucide-react';
 import { ClientForm, PaymentForm, PayForm, RenewForm, SessionForm } from '../components/Forms';
 import { useOpen } from '../components/Layout';
 import { PayBanner, Segments } from '../components/ClientCard';
 import { Confirm, Empty, ErrorBox, Loading, useAction, useApi } from '../components/ui';
-import { api, type ClientSummary, type Payment, type Session } from '../lib/api';
+import { api, type ClientSummary, type Payment, type Session, type VisitFormRecord } from '../lib/api';
+import { progress, TEMPLATES } from '../lib/visitForm';
 import { euro, initials, itDate, KIND_LABEL, METHOD_LABEL, MODE_LABEL, nowRomeLocal, shortDay, STATUS_LABEL, time, waNumber } from '../lib/format';
 
 type Detail = { client: ClientSummary; payments: Payment[]; sessions: Session[]; activity: { id: number; ts: string; action: string; summary: string }[] };
@@ -16,7 +17,8 @@ const SES_PILL: Record<string, [string, string]> = { programmata: ['violet', 'Pr
 export default function ClientDetail() {
   const { id } = useParams();
   const { data, error } = useApi<Detail>(`/clients/${id}`);
-  const [tab, setTab] = useState<'pagamenti' | 'lezioni' | 'note' | 'storico'>('pagamenti');
+  const [tab, setTab] = useState<'pagamenti' | 'lezioni' | 'visite' | 'note' | 'storico'>('pagamenti');
+  const forms = useApi<VisitFormRecord[]>(`/visit-forms?client_id=${id}`);
   const [modal, setModal] = useState<null | 'edit' | 'renew' | 'delete' | 'payment' | { pay: Payment } | { editPay: Payment } | { delPay: Payment } | { session: Session }>(null);
   const act = useAction();
   const nav = useNavigate();
@@ -62,7 +64,7 @@ export default function ClientDetail() {
       <div className="fade-in"><PayBanner c={c} /></div>
 
       <div className="tabs" style={{ marginTop: 34 }}>
-        {(['pagamenti', 'lezioni', 'note', 'storico'] as const).map((t) => <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>{t[0].toUpperCase() + t.slice(1)}</button>)}
+        {(['pagamenti', 'lezioni', 'visite', 'note', 'storico'] as const).map((t) => <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>{t[0].toUpperCase() + t.slice(1)}</button>)}
       </div>
 
       {tab === 'pagamenti' && (
@@ -108,6 +110,27 @@ export default function ClientDetail() {
                 )}
               </div>
             ))}
+          </div>
+        </>
+      )}
+
+      {tab === 'visite' && (
+        <>
+          <div className="row" style={{ justifyContent: 'flex-end', marginBottom: 14 }}><button className="btn btn-primary" onClick={() => nav(`/visits/form/new?client=${c.id}`)}><ClipboardList /> Nuova visita</button></div>
+          <div className="card list">
+            {!forms.data ? <Loading /> : forms.data.length === 0 ? <Empty>Nessuna visita compilata. “Nuova visita” apre l’anamnesi iniziale; dalle successive si apre il check di controllo.</Empty> : forms.data.map((f) => {
+              const p = progress(TEMPLATES[f.template], f.answers);
+              return (
+                <Link className="list-row" key={f.id} to={`/visits/form/${f.id}`}>
+                  <div className={`row-icon ${f.template === 'anamnesi' ? 'violet' : 'green'}`}><FileText /></div>
+                  <div className="grow">
+                    <div className="title">{TEMPLATES[f.template].label} · {itDate(f.visit_date)}</div>
+                    <div className="sub">{p.done}/{p.total} risposte{typeof f.answers.peso === 'string' && ` · ${f.answers.peso} kg`}</div>
+                  </div>
+                  <span className="btn btn-sm">Apri</span>
+                </Link>
+              );
+            })}
           </div>
         </>
       )}
