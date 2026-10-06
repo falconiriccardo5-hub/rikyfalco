@@ -57,6 +57,10 @@ export interface Session {
   duration_min: number; mode: 'live' | 'online'; location: string; status: 'programmata' | 'svolta' | 'saltata' | 'annullata';
   notes: string; gcal_status: string; gcal_error: string | null; person?: string;
 }
+/** Impegno letto da Google Calendar (sola lettura) */
+export interface GoogleEvent {
+  id: string; calendar: 'primary' | 'app'; summary: string; location: string; starts_at: string; ends_at: string; all_day: number; html_link: string;
+}
 export interface Lead {
   id: string; first_name: string; last_name: string; email: string; phone: string; source: string; notes: string;
   status: 'da_fare' | 'svolta' | 'convertito' | 'perso'; client_id: string | null; visit_at: string | null; created_at: string;

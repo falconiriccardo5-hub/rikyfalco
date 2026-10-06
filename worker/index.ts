@@ -125,6 +125,14 @@ async function syncPending(env: Env, limit = 40) {
   return rows.length;
 }
 
+/** Legge Google Calendar se l'ultima lettura è più vecchia di maxAgeMin minuti */
+async function pullIfStale(env: Env, maxAgeMin = 10) {
+  if (!(await google.canReadCalendar(env))) return;
+  const last = await getSetting(env.DB, 'google_pull_at');
+  if (last && Date.now() - Date.parse(last) < maxAgeMin * 60_000) return;
+  await google.pullCalendar(env).catch((e) => console.error('lettura Google Calendar fallita', e));
+}
+
 // ───────────── API: generali ─────────────
 
 app.get('/api/me', async (c) => c.json({ email: actor(c), coach_name: (await getSetting(c.env.DB, 'coach_name')) || 'Riccardo Falconi', badges: await badges(c.env) }));
@@ -324,7 +332,10 @@ app.get('/api/sessions', async (c) => {
     `SELECT s.*, TRIM(COALESCE(c.first_name || ' ' || c.last_name, l.first_name || ' ' || l.last_name, '')) AS person
      FROM sessions s LEFT JOIN clients c ON c.id = s.client_id LEFT JOIN leads l ON l.id = s.lead_id
      WHERE s.starts_at >= ? AND s.starts_at < ? ORDER BY s.starts_at`, from, addDays(to, 1));
-  return c.json({ sessions: rows, google: { connected: await google.isConnected(c.env) } });
+  const events = await all(c.env.DB, 'SELECT id, calendar, summary, location, starts_at, ends_at, all_day, html_link FROM gcal_events WHERE starts_at < ? AND ends_at > ? ORDER BY all_day DESC, starts_at',
+    addDays(to, 1), from);
+  c.executionCtx.waitUntil(pullIfStale(c.env));
+  return c.json({ sessions: rows, events, google: { connected: await google.isConnected(c.env), reads: await google.canReadCalendar(c.env) } });
 });
 
 const sessionSchema = z.object({
@@ -603,6 +614,9 @@ app.get('/api/settings', async (c) => {
       connected: await google.isConnected(c.env),
       account: s.google_account || null,
       calendar_id: s.google_calendar_id || null,
+      reads_calendar: await google.canReadCalendar(c.env),
+      last_pull: s.google_pull_at || null,
+      pull_error: s.google_pull_error || null,
       drive_folder_id: s.google_drive_folder_id || null,
     },
     email: actor(c),
@@ -640,7 +654,7 @@ app.get('/api/google/callback', async (c) => {
     const account = await google.handleCallback(c.env, c.req.query('code') || '', c.req.query('state') || '');
     await logActivity(c.env, actor(c), 'collegato', 'google', null, `Google collegato (${account || 'account'})`);
     await run(c.env.DB, "UPDATE sessions SET gcal_status = 'pending' WHERE status != 'annullata'");
-    c.executionCtx.waitUntil(syncPending(c.env, 200));
+    c.executionCtx.waitUntil((async () => { await syncPending(c.env, 200); await pullIfStale(c.env, 0); })());
     return c.redirect('/settings?google=ok');
   } catch (e) {
     return c.redirect(`/settings?google=error&reason=${encodeURIComponent((e as Error).message.slice(0, 120))}`);
@@ -656,7 +670,8 @@ app.post('/api/google/disconnect', async (c) => {
 app.post('/api/google/resync', async (c) => {
   await run(c.env.DB, "UPDATE sessions SET gcal_status = 'pending' WHERE status != 'annullata' AND starts_at >= ?", addDays(romeNow().date, -60));
   const n = await syncPending(c.env, 200);
-  return c.json({ synced: n });
+  const pulled = await google.pullCalendar(c.env);
+  return c.json({ synced: n, ...pulled });
 });
 
 app.all('/api/*', (c) => c.json({ error: 'Endpoint non trovato' }, 404));
@@ -666,8 +681,14 @@ app.all('*', async (c) => c.env.ASSETS.fetch(c.req.raw));
 
 // ───────────── Cron ─────────────
 async function scheduled(event: ScheduledController, env: Env, ctx: ExecutionContext) {
-  if (event.cron === '0 * * * *') {
-    ctx.waitUntil((async () => { await refreshAutomations(env); await syncPending(env); })());
+  if (event.cron === '*/15 * * * *') {
+    // ogni 15 minuti: legge Google Calendar e invia le modifiche; notifiche/automazioni una volta l'ora
+    const hourly = new Date(event.scheduledTime).getUTCMinutes() < 15;
+    ctx.waitUntil((async () => {
+      if (hourly) await refreshAutomations(env);
+      await pullIfStale(env, 5);
+      await syncPending(env, 30);
+    })());
     return;
   }
   // backup notturno
