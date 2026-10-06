@@ -360,6 +360,8 @@ input[type='date'], input[type='datetime-local'], input[type='time'] { color-sch
 .cal .ev.consulenza, .cal .ev.visita { background: rgba(251,191,36,.08); color: #fde68a; border-color: var(--amber); }
 .cal .ev.svolta { opacity: .55; }
 .cal .ev.saltata, .cal .ev.annullata { opacity: .45; text-decoration: line-through; }
+.cal .ev.google { background: rgba(255,255,255,.05); color: #c7c7d1; border-color: rgba(255,255,255,.28); }
+.mini.gevent { border-left: 2px solid rgba(255,255,255,.28); }
 @media (max-width: 760px) { .cal .day { min-height: 64px; padding: 6px; } .cal .ev { font-size: 0; height: 6px; padding: 0; border-left: 0; } .cal .dow { padding: 10px 4px; font-size: 10px; letter-spacing: .05em; } }
 .cal-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; align-items: start; }
 @media (max-width: 1200px) { .cal-layout { grid-template-columns: 1fr; } }

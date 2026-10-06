@@ -9,7 +9,7 @@ Gira interamente su **Cloudflare** (niente Vercel):
 | Backend/API | Cloudflare Worker (Hono) |
 | Database | Cloudflare D1 (SQLite) — con Time Travel: cronologia ripristinabile di 30 giorni |
 | Login | Cloudflare Access (Zero Trust) + verifica del token lato server |
-| Calendario | Google Calendar: calendario dedicato "RF Coaching" (si vede su PC e iPhone) |
+| Calendario | Google Calendar con due link iCal, senza Google Cloud: i tuoi eventi Google compaiono nell'agenda (ogni 15 minuti) e le lezioni compaiono in Google Calendar come calendario "RF Coaching" (PC e iPhone) |
 | Backup | CSV su Google Drive ogni notte + download ZIP + ripristino |
 
 ## Sezioni
@@ -27,7 +27,7 @@ In più: ricerca globale `⌘K` / `Ctrl+K` e pulsante viola ✨ per le azioni ra
 2. Il Worker **verifica comunque** il token firmato da Cloudflare (firma, scadenza, audience, email autorizzata): se qualcuno aggirasse Access riceve 401/403. L'URL pubblico `*.workers.dev` è disattivato.
 3. Header di sicurezza rigidi (CSP senza script esterni, HSTS, anti-iframe, no-referrer); font ospitati in locale.
 4. Protezione CSRF su tutte le modifiche (header dedicato + controllo Origin); validazione di ogni input lato server.
-5. Google con **permessi minimi**: l'app vede solo il calendario e i file *che crea lei* (`calendar.app.created`, `drive.file`). Il token Google è salvato **cifrato AES-256-GCM** e non finisce mai nei backup.
+5. Google con **permessi minimi**: l'app modifica solo il calendario e i file *che crea lei* (`calendar.app.created`, `drive.file`) e legge in sola lettura gli eventi del tuo calendario principale (`calendar.events.readonly`). Il token Google è salvato **cifrato AES-256-GCM** e non finisce mai nei backup.
 6. Registro **Attività** di ogni modifica; eliminare un cliente richiede di riscriverne il nome; il ripristino richiede di scrivere `RIPRISTINA` e salva prima una copia dei dati attuali su Drive.
 7. Protezione dei CSV dalle "formule malevole" quando li apri in Excel.
 
@@ -68,10 +68,23 @@ npx wrangler secret put APP_URL              # es. https://rf-coaching.riccardo.
 Ora apri l'indirizzo: Cloudflare ti chiede la mail, ti manda un codice e sei dentro.
 Consigliato: attiva la verifica in due passaggi sul tuo account Cloudflare (My Profile → Authentication).
 
-### 4. Google (Calendar + Drive)
+### 4. Google Calendar (senza Google Cloud Console)
+Tutto da **Impostazioni → Google Calendar** nell'app, con due link da copiare e incollare:
+
+1. **I tuoi eventi Google nell'app**: in Google Calendar dal computer → Impostazioni → clicca il tuo calendario →
+   *Indirizzo segreto in formato iCal* → copia e incollalo nell'app. Gli eventi si aggiornano ogni 15 minuti.
+2. **Le lezioni in Google Calendar**: nell'app premi *Crea il link per Google Calendar*, copialo e in Google Calendar
+   → *Altri calendari* → **Da URL** → incolla. Google aggiorna i calendari aggiunti da URL con i suoi tempi (di solito qualche ora).
+
+Perché Google possa leggere il link delle lezioni, quel solo percorso deve saltare il login di Cloudflare Access
+(il link resta protetto dal suo codice segreto e si può rigenerare in qualsiasi momento):
+Zero Trust → *Access → Applications* → **Add an application** → *Self-hosted* → dominio `rf-coaching.<tuo-nome>.workers.dev`,
+path `ical` → policy con Action **Bypass** e Include **Everyone** → salva.
+
+### 4b. Google avanzato (facoltativo: backup su Drive e aggiornamento istantaneo)
 1. https://console.cloud.google.com → crea un progetto "RF Coaching".
 2. *APIs & Services → Library*: abilita **Google Calendar API** e **Google Drive API**.
-3. *OAuth consent screen*: tipo **External**, scope `calendar.app.created`, `drive.file`, `openid`, `email`, poi **Publish app**
+3. *OAuth consent screen*: tipo **External**, scope `calendar.app.created`, `calendar.events.readonly`, `drive.file`, `openid`, `email`, poi **Publish app**
    (in modalità "Testing" il collegamento scadrebbe ogni 7 giorni). Al primo collegamento Google mostrerà "app non verificata":
    è normale per un'app personale, premi *Avanzate → Vai a RF Coaching*.
 4. *Credentials → Create credentials → OAuth client ID* → **Web application**.
@@ -83,7 +96,9 @@ npx wrangler secret put GOOGLE_CLIENT_SECRET
 openssl rand -base64 32                        # genera la chiave…
 npx wrangler secret put ENCRYPTION_KEY         # …e incollala qui (conservane una copia sicura)
 ```
-Nell'app: **Impostazioni → Collega Google**. Vengono creati il calendario "RF Coaching" e la cartella Drive "RF Coaching – Backup".
+Nell'app: **Impostazioni → Collega Google** e accedi con l'account del calendario (es. rikyfitnesscoaching@gmail.com).
+Vengono creati il calendario "RF Coaching" e la cartella Drive "RF Coaching – Backup"; da quel momento i tuoi eventi Google compaiono nell'agenda.
+Se avevi già collegato Google prima di questa versione, premi **Ricollega Google** per concedere la lettura del calendario.
 
 ### Aggiornamenti futuri
 `npm run deploy` (applica anche eventuali nuove migrazioni del database). I secret restano salvati.

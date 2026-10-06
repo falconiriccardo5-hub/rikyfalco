@@ -3,11 +3,14 @@ import { useSearchParams } from 'react-router-dom';
 import { CalendarCheck, Cloud, ExternalLink, RefreshCw, ShieldCheck, Unplug } from 'lucide-react';
 import { Confirm, ErrorBox, Loading, PageHead, useAction, useApi, useToast } from '../components/ui';
 import { api } from '../lib/api';
+import { IcalCard, type IcalSettings } from '../components/IcalCard';
 
 type S = {
   coach_name: string; calendar_name: string; default_duration: number; backup_auto: boolean; backup_retention: number; email: string;
   templates: Record<string, string>; default_templates: Record<string, string>;
-  google: { configured: boolean; connected: boolean; account: string | null; calendar_id: string | null; drive_folder_id: string | null };
+  google: { configured: boolean; connected: boolean; account: string | null; calendar_id: string | null; drive_folder_id: string | null;
+    reads_calendar?: boolean; last_pull?: string | null; pull_error?: string | null };
+  ical?: IcalSettings;
 };
 const TPL: Record<string, [string, string]> = {
   rata_scaduta: ['Sollecito rata scaduta', '{nome} {importo} {data}'],
@@ -48,18 +51,28 @@ export default function Settings() {
       </PageHead>
 
       <div className="stack fade-in" style={{ gap: 22 }}>
+        {data.ical && <IcalCard ical={data.ical} />}
         <div className="card pad">
-          <div className="label">Google Calendar e Drive</div>
+          <div className="label">Collegamento Google avanzato (facoltativo)</div>
           {!data.google.configured ? (
-            <div className="callout warn" style={{ marginTop: 16 }}>Le credenziali Google non sono ancora configurate sul server (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, ENCRYPTION_KEY, APP_URL). Segui la guida nel README.</div>
+            <p className="muted" style={{ marginTop: 16, marginBottom: 0 }}>Facoltativo: serve solo per i backup automatici su Google Drive e per aggiornare Google Calendar all'istante.
+              Richiede credenziali create su Google Cloud (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, ENCRYPTION_KEY, APP_URL): vedi la guida nel README.</p>
           ) : data.google.connected ? (
             <div className="stack" style={{ marginTop: 16 }}>
               <div className="row wrap"><span className="pill green">Collegato</span><span className="muted">{data.google.account}</span></div>
               <p className="muted" style={{ margin: 0 }}>
                 <CalendarCheck size={15} style={{ verticalAlign: -2 }} /> Gli appuntamenti sono nel calendario <b style={{ color: '#fff' }}>“{data.calendar_name}”</b> del tuo account Google:
                 appare automaticamente su Google Calendar (PC) e sull'app Calendario dell'iPhone se l'account Google è aggiunto in Impostazioni → Calendario → Account.
+                {data.google.reads_calendar && <><br /><RefreshCw size={15} style={{ verticalAlign: -2 }} /> Sincronizzazione nei due sensi ogni 15 minuti: i tuoi impegni Google compaiono nell'agenda dell'app,
+                  e se sposti o elimini una lezione da Google Calendar l'app si aggiorna.
+                  {data.google.last_pull && <> Ultima lettura: {new Date(data.google.last_pull).toLocaleString('it-IT', { timeZone: 'Europe/Rome', dateStyle: 'short', timeStyle: 'short' })}.</>}</>}
                 <br /><Cloud size={15} style={{ verticalAlign: -2 }} /> I backup vanno nella cartella Drive “RF Coaching – Backup”.
               </p>
+              {!data.google.reads_calendar && (
+                <div className="callout warn">Per vedere nell'app anche gli eventi del tuo Google Calendar serve un nuovo permesso (sola lettura).
+                  <div style={{ marginTop: 10 }}><a className="btn btn-accent" href="/api/google/connect"><Cloud /> Ricollega Google</a></div></div>
+              )}
+              {data.google.pull_error && <div className="callout warn">Ultima lettura di Google Calendar non riuscita: {data.google.pull_error}</div>}
               <div className="row wrap">
                 <a className="btn" href="https://calendar.google.com" target="_blank" rel="noopener noreferrer"><ExternalLink /> Apri Google Calendar</a>
                 <button className="btn" onClick={() => act(() => api.post<{ synced: number }>('/google/resync'), 'Sincronizzazione completata')}><RefreshCw /> Risincronizza</button>
@@ -69,7 +82,8 @@ export default function Settings() {
           ) : (
             <div className="stack" style={{ marginTop: 16 }}>
               <p className="muted" style={{ margin: 0 }}>Collega il tuo account Google: l'app creerà un calendario dedicato “{data.calendar_name}” e una cartella per i backup.
-                Per sicurezza chiede solo i permessi minimi: può vedere <b>solo</b> il calendario e i file che crea lei, non il resto del tuo Google.</p>
+                Le lezioni vengono copiate su Google e i tuoi impegni Google compaiono nell'agenda dell'app.
+                Per sicurezza i permessi sono minimi: può <b>modificare solo</b> il calendario e i file che crea lei, e i tuoi altri eventi li <b>legge</b> soltanto.</p>
               <div><a className="btn btn-accent btn-lg" href="/api/google/connect"><Cloud /> Collega Google</a></div>
             </div>
           )}
