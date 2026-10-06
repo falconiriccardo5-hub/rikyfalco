@@ -23,7 +23,9 @@ export default function Layout() {
   const loc = useLocation();
   const nav = useNavigate();
 
-  useEffect(() => setMenu(false), [loc.pathname]);
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => { setMenu(false); mainRef.current?.scrollTo(0, 0); }, [loc.pathname]);
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setPalette((p) => !p); }
@@ -39,6 +41,7 @@ export default function Layout() {
   }), []);
 
   const b = badges.data ?? me.data?.badges;
+  const coachInitials = me.data ? me.data.coach_name.split(/\s+/).map((w) => w[0] ?? '').slice(0, 2).join('').toUpperCase() : 'RF';
   const items = [
     { to: '/', icon: LayoutGrid, label: 'Dashboard', end: true },
     { to: '/clients', icon: Users, label: 'Clienti' },
@@ -75,8 +78,10 @@ export default function Layout() {
               </div>
               {menu && <button className="icon-btn sm" style={{ marginLeft: 'auto' }} onClick={() => setMenu(false)} aria-label="Chiudi menu"><X /></button>}
             </div>
-            <button className="btn btn-primary btn-lg btn-block" onClick={open.client}><Plus /> Nuovo cliente</button>
-            <button className="side-search" onClick={() => setPalette(true)}><Search /> Cerca <span className="kbd">⌘K</span></button>
+            <div className="side-actions">
+              <button className="btn btn-primary btn-lg btn-block" onClick={open.client}><Plus /> Nuovo cliente</button>
+              <button className="side-search" onClick={() => setPalette(true)}><Search /> Cerca <span className="kbd">⌘K</span></button>
+            </div>
 
             <nav className="nav" aria-label="Principale">
               {items.map(({ to, icon: Icon, label, end, badge }) => (
@@ -88,7 +93,8 @@ export default function Layout() {
 
             <div className="sidebar-foot">
               <div className="user-box">
-                <div style={{ minWidth: 0 }}>
+                <div className="avatar sm">{coachInitials}</div>
+                <div className="grow">
                   <div className="truncate">{me.data?.coach_name ?? '…'}</div>
                   <div className="role">ADMIN</div>
                 </div>
@@ -97,7 +103,19 @@ export default function Layout() {
             </div>
           </aside>
 
-          <main className="main">
+          <main className="main" ref={mainRef}>
+            <div className="deskbar">
+              <button className="deskbar-search" onClick={() => setPalette(true)}>
+                <Search /> <span className="grow">Cerca clienti, contatti o pagine…</span> <span className="kbd">⌘K</span>
+              </button>
+              <div className="deskbar-actions">
+                <button className="btn" onClick={open.client}><Plus /> Nuovo cliente</button>
+                <NavLink to="/notifications" className="icon-btn bell" title="Notifiche" aria-label="Notifiche">
+                  <Bell />{!!b?.notifications && <span className="dot" />}
+                </NavLink>
+                <NavLink to="/settings" className="avatar sm deskbar-avatar" title="Impostazioni" aria-label="Impostazioni">{coachInitials}</NavLink>
+              </div>
+            </div>
             <div className="container" key={loc.pathname}>
               <Outlet />
             </div>
