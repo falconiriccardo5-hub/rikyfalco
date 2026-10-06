@@ -26,9 +26,9 @@ database_id = "25c42987-60f8-478e-9e28-57232ed42e35"
 migrations_dir = "migrations"
 
 [triggers]
-# ogni ora: notifiche, messaggi, sincronizzazione calendario
+# ogni 15 minuti: sincronizzazione Google Calendar nei due sensi (notifiche e messaggi una volta l'ora)
 # 01:30 UTC (≈ 03:30 a Roma): backup automatico su Google Drive
-crons = ["0 * * * *", "30 1 * * *"]
+crons = ["*/15 * * * *", "30 1 * * *"]
 
 # Configurazione impostata come "secret" (vedi README), non scritta qui:
 # ALLOWED_EMAILS, ACCESS_TEAM_DOMAIN, ACCESS_AUD, APP_URL,

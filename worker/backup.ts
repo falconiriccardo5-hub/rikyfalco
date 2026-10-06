@@ -10,7 +10,7 @@ export const BACKUP_TABLES = ['clients', 'leads', 'payments', 'sessions', 'messa
 export type BackupTable = (typeof BACKUP_TABLES)[number];
 
 /** Impostazioni mai esportate (segreti / legate a questo specifico collegamento Google). */
-const PROTECTED_SETTINGS = ['google_refresh_token', 'google_account', 'google_calendar_id', 'google_drive_folder_id'];
+const PROTECTED_SETTINGS = ['google_refresh_token', 'google_account', 'google_calendar_id', 'google_drive_folder_id', 'google_scopes', 'google_pull_at', 'google_pull_error', 'ical_feed_token', 'ical_import_url', 'ical_import_at', 'ical_import_error'];
 export const SCHEMA_VERSION = 1;
 
 async function columnsOf(env: Env, table: string): Promise<string[]> {

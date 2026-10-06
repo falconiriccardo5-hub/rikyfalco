@@ -1,17 +1,22 @@
 // Integrazione Google con permessi minimi:
 //  - calendar.app.created → l'app vede/modifica SOLO il calendario che crea lei ("RF Coaching")
+//  - calendar.events.readonly → l'app LEGGE (senza poterli modificare) gli eventi del tuo calendario
+//    principale, per mostrarli nell'agenda accanto alle lezioni
 //  - drive.file           → l'app vede SOLO i file/cartelle che crea lei (i backup)
 // Il refresh token è salvato nel DB cifrato con AES-256-GCM (ENCRYPTION_KEY).
 import type { Env } from './types';
-import { getSetting, setSetting, first, run } from './db';
+import { all, getSetting, setSetting, first, logActivity, run } from './db';
 import { decrypt, encrypt, randomToken } from './crypto';
-import { addMinutesLocal, isoNow, TZ } from './time';
+import { addDays, addMinutesLocal, isoNow, romeNow, TZ } from './time';
+
+const READ_SCOPE = 'https://www.googleapis.com/auth/calendar.events.readonly';
 
 export const SCOPES = [
   'openid',
   'email',
   'https://www.googleapis.com/auth/calendar.app.created',
   'https://www.googleapis.com/auth/drive.file',
+  READ_SCOPE,
 ];
 
 const CAL = 'https://www.googleapis.com/calendar/v3';
@@ -61,6 +66,7 @@ export async function handleCallback(env: Env, code: string, state: string): Pro
   }
   await setSetting(env.DB, 'google_refresh_token', await encrypt(tok.refresh_token, env.ENCRYPTION_KEY!));
   await setSetting(env.DB, 'google_account', email);
+  await setSetting(env.DB, 'google_scopes', granted.join(' '));
   tokenCache = { token: tok.access_token!, exp: Date.now() + (tok.expires_in ?? 3000) * 1000 - 60_000 };
   await ensureCalendar(env);
   await ensureBackupFolder(env);
@@ -71,6 +77,11 @@ let tokenCache: { token: string; exp: number } | null = null;
 
 export async function isConnected(env: Env) {
   return googleConfigured(env) && !!(await getSetting(env.DB, 'google_refresh_token'));
+}
+
+/** true se il collegamento include il permesso di lettura del calendario principale (collegamenti vecchi: no) */
+export async function canReadCalendar(env: Env) {
+  return (await isConnected(env)) && ((await getSetting(env.DB, 'google_scopes')) || '').split(' ').includes(READ_SCOPE);
 }
 
 async function accessToken(env: Env): Promise<string> {
@@ -103,6 +114,8 @@ export async function disconnect(env: Env) {
   tokenCache = null;
   await setSetting(env.DB, 'google_refresh_token', null);
   await setSetting(env.DB, 'google_account', null);
+  await setSetting(env.DB, 'google_scopes', null);
+  await run(env.DB, "DELETE FROM gcal_events WHERE calendar IN ('primary','app')");
 }
 
 async function g<T>(env: Env, url: string, init: RequestInit = {}): Promise<T> {
@@ -183,6 +196,115 @@ export async function deleteEvent(env: Env, eventId: string | null) {
     const calId = encodeURIComponent(await ensureCalendar(env));
     await g(env, `${CAL}/calendars/${calId}/events/${encodeURIComponent(eventId)}`, { method: 'DELETE' });
   } catch { /* evento già rimosso */ }
+}
+
+// ───────────── Calendario: Google → app ─────────────
+// Ogni sincronizzazione rilegge una finestra (30 giorni indietro, 180 avanti):
+//  - calendario principale → copia di sola lettura in gcal_events (impegni personali nell'agenda)
+//  - calendario "RF Coaching" → se una lezione viene spostata o eliminata da Google, l'app si allinea;
+//    gli eventi aggiunti a mano in quel calendario compaiono come impegni.
+
+const PULL_BACK_DAYS = 30;
+const PULL_AHEAD_DAYS = 180;
+
+interface GEvent {
+  id: string; status?: string; summary?: string; location?: string; htmlLink?: string; eventType?: string;
+  start?: { dateTime?: string; date?: string }; end?: { dateTime?: string; date?: string };
+  extendedProperties?: { private?: Record<string, string> };
+}
+
+async function listEvents(env: Env, calId: string, timeMin: string, timeMax: string): Promise<GEvent[]> {
+  const out: GEvent[] = [];
+  let pageToken = '';
+  do {
+    const p = new URLSearchParams({ timeMin, timeMax, singleEvents: 'true', maxResults: '250', timeZone: TZ });
+    if (pageToken) p.set('pageToken', pageToken);
+    const r = await g<{ items?: GEvent[]; nextPageToken?: string }>(env, `${CAL}/calendars/${encodeURIComponent(calId)}/events?${p}`);
+    out.push(...(r.items ?? []));
+    pageToken = r.nextPageToken || '';
+  } while (pageToken && out.length < 5000);
+  return out;
+}
+
+/** Orario Google (dateTime con fuso o data di giornata intera) → ora di Roma 'YYYY-MM-DDTHH:MM' */
+export function toRomeLocal(t: { dateTime?: string; date?: string } | undefined): string | null {
+  if (t?.dateTime) { const d = new Date(t.dateTime); return isNaN(d.getTime()) ? null : romeNow(d).local; }
+  if (t?.date) return `${t.date}T00:00`;
+  return null;
+}
+
+const minutesBetween = (a: string, b: string) => Math.round((Date.parse(b + ':00Z') - Date.parse(a + ':00Z')) / 60000);
+
+export interface PullResult { events: number; moved: number; cancelled: number }
+
+export async function pullCalendar(env: Env): Promise<PullResult> {
+  const res: PullResult = { events: 0, moved: 0, cancelled: 0 };
+  if (!(await canReadCalendar(env))) return res;
+  try {
+    const today = romeNow().date;
+    const winFrom = addDays(today, -PULL_BACK_DAYS), winTo = addDays(today, PULL_AHEAD_DAYS);
+    const timeMin = `${addDays(winFrom, -1)}T00:00:00Z`, timeMax = `${addDays(winTo, 1)}T00:00:00Z`;
+    const prevCal = await getSetting(env.DB, 'google_calendar_id');
+    const appCal = await ensureCalendar(env);
+    const [primary, app] = await Promise.all([listEvents(env, 'primary', timeMin, timeMax), listEvents(env, appCal, timeMin, timeMax)]);
+    const now = isoNow();
+
+    // 1) lezioni dell'app spostate / eliminate da Google
+    const linked = new Map<string, GEvent>();
+    for (const e of app) if (e.status !== 'cancelled' && e.extendedProperties?.private?.rfSessionId) linked.set(e.id, e);
+    const sessions = await all<{ id: string; starts_at: string; duration_min: number; status: string; gcal_event_id: string; gcal_status: string; client_id: string | null; lead_id: string | null }>(env.DB,
+      "SELECT id, starts_at, duration_min, status, gcal_event_id, gcal_status, client_id, lead_id FROM sessions WHERE gcal_event_id IS NOT NULL AND status != 'annullata' AND gcal_status = 'ok' AND starts_at >= ? AND starts_at < ?",
+      winFrom, addDays(winTo, 1));
+    const byEvent = new Map(sessions.map((s) => [s.gcal_event_id, s]));
+    for (const [eventId, e] of linked) {
+      let s = byEvent.get(eventId);
+      if (!s) {
+        // lezione spostata da fuori finestra a dentro
+        s = await first(env.DB, "SELECT id, starts_at, duration_min, status, gcal_event_id, gcal_status, client_id, lead_id FROM sessions WHERE id = ? AND gcal_event_id = ? AND status != 'annullata' AND gcal_status = 'ok'", e.extendedProperties!.private!.rfSessionId, eventId) ?? undefined;
+        if (!s) continue;
+      }
+      const start = toRomeLocal(e.start), end = toRomeLocal(e.end);
+      if (!start || !end || e.start?.date) continue;
+      const dur = minutesBetween(start, end);
+      if (dur < 5 || dur > 600 || (start === s.starts_at && dur === s.duration_min)) continue;
+      await run(env.DB, 'UPDATE sessions SET starts_at = ?, duration_min = ?, updated_at = ? WHERE id = ?', start, dur, now, s.id);
+      await logActivity(env, 'Google Calendar', 'spostato', 'appuntamento', s.client_id ?? s.lead_id, `${s.starts_at.replace('T', ' ')} → ${start.replace('T', ' ')} (${dur} min)`);
+      res.moved++;
+    }
+    const missing = sessions.filter((s) => !linked.has(s.gcal_event_id));
+    // Calendario "RF Coaching" ricreato o svuotato: non si annulla nulla, le lezioni vengono ricopiate su Google
+    if (missing.length && (prevCal !== appCal || (missing.length === sessions.length && missing.length > 3))) {
+      await env.DB.batch(missing.map((s) => env.DB.prepare("UPDATE sessions SET gcal_event_id = NULL, gcal_status = 'pending' WHERE id = ?").bind(s.id)));
+      missing.length = 0;
+    }
+    for (const s of missing) {
+      await run(env.DB, "UPDATE sessions SET status = 'annullata', gcal_event_id = NULL, updated_at = ? WHERE id = ?", now, s.id);
+      await logActivity(env, 'Google Calendar', 'stato: annullata', 'appuntamento', s.client_id ?? s.lead_id, `${s.starts_at.replace('T', ' ')} (evento eliminato da Google)`);
+      res.cancelled++;
+    }
+
+    // 2) impegni Google (copia di sola lettura)
+    const rows: { id: string; calendar: string; e: GEvent }[] = [
+      ...primary.map((e) => ({ id: `primary:${e.id}`, calendar: 'primary', e })),
+      ...app.filter((e) => !e.extendedProperties?.private?.rfSessionId).map((e) => ({ id: `app:${e.id}`, calendar: 'app', e })),
+    ];
+    const stmts: D1PreparedStatement[] = [env.DB.prepare("DELETE FROM gcal_events WHERE calendar IN ('primary','app')")];
+    for (const { id, calendar, e } of rows) {
+      if (e.status === 'cancelled' || e.eventType === 'workingLocation') continue;
+      const start = toRomeLocal(e.start), end = toRomeLocal(e.end);
+      if (!start || !end) continue;
+      stmts.push(env.DB.prepare('INSERT OR REPLACE INTO gcal_events (id, calendar, summary, location, starts_at, ends_at, all_day, html_link, synced_at) VALUES (?,?,?,?,?,?,?,?,?)')
+        .bind(id, calendar, (e.summary || '(senza titolo)').slice(0, 300), (e.location || '').slice(0, 300), start, end, e.start?.date ? 1 : 0, (e.htmlLink || '').slice(0, 500), now));
+      res.events++;
+    }
+    for (let i = 0; i < stmts.length; i += 90) await env.DB.batch(stmts.slice(i, i + 90));
+    await setSetting(env.DB, 'google_pull_at', now);
+    await setSetting(env.DB, 'google_pull_error', null);
+  } catch (e) {
+    await setSetting(env.DB, 'google_pull_error', String((e as Error).message).slice(0, 300));
+    throw e;
+  }
+  return res;
 }
 
 // ───────────── Drive (backup) ─────────────

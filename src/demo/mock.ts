@@ -13,7 +13,7 @@ export function demoGet(path: string): unknown {
       .filter((c) => `${c.first_name} ${c.last_name} ${c.email}`.toLowerCase().includes(s));
     return { clients, leads: [] };
   }
-  if (base === '/sessions') return { sessions: [], google: { connected: false } };
+  if (base === '/sessions') return { sessions: [], events: [], google: { connected: false, reads: false } };
   if (base === '/report') return structuredClone(fx['/report?month=2026-01']);
   throw new Error('Non disponibile nell\'anteprima');
 }

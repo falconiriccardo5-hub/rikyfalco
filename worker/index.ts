@@ -10,6 +10,7 @@ import {
   type ClientRow, type PaymentRow, type SessionRow,
 } from './domain';
 import * as google from './google';
+import * as ical from './ical';
 import { exportCsvs, listDriveBackups, readDriveBackup, restoreFromCsvs, runDriveBackup } from './backup';
 import { makeZip } from './zip';
 import { toCsv } from './csv';
@@ -38,7 +39,16 @@ function withHeaders(res: Response, extra: Record<string, string> = {}): Respons
   return r;
 }
 
+// Feed iCal per Google Calendar ("Aggiungi da URL"): Google non può fare login con Cloudflare Access,
+// quindi questo solo percorso è protetto dal token segreto nell'URL (e da una regola Bypass in Access).
+app.get('/ical/:file', async (c) => {
+  const token = c.req.param('file').replace(/\.ics$/, '');
+  if (!(await ical.checkFeedToken(c.env, token))) return withHeaders(new Response('Not found', { status: 404 }));
+  return withHeaders(new Response(await ical.buildFeed(c.env), { headers: { 'content-type': 'text/calendar; charset=utf-8', 'cache-control': 'private, max-age=300' } }), { 'Cache-Control': 'private, max-age=300', 'X-Robots-Tag': 'noindex' });
+});
+
 app.use('*', async (c, next) => {
+  if (c.req.method === 'GET' && /^\/ical\/[^/]+$/.test(c.req.path)) return next();
   const email = await authenticate(c.req.raw, c.env);
   const isApi = c.req.path.startsWith('/api/');
   if (!email) {
@@ -84,6 +94,7 @@ const clientBase = z.object({
   phone: text(40).regex(/^[+0-9 ()./-]*$/, 'telefono non valido').default(''),
   mode: z.enum(MODES).default('misto'),
   program_months: z.number().int().min(1).max(60).default(12),
+  lessons_target: z.number().int().min(0).max(1000).default(0),
   start_date: dateStr,
   price_total_cents: cents.default(0),
   notes: text(5000).default(''),
@@ -125,6 +136,20 @@ async function syncPending(env: Env, limit = 40) {
   return rows.length;
 }
 
+/** Legge Google Calendar se l'ultima lettura è più vecchia di maxAgeMin minuti */
+async function pullIfStale(env: Env, maxAgeMin = 10) {
+  if (!(await google.canReadCalendar(env))) {
+    // senza collegamento OAuth: link iCal segreto di Google Calendar
+    const last = await getSetting(env.DB, 'ical_import_at');
+    if (last && Date.now() - Date.parse(last) < maxAgeMin * 60_000) return;
+    await ical.pullIcal(env).catch((e) => console.error('lettura link iCal fallita', e));
+    return;
+  }
+  const last = await getSetting(env.DB, 'google_pull_at');
+  if (last && Date.now() - Date.parse(last) < maxAgeMin * 60_000) return;
+  await google.pullCalendar(env).catch((e) => console.error('lettura Google Calendar fallita', e));
+}
+
 // ───────────── API: generali ─────────────
 
 app.get('/api/me', async (c) => c.json({ email: actor(c), coach_name: (await getSetting(c.env.DB, 'coach_name')) || 'Riccardo Falconi', badges: await badges(c.env) }));
@@ -153,8 +178,8 @@ app.post('/api/clients', async (c) => {
   const now = isoNow();
   const end = addDays(addMonths(d.start_date, d.program_months), -1);
   const stmts = [
-    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, start_date, end_date, price_total_cents, notes, created_at, updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.start_date, end, d.price_total_cents, d.notes, now, now),
+    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, created_at, updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, now, now),
     ...insertPayments(c.env, buildPlan(id, d.price_total_cents, plan.installments, plan.first_due_date || d.start_date)),
   ];
   await c.env.DB.batch(stmts);
@@ -180,8 +205,8 @@ app.patch('/api/clients/:id', async (c) => {
   const d = clientBase.partial().parse(await c.req.json());
   const merged = { ...cur, ...Object.fromEntries(Object.entries(d).filter(([, v]) => v !== undefined)) } as ClientRow;
   merged.end_date = addDays(addMonths(merged.start_date, merged.program_months), -1);
-  await run(c.env.DB, `UPDATE clients SET first_name=?, last_name=?, email=?, phone=?, mode=?, program_months=?, start_date=?, end_date=?, price_total_cents=?, notes=?, updated_at=? WHERE id=?`,
-    merged.first_name, merged.last_name, merged.email, merged.phone, merged.mode, merged.program_months, merged.start_date, merged.end_date, merged.price_total_cents, merged.notes, isoNow(), id);
+  await run(c.env.DB, `UPDATE clients SET first_name=?, last_name=?, email=?, phone=?, mode=?, program_months=?, lessons_target=?, start_date=?, end_date=?, price_total_cents=?, notes=?, updated_at=? WHERE id=?`,
+    merged.first_name, merged.last_name, merged.email, merged.phone, merged.mode, merged.program_months, merged.lessons_target, merged.start_date, merged.end_date, merged.price_total_cents, merged.notes, isoNow(), id);
   await logActivity(c.env, actor(c), 'modificato', 'cliente', id, `Modificato ${fullName(merged)}`);
   // Il nome compare negli eventi del calendario: riallinea le sessioni future
   if (d.first_name !== undefined || d.last_name !== undefined) {
@@ -324,7 +349,11 @@ app.get('/api/sessions', async (c) => {
     `SELECT s.*, TRIM(COALESCE(c.first_name || ' ' || c.last_name, l.first_name || ' ' || l.last_name, '')) AS person
      FROM sessions s LEFT JOIN clients c ON c.id = s.client_id LEFT JOIN leads l ON l.id = s.lead_id
      WHERE s.starts_at >= ? AND s.starts_at < ? ORDER BY s.starts_at`, from, addDays(to, 1));
-  return c.json({ sessions: rows, google: { connected: await google.isConnected(c.env) } });
+  const events = await all(c.env.DB, 'SELECT id, calendar, summary, location, starts_at, ends_at, all_day, html_link FROM gcal_events WHERE starts_at < ? AND ends_at > ? ORDER BY all_day DESC, starts_at',
+    addDays(to, 1), from);
+  c.executionCtx.waitUntil(pullIfStale(c.env));
+  const viaIcal = !!(await getSetting(c.env.DB, 'ical_import_url')) || !!(await getSetting(c.env.DB, 'ical_feed_token'));
+  return c.json({ sessions: rows, events, google: { connected: (await google.isConnected(c.env)) || viaIcal, reads: (await google.canReadCalendar(c.env)) || !!(await getSetting(c.env.DB, 'ical_import_url')), ical: viaIcal } });
 });
 
 const sessionSchema = z.object({
@@ -442,8 +471,8 @@ app.post('/api/leads/:id/convert', async (c) => {
   const clientId = uid(); const now = isoNow();
   const end = addDays(addMonths(d.start_date, d.program_months), -1);
   await c.env.DB.batch([
-    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, start_date, end_date, price_total_cents, notes, created_at, updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(clientId, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.start_date, end, d.price_total_cents, d.notes, now, now),
+    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, created_at, updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(clientId, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, now, now),
     c.env.DB.prepare("UPDATE leads SET status='convertito', client_id=?, updated_at=? WHERE id=?").bind(clientId, now, id),
     ...insertPayments(c.env, buildPlan(clientId, d.price_total_cents, plan.installments, plan.first_due_date || d.start_date)),
   ]);
@@ -590,6 +619,7 @@ app.post('/api/backup/restore-drive', async (c) => {
 
 app.get('/api/settings', async (c) => {
   const s = Object.fromEntries((await all<{ key: string; value: string }>(c.env.DB, 'SELECT key, value FROM settings WHERE key NOT IN (?)', 'google_refresh_token')).map((r) => [r.key, r.value]));
+  const base = (c.env.APP_URL || new URL(c.req.url).origin).replace(/\/$/, '');
   return c.json({
     coach_name: s.coach_name || 'Riccardo Falconi',
     calendar_name: s.calendar_name || 'RF Coaching',
@@ -603,11 +633,57 @@ app.get('/api/settings', async (c) => {
       connected: await google.isConnected(c.env),
       account: s.google_account || null,
       calendar_id: s.google_calendar_id || null,
+      reads_calendar: await google.canReadCalendar(c.env),
+      last_pull: s.google_pull_at || null,
+      pull_error: s.google_pull_error || null,
       drive_folder_id: s.google_drive_folder_id || null,
+    },
+    ical: {
+      feed_url: s.ical_feed_token ? `${base}/ical/${s.ical_feed_token}.ics` : null,
+      import_set: !!s.ical_import_url,
+      import_hint: s.ical_import_url ? s.ical_import_url.replace(/private-[^/]+/, 'private-••••••') : null,
+      last_pull: s.ical_import_at || null,
+      error: s.ical_import_error || null,
     },
     email: actor(c),
   });
 });
+
+app.post('/api/ical/feed', async (c) => {
+  const rotate = z.object({ rotate: z.boolean().default(false) }).parse(await c.req.json().catch(() => ({}))).rotate;
+  await ical.feedToken(c.env, rotate);
+  await logActivity(c.env, actor(c), rotate ? 'rigenerato' : 'creato', 'calendario', null, rotate ? 'Link iCal dell\'agenda rigenerato (il vecchio non funziona più)' : 'Link iCal dell\'agenda creato');
+  return c.json({ ok: true });
+});
+
+app.delete('/api/ical/feed', async (c) => {
+  await setSetting(c.env.DB, 'ical_feed_token', null);
+  await logActivity(c.env, actor(c), 'disattivato', 'calendario', null, 'Link iCal dell\'agenda disattivato');
+  return c.json({ ok: true });
+});
+
+app.put('/api/ical/import', async (c) => {
+  const { url } = z.object({ url: z.string().min(10).max(1000) }).parse(await c.req.json());
+  const clean = ical.validImportUrl(url);
+  if (!clean) return c.json({ error: 'Incolla l\'indirizzo segreto in formato iCal (inizia con https://)' }, 400);
+  await setSetting(c.env.DB, 'ical_import_url', clean);
+  try {
+    const n = await ical.pullIcal(c.env);
+    await logActivity(c.env, actor(c), 'collegato', 'calendario', null, 'Google Calendar collegato tramite link iCal');
+    return c.json({ events: n });
+  } catch (e) {
+    await ical.clearImport(c.env);
+    return c.json({ error: `Non riesco a leggere il calendario: ${(e as Error).message}` }, 400);
+  }
+});
+
+app.delete('/api/ical/import', async (c) => {
+  await ical.clearImport(c.env);
+  await logActivity(c.env, actor(c), 'scollegato', 'calendario', null, 'Link iCal di Google Calendar rimosso');
+  return c.json({ ok: true });
+});
+
+app.post('/api/ical/refresh', async (c) => c.json({ events: await ical.pullIcal(c.env) }));
 
 app.put('/api/settings', async (c) => {
   const d = z.object({
@@ -640,7 +716,7 @@ app.get('/api/google/callback', async (c) => {
     const account = await google.handleCallback(c.env, c.req.query('code') || '', c.req.query('state') || '');
     await logActivity(c.env, actor(c), 'collegato', 'google', null, `Google collegato (${account || 'account'})`);
     await run(c.env.DB, "UPDATE sessions SET gcal_status = 'pending' WHERE status != 'annullata'");
-    c.executionCtx.waitUntil(syncPending(c.env, 200));
+    c.executionCtx.waitUntil((async () => { await syncPending(c.env, 200); await pullIfStale(c.env, 0); })());
     return c.redirect('/settings?google=ok');
   } catch (e) {
     return c.redirect(`/settings?google=error&reason=${encodeURIComponent((e as Error).message.slice(0, 120))}`);
@@ -656,7 +732,8 @@ app.post('/api/google/disconnect', async (c) => {
 app.post('/api/google/resync', async (c) => {
   await run(c.env.DB, "UPDATE sessions SET gcal_status = 'pending' WHERE status != 'annullata' AND starts_at >= ?", addDays(romeNow().date, -60));
   const n = await syncPending(c.env, 200);
-  return c.json({ synced: n });
+  const pulled = await google.pullCalendar(c.env);
+  return c.json({ synced: n, ...pulled });
 });
 
 app.all('/api/*', (c) => c.json({ error: 'Endpoint non trovato' }, 404));
@@ -666,8 +743,14 @@ app.all('*', async (c) => c.env.ASSETS.fetch(c.req.raw));
 
 // ───────────── Cron ─────────────
 async function scheduled(event: ScheduledController, env: Env, ctx: ExecutionContext) {
-  if (event.cron === '0 * * * *') {
-    ctx.waitUntil((async () => { await refreshAutomations(env); await syncPending(env); })());
+  if (event.cron === '*/15 * * * *') {
+    // ogni 15 minuti: legge Google Calendar e invia le modifiche; notifiche/automazioni una volta l'ora
+    const hourly = new Date(event.scheduledTime).getUTCMinutes() < 15;
+    ctx.waitUntil((async () => {
+      if (hourly) await refreshAutomations(env);
+      await pullIfStale(env, 5);
+      await syncPending(env, 30);
+    })());
     return;
   }
   // backup notturno

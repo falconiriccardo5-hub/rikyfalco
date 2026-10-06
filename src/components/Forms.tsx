@@ -27,7 +27,7 @@ export function ClientForm({ client, lead, onClose, onSaved }: { client?: Client
   const src = client ?? lead;
   const { v, bind } = useForm({
     first_name: src?.first_name ?? '', last_name: src?.last_name ?? '', email: src?.email ?? '', phone: src?.phone ?? '',
-    mode: client?.mode ?? 'misto', program_months: String(client?.program_months ?? 12), start_date: client?.start_date ?? today,
+    mode: client?.mode ?? 'misto', program_months: String(client?.program_months ?? 12), lessons_target: String(client?.lessons_target || ''), start_date: client?.start_date ?? today,
     price: client ? fromCents(client.price_total_cents) : '', installments: '12', first_due_date: client?.start_date ?? today, notes: src?.notes ?? '',
   });
   const [busy, setBusy] = useState(false);
@@ -39,7 +39,7 @@ export function ClientForm({ client, lead, onClose, onSaved }: { client?: Client
     setBusy(true);
     const body = {
       first_name: v.first_name, last_name: v.last_name, email: v.email, phone: v.phone, mode: v.mode,
-      program_months: Number(v.program_months), start_date: v.start_date, price_total_cents: toCents(v.price || '0'), notes: v.notes,
+      program_months: Number(v.program_months), lessons_target: Number(v.lessons_target) || 0, start_date: v.start_date, price_total_cents: toCents(v.price || '0'), notes: v.notes,
       ...(editing ? {} : { installments: Number(v.installments) || 0, first_due_date: v.first_due_date }),
     };
     const r = await act(() => editing
@@ -66,7 +66,10 @@ export function ClientForm({ client, lead, onClose, onSaved }: { client?: Client
           <label className="field"><span>Durata (mesi)</span><input className="input" type="number" min={1} max={60} required {...bind('program_months')} /></label>
           <label className="field"><span>Inizio</span><input className="input" type="date" required {...bind('start_date')} /></label>
         </div>
-        <label className="field"><span>Prezzo totale del percorso (€)</span><input className="input" inputMode="decimal" placeholder="es. 1800" {...bind('price')} /></label>
+        <div className="grid-2">
+          <label className="field"><span>Lezioni previste</span><input className="input" type="number" min={0} max={1000} placeholder="es. 48" {...bind('lessons_target')} /></label>
+          <label className="field"><span>Prezzo totale del percorso (€)</span><input className="input" inputMode="decimal" placeholder="es. 1800" {...bind('price')} /></label>
+        </div>
         {!editing && (
           <div className="grid-2">
             <label className="field"><span>Numero di rate (0 = nessun piano)</span><input className="input" type="number" min={0} max={60} {...bind('installments')} /></label>
