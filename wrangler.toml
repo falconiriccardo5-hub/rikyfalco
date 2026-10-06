@@ -1,0 +1,38 @@
+name = "rf-coaching"
+main = "worker/index.ts"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+# Indirizzo gratuito https://rf-coaching.<tuo-sottodominio>.workers.dev
+# DEVE essere protetto da Cloudflare Access (Worker → Settings → Domains & Routes → Enable Cloudflare Access).
+# Anche senza Access il Worker rifiuta ogni richiesta che non abbia un token Access valido (fail-closed).
+workers_dev = true
+# Gli URL di anteprima delle versioni restano disattivati (superficie d'attacco in meno)
+preview_urls = false
+
+# Se un giorno acquisti un dominio: decommenta e imposta APP_URL di conseguenza
+# routes = [{ pattern = "coaching.tuodominio.it", custom_domain = true }]
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+# Il Worker gestisce ogni richiesta (verifica Access + header di sicurezza anche sui file statici)
+run_worker_first = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rf-coaching-db"
+database_id = "25c42987-60f8-478e-9e28-57232ed42e35"
+migrations_dir = "migrations"
+
+[triggers]
+# ogni ora: notifiche, messaggi, sincronizzazione calendario
+# 01:30 UTC (≈ 03:30 a Roma): backup automatico su Google Drive
+crons = ["0 * * * *", "30 1 * * *"]
+
+# Configurazione impostata come "secret" (vedi README), non scritta qui:
+# ALLOWED_EMAILS, ACCESS_TEAM_DOMAIN, ACCESS_AUD, APP_URL,
+# GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, ENCRYPTION_KEY
+
+[observability]
+enabled = true

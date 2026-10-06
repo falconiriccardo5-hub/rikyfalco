@@ -1,0 +1,6 @@
+# Copia in .dev.vars per lo sviluppo locale (MAI committare .dev.vars)
+DEV_BYPASS_AUTH=true
+APP_URL=http://localhost:8787
+# GOOGLE_CLIENT_ID=...
+# GOOGLE_CLIENT_SECRET=...
+# ENCRYPTION_KEY=   # genera con: openssl rand -base64 32
