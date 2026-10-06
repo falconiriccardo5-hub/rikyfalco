@@ -115,7 +115,7 @@ export async function disconnect(env: Env) {
   await setSetting(env.DB, 'google_refresh_token', null);
   await setSetting(env.DB, 'google_account', null);
   await setSetting(env.DB, 'google_scopes', null);
-  await run(env.DB, 'DELETE FROM gcal_events');
+  await run(env.DB, "DELETE FROM gcal_events WHERE calendar IN ('primary','app')");
 }
 
 async function g<T>(env: Env, url: string, init: RequestInit = {}): Promise<T> {
@@ -288,7 +288,7 @@ export async function pullCalendar(env: Env): Promise<PullResult> {
       ...primary.map((e) => ({ id: `primary:${e.id}`, calendar: 'primary', e })),
       ...app.filter((e) => !e.extendedProperties?.private?.rfSessionId).map((e) => ({ id: `app:${e.id}`, calendar: 'app', e })),
     ];
-    const stmts: D1PreparedStatement[] = [env.DB.prepare('DELETE FROM gcal_events')];
+    const stmts: D1PreparedStatement[] = [env.DB.prepare("DELETE FROM gcal_events WHERE calendar IN ('primary','app')")];
     for (const { id, calendar, e } of rows) {
       if (e.status === 'cancelled' || e.eventType === 'workingLocation') continue;
       const start = toRomeLocal(e.start), end = toRomeLocal(e.end);

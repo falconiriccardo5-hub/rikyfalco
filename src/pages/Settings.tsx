@@ -3,12 +3,14 @@ import { useSearchParams } from 'react-router-dom';
 import { CalendarCheck, Cloud, ExternalLink, RefreshCw, ShieldCheck, Unplug } from 'lucide-react';
 import { Confirm, ErrorBox, Loading, PageHead, useAction, useApi, useToast } from '../components/ui';
 import { api } from '../lib/api';
+import { IcalCard, type IcalSettings } from '../components/IcalCard';
 
 type S = {
   coach_name: string; calendar_name: string; default_duration: number; backup_auto: boolean; backup_retention: number; email: string;
   templates: Record<string, string>; default_templates: Record<string, string>;
   google: { configured: boolean; connected: boolean; account: string | null; calendar_id: string | null; drive_folder_id: string | null;
     reads_calendar?: boolean; last_pull?: string | null; pull_error?: string | null };
+  ical?: IcalSettings;
 };
 const TPL: Record<string, [string, string]> = {
   rata_scaduta: ['Sollecito rata scaduta', '{nome} {importo} {data}'],
@@ -49,10 +51,12 @@ export default function Settings() {
       </PageHead>
 
       <div className="stack fade-in" style={{ gap: 22 }}>
+        {data.ical && <IcalCard ical={data.ical} />}
         <div className="card pad">
-          <div className="label">Google Calendar e Drive</div>
+          <div className="label">Collegamento Google avanzato (facoltativo)</div>
           {!data.google.configured ? (
-            <div className="callout warn" style={{ marginTop: 16 }}>Le credenziali Google non sono ancora configurate sul server (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, ENCRYPTION_KEY, APP_URL). Segui la guida nel README.</div>
+            <p className="muted" style={{ marginTop: 16, marginBottom: 0 }}>Facoltativo: serve solo per i backup automatici su Google Drive e per aggiornare Google Calendar all'istante.
+              Richiede credenziali create su Google Cloud (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, ENCRYPTION_KEY, APP_URL): vedi la guida nel README.</p>
           ) : data.google.connected ? (
             <div className="stack" style={{ marginTop: 16 }}>
               <div className="row wrap"><span className="pill green">Collegato</span><span className="muted">{data.google.account}</span></div>

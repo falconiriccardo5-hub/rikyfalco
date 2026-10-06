@@ -9,7 +9,7 @@ Gira interamente su **Cloudflare** (niente Vercel):
 | Backend/API | Cloudflare Worker (Hono) |
 | Database | Cloudflare D1 (SQLite) — con Time Travel: cronologia ripristinabile di 30 giorni |
 | Login | Cloudflare Access (Zero Trust) + verifica del token lato server |
-| Calendario | Google Calendar nei due sensi: le lezioni vanno nel calendario "RF Coaching" (PC e iPhone), i tuoi impegni Google compaiono nell'agenda dell'app, e lezioni spostate/eliminate da Google si aggiornano nell'app (ogni 15 minuti) |
+| Calendario | Google Calendar con due link iCal, senza Google Cloud: i tuoi eventi Google compaiono nell'agenda (ogni 15 minuti) e le lezioni compaiono in Google Calendar come calendario "RF Coaching" (PC e iPhone) |
 | Backup | CSV su Google Drive ogni notte + download ZIP + ripristino |
 
 ## Sezioni
@@ -68,7 +68,20 @@ npx wrangler secret put APP_URL              # es. https://rf-coaching.riccardo.
 Ora apri l'indirizzo: Cloudflare ti chiede la mail, ti manda un codice e sei dentro.
 Consigliato: attiva la verifica in due passaggi sul tuo account Cloudflare (My Profile → Authentication).
 
-### 4. Google (Calendar + Drive)
+### 4. Google Calendar (senza Google Cloud Console)
+Tutto da **Impostazioni → Google Calendar** nell'app, con due link da copiare e incollare:
+
+1. **I tuoi eventi Google nell'app**: in Google Calendar dal computer → Impostazioni → clicca il tuo calendario →
+   *Indirizzo segreto in formato iCal* → copia e incollalo nell'app. Gli eventi si aggiornano ogni 15 minuti.
+2. **Le lezioni in Google Calendar**: nell'app premi *Crea il link per Google Calendar*, copialo e in Google Calendar
+   → *Altri calendari* → **Da URL** → incolla. Google aggiorna i calendari aggiunti da URL con i suoi tempi (di solito qualche ora).
+
+Perché Google possa leggere il link delle lezioni, quel solo percorso deve saltare il login di Cloudflare Access
+(il link resta protetto dal suo codice segreto e si può rigenerare in qualsiasi momento):
+Zero Trust → *Access → Applications* → **Add an application** → *Self-hosted* → dominio `rf-coaching.<tuo-nome>.workers.dev`,
+path `ical` → policy con Action **Bypass** e Include **Everyone** → salva.
+
+### 4b. Google avanzato (facoltativo: backup su Drive e aggiornamento istantaneo)
 1. https://console.cloud.google.com → crea un progetto "RF Coaching".
 2. *APIs & Services → Library*: abilita **Google Calendar API** e **Google Drive API**.
 3. *OAuth consent screen*: tipo **External**, scope `calendar.app.created`, `calendar.events.readonly`, `drive.file`, `openid`, `email`, poi **Publish app**

@@ -10,6 +10,7 @@ import {
   type ClientRow, type PaymentRow, type SessionRow,
 } from './domain';
 import * as google from './google';
+import * as ical from './ical';
 import { exportCsvs, listDriveBackups, readDriveBackup, restoreFromCsvs, runDriveBackup } from './backup';
 import { makeZip } from './zip';
 import { toCsv } from './csv';
@@ -38,7 +39,16 @@ function withHeaders(res: Response, extra: Record<string, string> = {}): Respons
   return r;
 }
 
+// Feed iCal per Google Calendar ("Aggiungi da URL"): Google non può fare login con Cloudflare Access,
+// quindi questo solo percorso è protetto dal token segreto nell'URL (e da una regola Bypass in Access).
+app.get('/ical/:file', async (c) => {
+  const token = c.req.param('file').replace(/\.ics$/, '');
+  if (!(await ical.checkFeedToken(c.env, token))) return withHeaders(new Response('Not found', { status: 404 }));
+  return withHeaders(new Response(await ical.buildFeed(c.env), { headers: { 'content-type': 'text/calendar; charset=utf-8', 'cache-control': 'private, max-age=300' } }), { 'Cache-Control': 'private, max-age=300', 'X-Robots-Tag': 'noindex' });
+});
+
 app.use('*', async (c, next) => {
+  if (c.req.method === 'GET' && /^\/ical\/[^/]+$/.test(c.req.path)) return next();
   const email = await authenticate(c.req.raw, c.env);
   const isApi = c.req.path.startsWith('/api/');
   if (!email) {
@@ -127,7 +137,13 @@ async function syncPending(env: Env, limit = 40) {
 
 /** Legge Google Calendar se l'ultima lettura è più vecchia di maxAgeMin minuti */
 async function pullIfStale(env: Env, maxAgeMin = 10) {
-  if (!(await google.canReadCalendar(env))) return;
+  if (!(await google.canReadCalendar(env))) {
+    // senza collegamento OAuth: link iCal segreto di Google Calendar
+    const last = await getSetting(env.DB, 'ical_import_at');
+    if (last && Date.now() - Date.parse(last) < maxAgeMin * 60_000) return;
+    await ical.pullIcal(env).catch((e) => console.error('lettura link iCal fallita', e));
+    return;
+  }
   const last = await getSetting(env.DB, 'google_pull_at');
   if (last && Date.now() - Date.parse(last) < maxAgeMin * 60_000) return;
   await google.pullCalendar(env).catch((e) => console.error('lettura Google Calendar fallita', e));
@@ -335,7 +351,8 @@ app.get('/api/sessions', async (c) => {
   const events = await all(c.env.DB, 'SELECT id, calendar, summary, location, starts_at, ends_at, all_day, html_link FROM gcal_events WHERE starts_at < ? AND ends_at > ? ORDER BY all_day DESC, starts_at',
     addDays(to, 1), from);
   c.executionCtx.waitUntil(pullIfStale(c.env));
-  return c.json({ sessions: rows, events, google: { connected: await google.isConnected(c.env), reads: await google.canReadCalendar(c.env) } });
+  const viaIcal = !!(await getSetting(c.env.DB, 'ical_import_url')) || !!(await getSetting(c.env.DB, 'ical_feed_token'));
+  return c.json({ sessions: rows, events, google: { connected: (await google.isConnected(c.env)) || viaIcal, reads: (await google.canReadCalendar(c.env)) || !!(await getSetting(c.env.DB, 'ical_import_url')), ical: viaIcal } });
 });
 
 const sessionSchema = z.object({
@@ -601,6 +618,7 @@ app.post('/api/backup/restore-drive', async (c) => {
 
 app.get('/api/settings', async (c) => {
   const s = Object.fromEntries((await all<{ key: string; value: string }>(c.env.DB, 'SELECT key, value FROM settings WHERE key NOT IN (?)', 'google_refresh_token')).map((r) => [r.key, r.value]));
+  const base = (c.env.APP_URL || new URL(c.req.url).origin).replace(/\/$/, '');
   return c.json({
     coach_name: s.coach_name || 'Riccardo Falconi',
     calendar_name: s.calendar_name || 'RF Coaching',
@@ -619,9 +637,52 @@ app.get('/api/settings', async (c) => {
       pull_error: s.google_pull_error || null,
       drive_folder_id: s.google_drive_folder_id || null,
     },
+    ical: {
+      feed_url: s.ical_feed_token ? `${base}/ical/${s.ical_feed_token}.ics` : null,
+      import_set: !!s.ical_import_url,
+      import_hint: s.ical_import_url ? s.ical_import_url.replace(/private-[^/]+/, 'private-••••••') : null,
+      last_pull: s.ical_import_at || null,
+      error: s.ical_import_error || null,
+    },
     email: actor(c),
   });
 });
+
+app.post('/api/ical/feed', async (c) => {
+  const rotate = z.object({ rotate: z.boolean().default(false) }).parse(await c.req.json().catch(() => ({}))).rotate;
+  await ical.feedToken(c.env, rotate);
+  await logActivity(c.env, actor(c), rotate ? 'rigenerato' : 'creato', 'calendario', null, rotate ? 'Link iCal dell\'agenda rigenerato (il vecchio non funziona più)' : 'Link iCal dell\'agenda creato');
+  return c.json({ ok: true });
+});
+
+app.delete('/api/ical/feed', async (c) => {
+  await setSetting(c.env.DB, 'ical_feed_token', null);
+  await logActivity(c.env, actor(c), 'disattivato', 'calendario', null, 'Link iCal dell\'agenda disattivato');
+  return c.json({ ok: true });
+});
+
+app.put('/api/ical/import', async (c) => {
+  const { url } = z.object({ url: z.string().min(10).max(1000) }).parse(await c.req.json());
+  const clean = ical.validImportUrl(url);
+  if (!clean) return c.json({ error: 'Incolla l\'indirizzo segreto in formato iCal (inizia con https://)' }, 400);
+  await setSetting(c.env.DB, 'ical_import_url', clean);
+  try {
+    const n = await ical.pullIcal(c.env);
+    await logActivity(c.env, actor(c), 'collegato', 'calendario', null, 'Google Calendar collegato tramite link iCal');
+    return c.json({ events: n });
+  } catch (e) {
+    await ical.clearImport(c.env);
+    return c.json({ error: `Non riesco a leggere il calendario: ${(e as Error).message}` }, 400);
+  }
+});
+
+app.delete('/api/ical/import', async (c) => {
+  await ical.clearImport(c.env);
+  await logActivity(c.env, actor(c), 'scollegato', 'calendario', null, 'Link iCal di Google Calendar rimosso');
+  return c.json({ ok: true });
+});
+
+app.post('/api/ical/refresh', async (c) => c.json({ events: await ical.pullIcal(c.env) }));
 
 app.put('/api/settings', async (c) => {
   const d = z.object({
