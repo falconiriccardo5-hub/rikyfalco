@@ -5,12 +5,12 @@ import {
   MessageCircle, Plus, Search, Settings, Sparkles, UserPlus, Users, X,
 } from 'lucide-react';
 import { api } from '../lib/api';
-import { ClientForm, LeadForm, SessionForm } from './Forms';
+import { ClientForm, LeadForm, NewVisitForm, SessionForm } from './Forms';
 import { Modal, useApi } from './ui';
 
 type Me = { email: string; coach_name: string; badges: { notifications: number; messages: number } };
-type Open = { client: () => void; session: (clientId?: string, date?: string) => void; lead: () => void };
-const OpenCtx = createContext<Open>({ client: () => {}, session: () => {}, lead: () => {} });
+type Open = { client: () => void; session: (clientId?: string, date?: string) => void; lead: () => void; visit: () => void };
+const OpenCtx = createContext<Open>({ client: () => {}, session: () => {}, lead: () => {}, visit: () => {} });
 export const useOpen = () => useContext(OpenCtx);
 export const MeCtx = createContext<Me | null>(null);
 
@@ -19,7 +19,7 @@ export default function Layout() {
   const badges = useApi<Me['badges']>('/badges');
   const [menu, setMenu] = useState(false);
   const [palette, setPalette] = useState(false);
-  const [modal, setModal] = useState<null | { t: 'client' } | { t: 'lead' } | { t: 'session'; clientId?: string; date?: string }>(null);
+  const [modal, setModal] = useState<null | { t: 'client' } | { t: 'lead' } | { t: 'visit' } | { t: 'session'; clientId?: string; date?: string }>(null);
   const loc = useLocation();
   const nav = useNavigate();
 
@@ -37,6 +37,7 @@ export default function Layout() {
   const open = useMemo<Open>(() => ({
     client: () => setModal({ t: 'client' }),
     lead: () => setModal({ t: 'lead' }),
+    visit: () => setModal({ t: 'visit' }),
     session: (clientId, date) => setModal({ t: 'session', clientId, date }),
   }), []);
 
@@ -126,6 +127,7 @@ export default function Layout() {
           {palette && <CommandPalette onClose={() => setPalette(false)} onGo={(to) => { setPalette(false); nav(to); }} />}
           {modal?.t === 'client' && <ClientForm onClose={() => setModal(null)} onSaved={(id) => nav(`/clients/${id}`)} />}
           {modal?.t === 'lead' && <LeadForm onClose={() => setModal(null)} />}
+          {modal?.t === 'visit' && <NewVisitForm onClose={() => setModal(null)} />}
           {modal?.t === 'session' && <SessionForm clientId={modal.clientId} date={modal.date} onClose={() => setModal(null)} />}
         </div>
       </OpenCtx.Provider>
@@ -149,7 +151,7 @@ function QuickFab() {
       {open && (
         <div className="fab-menu">
           <button className="btn" onClick={go(() => o.session())} style={{ animationDelay: '0ms' }}><CalendarPlus /> Nuovo appuntamento</button>
-          <button className="btn" onClick={go(o.lead)} style={{ animationDelay: '40ms' }}><ClipboardList /> Nuova visita</button>
+          <button className="btn" onClick={go(o.visit)} style={{ animationDelay: '40ms' }}><ClipboardList /> Nuova visita</button>
           <button className="btn" onClick={go(o.client)} style={{ animationDelay: '80ms' }}><UserPlus /> Nuovo cliente</button>
         </div>
       )}

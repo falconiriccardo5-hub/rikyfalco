@@ -6,7 +6,7 @@ import { driveCreateFolder, driveDownload, driveList, driveTrash, driveUpload, e
 import { isoNow, romeNow } from './time';
 
 /** Ordine rilevante per le chiavi esterne in fase di ripristino. */
-export const BACKUP_TABLES = ['clients', 'leads', 'payments', 'sessions', 'messages', 'notifications', 'activity', 'settings'] as const;
+export const BACKUP_TABLES = ['clients', 'leads', 'payments', 'sessions', 'visit_forms', 'messages', 'notifications', 'activity', 'settings'] as const;
 export type BackupTable = (typeof BACKUP_TABLES)[number];
 
 /** Impostazioni mai esportate (segreti / legate a questo specifico collegamento Google). */

@@ -66,3 +66,7 @@ export interface Lead {
   id: string; first_name: string; last_name: string; email: string; phone: string; source: string; notes: string;
   status: 'da_fare' | 'svolta' | 'convertito' | 'perso'; client_id: string | null; visit_at: string | null; created_at: string;
 }
+export interface VisitFormRecord {
+  id: string; client_id: string | null; lead_id: string | null; template: 'anamnesi' | 'check'; visit_date: string;
+  answers: Record<string, string | string[]>; person: string; created_at: string; updated_at: string;
+}

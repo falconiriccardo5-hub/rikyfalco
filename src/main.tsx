@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Clients from './pages/Clients';
 import ClientDetail from './pages/ClientDetail';
 import Visits from './pages/Visits';
+import VisitForm from './pages/VisitForm';
 import Payments from './pages/Payments';
 import Calendar from './pages/Calendar';
 import Notifications from './pages/Notifications';
@@ -31,6 +32,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="clients" element={<Clients />} />
               <Route path="clients/:id" element={<ClientDetail />} />
               <Route path="visits" element={<Visits />} />
+              <Route path="visits/form/:id" element={<VisitForm />} />
               <Route path="payments" element={<Payments />} />
               <Route path="calendar" element={<Calendar />} />
               <Route path="notifications" element={<Notifications />} />

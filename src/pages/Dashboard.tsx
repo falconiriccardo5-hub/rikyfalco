@@ -46,7 +46,7 @@ export default function Dashboard() {
         </div>
         <div className="chips hero-content" style={{ marginTop: 28 }}>
           <button className="chip action" onClick={() => open.session()}><CalendarPlus /> Nuovo appuntamento</button>
-          <button className="chip action" onClick={open.lead}><ClipboardList /> Nuova visita</button>
+          <button className="chip action" onClick={open.visit}><ClipboardList /> Nuova visita</button>
           <button className="chip action" onClick={open.client}><UserPlus /> Nuovo cliente</button>
           <Link to="/report" className="chip action"><BarChart3 /> Report</Link>
         </div>
