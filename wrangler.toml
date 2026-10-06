@@ -12,6 +12,12 @@ preview_urls = false
 # Se un giorno acquisti un dominio: decommenta e imposta APP_URL di conseguenza
 # routes = [{ pattern = "coaching.tuodominio.it", custom_domain = true }]
 
+# I file .sql delle migrazioni vengono inclusi come testo: il Worker le applica da solo (worker/migrate.ts)
+[[rules]]
+type = "Text"
+globs = ["**/*.sql"]
+fallthrough = true
+
 [assets]
 directory = "./dist"
 binding = "ASSETS"
@@ -27,8 +33,9 @@ migrations_dir = "migrations"
 
 [triggers]
 # ogni ora: notifiche, messaggi, sincronizzazione calendario
+# ogni ora al minuto 15: backup su Drive se i dati sono cambiati
 # 01:30 UTC (≈ 03:30 a Roma): backup automatico su Google Drive
-crons = ["0 * * * *", "30 1 * * *"]
+crons = ["0 * * * *", "15 * * * *", "30 1 * * *"]
 
 # Configurazione impostata come "secret" (vedi README), non scritta qui:
 # ALLOWED_EMAILS, ACCESS_TEAM_DOMAIN, ACCESS_AUD, APP_URL,

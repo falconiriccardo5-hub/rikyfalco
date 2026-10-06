@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { ClipboardList, CalendarDays, Bell, Activity, HardDriveDownload, Settings, LogOut, ChevronRight } from "lucide-react";
+import { CreditCard, Bell, MessageSquare, BarChart3, Activity, HardDriveDownload, Settings, LogOut, ChevronRight } from "lucide-react";
 import { PageHeader, Card } from "@/components/ui";
 import { signOut } from "@/server/actions";
 const items = [
-  { href: "/visite", label: "Visita", icon: ClipboardList },
-  { href: "/calendar", label: "Calendario", icon: CalendarDays }, { href: "/notifications", label: "Notifiche", icon: Bell },
-  { href: "/activity", label: "Attività", icon: Activity }, { href: "/backup", label: "Backup", icon: HardDriveDownload }, { href: "/settings", label: "Impostazioni", icon: Settings },
+  { href: "/payments", label: "Pagamenti", icon: CreditCard },
+  { href: "/notifications", label: "Notifiche", icon: Bell },
+  { href: "/messages", label: "Messaggi da inviare", icon: MessageSquare },
+  { href: "/reports", label: "Report mensile", icon: BarChart3 },
+  { href: "/activity", label: "Attività", icon: Activity },
+  { href: "/backup", label: "Backup", icon: HardDriveDownload },
+  { href: "/settings", label: "Impostazioni", icon: Settings },
 ];
 export default function More() {
   return (

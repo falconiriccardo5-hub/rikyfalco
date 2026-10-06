@@ -6,14 +6,28 @@ import { ActButton } from "@/components/forms/action-form";
 import { syncCalendarAction } from "@/server/actions";
 import { accessToken, googleStatus, listEvents } from "@/server/integrations/google";
 import { fmtTime, todayISO, addDaysISO, eur } from "@/lib/format";
+import { WeekGrid, type GridEvent } from "@/components/week-grid";
 export const metadata = { title: "Calendario" };
-type Ev = { at: string; time?: string; kind: "appuntamento" | "rata" | "fine" | "google"; label: string; href?: string; appt?: { id: string; client_id: string | null; starts_at: string; ends_at: string; type: string; notes: string | null }; synced?: boolean };
+type Ev = { at: string; time?: string; startMin?: number; endMin?: number; kind: "appuntamento" | "rata" | "fine" | "google"; label: string; href?: string; appt?: { id: string; client_id: string | null; starts_at: string; ends_at: string; type: string; notes: string | null }; synced?: boolean };
 const COLOR = { appuntamento: "bg-accent-2", rata: "bg-orange", fine: "bg-warn", google: "bg-info" };
 const LABEL = { appuntamento: "appuntamento", rata: "rata", fine: "fine percorso", google: "Google Calendar" };
 const romeDay = (iso: string) => new Date(iso).toLocaleDateString("sv-SE", { timeZone: "Europe/Rome" });
-export default async function CalendarPage() {
+const minutes = (iso: string) => { const d = new Date(new Date(iso).toLocaleString("en-US", { timeZone: "Europe/Rome" })); return d.getHours() * 60 + d.getMinutes(); };
+/** Lunedì della settimana che contiene `iso`, spostato di `offset` settimane. */
+function weekStart(iso: string, offset: number) {
+  const d = new Date(iso + "T12:00:00");
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7) + offset * 7);
+  return d.toLocaleDateString("sv-SE");
+}
+export default async function CalendarPage({ searchParams }: { searchParams: Promise<{ v?: string; w?: string }> }) {
+  const sp = await searchParams;
+  const view = sp.v === "agenda" ? "agenda" : "settimana";
+  const offset = Number.isFinite(Number(sp.w)) ? Number(sp.w) : 0;
   const { supabase } = await requireAdmin();
-  const from = todayISO(); const to = addDaysISO(from, 30);
+  const today = todayISO();
+  const monday = weekStart(today, offset);
+  const from = view === "settimana" ? monday : today;
+  const to = view === "settimana" ? addDaysISO(monday, 7) : addDaysISO(today, 30);
   const [ap, pay, pr, cl, gs] = await Promise.all([
     supabase.from("appointments").select("id,client_id,starts_at,ends_at,type,notes,google_event_id,clients(first_name,last_name)").gte("starts_at", from).lt("starts_at", to).order("starts_at"),
     supabase.from("payment_overview").select("id,client_id,due_date,amount,first_name,last_name").is("paid_date", null).gte("due_date", from).lt("due_date", to),
@@ -31,20 +45,23 @@ export default async function CalendarPage() {
       const items = token ? await listEvents(token, new Date(from + "T00:00:00Z").toISOString(), new Date(to + "T00:00:00Z").toISOString()) : [];
       google = items.filter((e) => !mine.has(e.id) && !e.extendedProperties?.private?.rfAppointmentId).map((e) => {
         const s = e.start.dateTime ?? e.start.date!;
-        return { at: e.start.dateTime ? romeDay(s) : s, time: e.start.dateTime ? fmtTime(s) : undefined, kind: "google" as const, label: e.summary ?? "(senza titolo)" };
+        return { at: e.start.dateTime ? romeDay(s) : s, time: e.start.dateTime ? fmtTime(s) : undefined, startMin: e.start.dateTime ? minutes(s) : undefined, kind: "google" as const, label: e.summary ?? "(senza titolo)" };
       });
     } catch (e) { gError = (e as Error).message; }
   }
   const ev: Ev[] = ([
-    ...appts.map((a) => ({ at: romeDay(a.starts_at), time: fmtTime(a.starts_at), kind: "appuntamento" as const, label: `${a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Senza cliente"} · ${a.type}`, href: a.client_id ? `/clients/${a.client_id}` : undefined, appt: a, synced: !!a.google_event_id })),
+    ...appts.map((a) => ({ at: romeDay(a.starts_at), time: fmtTime(a.starts_at), startMin: minutes(a.starts_at), endMin: minutes(a.ends_at), kind: "appuntamento" as const, label: `${a.clients ? `${a.clients.first_name} ${a.clients.last_name}` : "Senza cliente"} · ${a.type}`, href: a.client_id ? `/clients/${a.client_id}` : undefined, appt: a, synced: !!a.google_event_id })),
     ...(pay.data ?? []).map((p) => ({ at: p.due_date, kind: "rata" as const, label: `Rata ${eur(p.amount)} · ${p.first_name} ${p.last_name}`, href: `/clients/${p.client_id}` })),
     ...(pr.data ?? []).map((p) => ({ at: p.end_date, kind: "fine" as const, label: `Fine percorso · ${p.first_name} ${p.last_name}`, href: `/clients/${p.client_id}` })),
     ...google,
   ] as Ev[]).sort((a, b) => (a.at + (a.time ?? "00")).localeCompare(b.at + (b.time ?? "00")));
   const days = [...new Set(ev.map((e) => e.at))];
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDaysISO(monday, i));
+  const fmtShort = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short" }).toUpperCase();
+  const weekLabel = `${fmtShort(monday)} – ${fmtShort(weekDays[6])} ${monday.slice(0, 4)}`;
   return (
     <>
-      <PageHeader eyebrow="Prossimi 30 giorni" title="Calendario">
+      <PageHeader eyebrow={view === "settimana" ? weekLabel : "Prossimi 30 giorni"} title="Calendario">
         <NewAppointment clients={clients} today={from} label="Nuovo appuntamento" primary />
       </PageHeader>
       <Card className="rise rise-1 mb-10 flex flex-wrap items-center justify-between gap-3 px-5 py-4">
@@ -57,11 +74,29 @@ export default async function CalendarPage() {
           ? <ActButton act={syncCalendarAction} className="press h-8 rounded-full border border-line px-3.5 text-[13px] hover:bg-white/5">Sincronizza ora</ActButton>
           : <Link href="/settings#google" className="text-[13px] text-accent-3">Collega →</Link>}
       </Card>
-      <SectionLabel>Agenda</SectionLabel>
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex rounded-full border border-line p-1">
+          {(["settimana", "agenda"] as const).map((v) => (
+            <Link key={v} href={v === "settimana" ? "/calendar" : "/calendar?v=agenda"}
+              className={cx("press rounded-full px-4 py-1.5 text-[13px] capitalize transition", view === v ? "bg-white/[.08] text-fg" : "text-muted")}>
+              {v}
+            </Link>
+          ))}
+        </div>
+        {view === "settimana" && (
+          <div className="flex items-center gap-2">
+            <Link href={`/calendar?w=${offset - 1}`} aria-label="Settimana precedente" className="press grid size-9 place-items-center rounded-full border border-line text-muted hover:text-fg">‹</Link>
+            <Link href="/calendar" className={cx("press rounded-full border border-line px-4 py-2 text-[13px]", offset === 0 ? "text-dim" : "text-fg")}>Oggi</Link>
+            <Link href={`/calendar?w=${offset + 1}`} aria-label="Settimana successiva" className="press grid size-9 place-items-center rounded-full border border-line text-muted hover:text-fg">›</Link>
+          </div>
+        )}
+      </div>
       <div className="mb-4 flex flex-wrap gap-4 text-[12px] text-muted">
         {(Object.keys(COLOR) as (keyof typeof COLOR)[]).filter((k) => k !== "google" || gs.connected).map((k) => <span key={k} className="flex items-center gap-1.5"><span className={cx("size-2 rounded-full", COLOR[k])} />{LABEL[k]}</span>)}
       </div>
-      {days.length === 0 ? <Empty>Nessun evento nei prossimi 30 giorni.</Empty> : (
+      {view === "settimana" ? (
+        <WeekGrid days={weekDays} events={ev as GridEvent[]} today={today} />
+      ) : days.length === 0 ? <Empty>Nessun evento nei prossimi 30 giorni.</Empty> : (
         <div className="space-y-3">
           {days.map((d) => (
             <Card key={d} className="grid gap-3 p-4 sm:grid-cols-[140px_1fr] sm:p-5">

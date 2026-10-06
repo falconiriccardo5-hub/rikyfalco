@@ -72,8 +72,15 @@ async function folder(token: string, name: string, parent?: string) {
 }
 export async function driveFolders(token: string) {
   const root = await folder(token, "Riccardo Falconi Coaching");
-  const [backups, clients, exports] = await Promise.all([folder(token, "Backups", root), folder(token, "Clients", root), folder(token, "Exports", root)]);
-  return { root, backups, clients, exports };
+  const [backups, clients, exports, csv] = await Promise.all([
+    folder(token, "Backups", root), folder(token, "Clients", root), folder(token, "Exports", root), folder(token, "CSV", root),
+  ]);
+  return { root, backups, clients, exports, csv };
+}
+
+/** Sottocartella con un nome dato (creata solo se manca). Usata per i CSV datati. */
+export async function driveFolder(token: string, name: string, parent: string) {
+  return folder(token, name, parent);
 }
 /** Creates or overwrites (same name in same folder) a file. */
 export async function driveUpload(token: string, parent: string, name: string, mime: string, data: Buffer | string) {

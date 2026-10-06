@@ -64,6 +64,22 @@ export function ClientLink({ clientId }: { clientId: string }) {
   );
 }
 
+export function ClientAreaLink({ clientId }: { clientId: string }) {
+  const [msg, setMsg] = useState<string>();
+  const [pending, start] = useTransition();
+  const open = () => start(async () => {
+    const res = await A.visitLinkAction(clientId);
+    if (!res.token) return setMsg(res.error ?? "Errore");
+    const url = `${window.location.origin}/c/${res.token}`;
+    try { await navigator.clipboard.writeText(url); setMsg("Link copiato"); } catch { window.prompt("Copia il link dell'area cliente", url); }
+  });
+  return (
+    <button type="button" onClick={open} disabled={pending} className={pill} title="Link personale con percorso, date e pagamenti">
+      {msg === "Link copiato" ? <Check size={15} /> : <Link2 size={15} />} {msg ?? "Area cliente"}
+    </button>
+  );
+}
+
 export function VisitActions({ id, status }: { id: string; status: string }) {
   return (
     <>

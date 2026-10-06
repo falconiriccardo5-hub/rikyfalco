@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CalendarCheck, Cloud, ExternalLink, RefreshCw, ShieldCheck, Unplug } from 'lucide-react';
+import { CalendarCheck, Cloud, Copy, ExternalLink, Link2, RefreshCw, ShieldCheck, Unplug } from 'lucide-react';
 import { Confirm, ErrorBox, Loading, PageHead, useAction, useApi, useToast } from '../components/ui';
 import { api } from '../lib/api';
 
 type S = {
   coach_name: string; calendar_name: string; default_duration: number; backup_auto: boolean; backup_retention: number; email: string;
   templates: Record<string, string>; default_templates: Record<string, string>;
-  google: { configured: boolean; connected: boolean; account: string | null; calendar_id: string | null; drive_folder_id: string | null };
+  google: { configured: boolean; connected: boolean; mode: 'script' | 'oauth' | null; account: string | null; calendar_id: string | null; drive_folder_id: string | null };
 };
 const TPL: Record<string, [string, string]> = {
   rata_scaduta: ['Sollecito rata scaduta', '{nome} {importo} {data}'],
@@ -50,11 +50,10 @@ export default function Settings() {
       <div className="stack fade-in" style={{ gap: 22 }}>
         <div className="card pad">
           <div className="label">Google Calendar e Drive</div>
-          {!data.google.configured ? (
-            <div className="callout warn" style={{ marginTop: 16 }}>Le credenziali Google non sono ancora configurate sul server (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, ENCRYPTION_KEY, APP_URL). Segui la guida nel README.</div>
-          ) : data.google.connected ? (
+          {data.google.connected ? (
             <div className="stack" style={{ marginTop: 16 }}>
-              <div className="row wrap"><span className="pill green">Collegato</span><span className="muted">{data.google.account}</span></div>
+              <div className="row wrap"><span className="pill green">Collegato</span><span className="muted">{data.google.account}</span>
+                {data.google.mode === 'script' && <span className="dim" style={{ fontSize: 13 }}>tramite script Google</span>}</div>
               <p className="muted" style={{ margin: 0 }}>
                 <CalendarCheck size={15} style={{ verticalAlign: -2 }} /> Gli appuntamenti sono nel calendario <b style={{ color: '#fff' }}>“{data.calendar_name}”</b> del tuo account Google:
                 appare automaticamente su Google Calendar (PC) e sull'app Calendario dell'iPhone se l'account Google è aggiunto in Impostazioni → Calendario → Account.
@@ -68,9 +67,12 @@ export default function Settings() {
             </div>
           ) : (
             <div className="stack" style={{ marginTop: 16 }}>
-              <p className="muted" style={{ margin: 0 }}>Collega il tuo account Google: l'app creerà un calendario dedicato “{data.calendar_name}” e una cartella per i backup.
-                Per sicurezza chiede solo i permessi minimi: può vedere <b>solo</b> il calendario e i file che crea lei, non il resto del tuo Google.</p>
-              <div><a className="btn btn-accent btn-lg" href="/api/google/connect"><Cloud /> Collega Google</a></div>
+              <p className="muted" style={{ margin: 0 }}>Collega il tuo account Google: l'app creerà un calendario dedicato “{data.calendar_name}” e una cartella “RF Coaching – Backup” per i backup.</p>
+              <ScriptSetup />
+              {data.google.configured && (
+                <p className="muted" style={{ margin: 0, fontSize: 14 }}>In alternativa, con le credenziali di Google Cloud già configurate sul server:{' '}
+                  <a href="/api/google/connect" style={{ textDecoration: 'underline' }}>collega con OAuth</a>.</p>
+              )}
             </div>
           )}
         </div>
@@ -88,8 +90,8 @@ export default function Settings() {
           <div className="label">Backup automatico</div>
           <div className="grid-2" style={{ marginTop: 16 }}>
             <label className="field"><span>Backup notturno su Drive</span>
-              <select className="select" value={String(form.backup_auto)} onChange={(e) => set('backup_auto', e.target.value === 'true')}><option value="true">Attivo (ogni notte alle 3:30)</option><option value="false">Disattivo</option></select></label>
-            <label className="field"><span>Backup da conservare</span><input className="input" type="number" min={7} max={365} value={form.backup_retention} onChange={(e) => set('backup_retention', Number(e.target.value))} /></label>
+              <select className="select" value={String(form.backup_auto)} onChange={(e) => set('backup_auto', e.target.value === 'true')}><option value="true">Attivo (a ogni modifica, entro un'ora, e ogni notte)</option><option value="false">Disattivo</option></select></label>
+            <label className="field"><span>Giorni di backup da conservare</span><input className="input" type="number" min={7} max={365} value={form.backup_retention} onChange={(e) => set('backup_retention', Number(e.target.value))} /></label>
           </div>
         </div>
 
@@ -116,8 +118,57 @@ export default function Settings() {
           </ul>
         </div>
       </div>
-      {disc && <Confirm title="Scollega Google" danger confirmLabel="Scollega" text="Il token verrà revocato. Il calendario e i backup già presenti su Google resteranno, ma l'app smetterà di aggiornarli."
+      {disc && <Confirm title="Scollega Google" danger confirmLabel="Scollega" text="L'app smetterà di aggiornare calendario e backup su Google. Quelli già presenti resteranno. Se avevi usato lo script, puoi anche eliminarlo da script.google.com."
         onConfirm={() => act(() => api.post('/google/disconnect'), 'Google scollegato')} onClose={() => setDisc(false)} />}
     </>
+  );
+}
+
+/** Collegamento a Google senza Google Cloud Console: uno script nell'account Google fa da ponte. */
+function ScriptSetup() {
+  const [url, setUrl] = useState('');
+  const [busy, setBusy] = useState(false);
+  const act = useAction();
+  const toast = useToast();
+
+  const copy = async () => {
+    // Safari accetta la copia solo se avviata subito dal clic: si passa la richiesta come promessa
+    const text = fetch('/api/google/script', { credentials: 'same-origin' }).then((res) => {
+      if (!res.ok) throw new Error(`Errore ${res.status}`);
+      return res.text();
+    }).then((t) => new Blob([t], { type: 'text/plain' }));
+    try {
+      if (typeof ClipboardItem !== 'undefined') await navigator.clipboard.write([new ClipboardItem({ 'text/plain': text })]);
+      else await navigator.clipboard.writeText(await (await text).text());
+      toast('Codice copiato');
+    } catch {
+      toast('Copia automatica non riuscita: usa "apri il codice" e copialo a mano', true);
+    }
+  };
+
+  const connect = async () => {
+    setBusy(true);
+    await act(() => api.post('/google/script', { url: url.trim() }), 'Google collegato: calendario e cartella backup pronti');
+    setBusy(false);
+  };
+
+  const step = { margin: 0, paddingLeft: 20, lineHeight: 1.8 } as const;
+  return (
+    <ol className="muted" style={step}>
+      <li><button className="btn btn-sm" onClick={copy}><Copy /> Copia il codice</button>{' '}
+        <span style={{ fontSize: 13 }}>oppure <a href="/api/google/script" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>apri il codice</a> e copialo tutto</span></li>
+      <li>Apri <a href="https://script.google.com/create" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>script.google.com</a> (nuovo progetto),
+        cancella il testo che c'è, <b>incolla</b> il codice e premi l'icona del dischetto per salvare.</li>
+      <li>In alto a destra: <b>Esegui il deployment → Nuovo deployment</b>. Ingranaggio accanto a "Seleziona tipo" → <b>App web</b>.
+        "Esegui come": <b>Me</b> · "Chi può accedere": <b>Chiunque</b> → <b>Esegui il deployment</b>.</li>
+      <li><b>Autorizza l'accesso</b> col tuo account. Google avvisa che l'app non è verificata (è il tuo script):
+        <b> Avanzate → Vai a … (non sicuro) → Consenti</b>.</li>
+      <li>Copia l'<b>URL dell'app web</b> (finisce con <span className="mono">/exec</span>) e incollalo qui:
+        <div className="row wrap" style={{ marginTop: 8 }}>
+          <input className="input" style={{ flex: 1, minWidth: 220 }} placeholder="https://script.google.com/macros/s/…/exec" value={url} onChange={(e) => setUrl(e.target.value)} />
+          <button className="btn btn-accent" disabled={busy || !url.trim()} onClick={connect}>{busy ? <span className="spinner" /> : <><Link2 /> Collega Google</>}</button>
+        </div>
+      </li>
+    </ol>
   );
 }

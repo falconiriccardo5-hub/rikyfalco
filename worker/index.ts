@@ -3,6 +3,8 @@ import { bodyLimit } from 'hono/body-limit';
 import { z } from 'zod';
 import type { AppEnv, Env } from './types';
 import { authenticate } from './auth';
+import { ensureMigrated } from './migrate';
+import { MIGRATIONS } from './migrations';
 import { all, first, getSetting, logActivity, run, setSetting, uid } from './db';
 import { addDays, addMonths, isoNow, romeNow } from './time';
 import {
@@ -10,8 +12,8 @@ import {
   type ClientRow, type PaymentRow, type SessionRow,
 } from './domain';
 import * as google from './google';
-import { exportCsvs, listDriveBackups, readDriveBackup, restoreFromCsvs, runDriveBackup } from './backup';
-import { makeZip } from './zip';
+import { appsScriptCode } from './apps-script';
+import { backupIfChanged, exportCsvs, listDriveBackups, readDriveBackup, restoreFromCsvs, runDriveBackup } from './backup';
 import { toCsv } from './csv';
 
 const app = new Hono<AppEnv>();
@@ -32,6 +34,9 @@ const SECURITY_HEADERS: Record<string, string> = {
   'Cross-Origin-Resource-Policy': 'same-origin',
 };
 
+const escapeHtml = (s: string) =>
+  s.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!);
+
 function withHeaders(res: Response, extra: Record<string, string> = {}): Response {
   const r = new Response(res.body, res);
   for (const [k, v] of Object.entries({ ...SECURITY_HEADERS, ...extra })) r.headers.set(k, v);
@@ -39,14 +44,17 @@ function withHeaders(res: Response, extra: Record<string, string> = {}): Respons
 }
 
 app.use('*', async (c, next) => {
-  const email = await authenticate(c.req.raw, c.env);
+  const auth = await authenticate(c.req.raw, c.env);
   const isApi = c.req.path.startsWith('/api/');
-  if (!email) {
+  if (auth.email === null) {
+    const reason = escapeHtml(auth.reason);
     return withHeaders(isApi
-      ? Response.json({ error: 'Non autorizzato' }, { status: 401 })
-      : new Response('<!doctype html><meta charset="utf-8"><title>Accesso negato</title><body style="background:#07070b;color:#ddd;font-family:system-ui;display:grid;place-items:center;height:100vh"><p>Accesso negato. Effettua il login tramite Cloudflare Access.</p>', { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } }));
+      ? Response.json({ error: 'Non autorizzato', reason: auth.reason }, { status: 401 })
+      : new Response(`<!doctype html><meta charset="utf-8"><title>Accesso negato</title><body style="background:#07070b;color:#ddd;font-family:system-ui;display:grid;place-items:center;height:100vh;margin:0;padding:16px;box-sizing:border-box"><div style="max-width:560px;text-align:center"><p>Accesso negato. Effettua il login tramite Cloudflare Access.</p><p style="color:#999;font-size:14px;word-break:break-all">Motivo: ${reason}</p></div>`, { status: 403, headers: { 'content-type': 'text/html; charset=utf-8' } }));
   }
+  const email = auth.email;
   c.set('email', email);
+  await ensureMigrated(c.env.DB, MIGRATIONS);
 
   if (isApi && c.req.method !== 'GET' && c.req.method !== 'HEAD') {
     // Anti-CSRF: header personalizzato (non impostabile da form di altri siti) + controllo Origin
@@ -566,7 +574,8 @@ app.get('/api/backup/download', async (c) => {
   const { files, rows } = await exportCsvs(c.env);
   await logActivity(c.env, actor(c), 'download backup', 'backup', null, `Backup scaricato (${rows} righe)`);
   const name = `rf-coaching_backup_${romeNow().date}.zip`;
-  return new Response(makeZip(files), { headers: { 'content-type': 'application/zip', 'content-disposition': `attachment; filename="${name}"` } });
+  const zip = files.find((f) => f.name === 'backup_completo.zip')!.content;
+  return new Response(zip, { headers: { 'content-type': 'application/zip', 'content-disposition': `attachment; filename="${name}"` } });
 });
 
 app.post('/api/backup/restore', async (c) => {
@@ -589,7 +598,8 @@ app.post('/api/backup/restore-drive', async (c) => {
 // ───────────── API: impostazioni e Google ─────────────
 
 app.get('/api/settings', async (c) => {
-  const s = Object.fromEntries((await all<{ key: string; value: string }>(c.env.DB, 'SELECT key, value FROM settings WHERE key NOT IN (?)', 'google_refresh_token')).map((r) => [r.key, r.value]));
+  const s = Object.fromEntries((await all<{ key: string; value: string }>(c.env.DB, 'SELECT key, value FROM settings WHERE key NOT IN (?, ?)', 'google_refresh_token', 'google_script_key')).map((r) => [r.key, r.value]));
+  if (await getSetting(c.env.DB, 'google_refresh_token')) s.google_refresh_token = 'presente';
   return c.json({
     coach_name: s.coach_name || 'Riccardo Falconi',
     calendar_name: s.calendar_name || 'RF Coaching',
@@ -601,6 +611,7 @@ app.get('/api/settings', async (c) => {
     google: {
       configured: google.googleConfigured(c.env),
       connected: await google.isConnected(c.env),
+      mode: s.google_script_url ? 'script' : s.google_refresh_token ? 'oauth' : null,
       account: s.google_account || null,
       calendar_id: s.google_calendar_id || null,
       drive_folder_id: s.google_drive_folder_id || null,
@@ -626,6 +637,21 @@ app.put('/api/settings', async (c) => {
   if (d.templates) await setSetting(c.env.DB, 'message_templates', JSON.stringify(d.templates));
   await logActivity(c.env, actor(c), 'modificato', 'impostazioni', null, `Impostazioni aggiornate (${Object.keys(d).join(', ')})`);
   return c.json({ ok: true });
+});
+
+// Collegamento senza Google Cloud Console: codice dello script da incollare su script.google.com
+app.get('/api/google/script', async (c) => {
+  const code = appsScriptCode(await google.scriptKey(c.env));
+  return new Response(code, { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } });
+});
+
+app.post('/api/google/script', async (c) => {
+  const d = z.object({ url: z.string().trim().max(300) }).parse(await c.req.json());
+  const account = await google.connectScript(c.env, d.url);
+  await logActivity(c.env, actor(c), 'collegato', 'google', null, `Google collegato tramite script (${account || 'account'})`);
+  await run(c.env.DB, "UPDATE sessions SET gcal_status = 'pending' WHERE status != 'annullata'");
+  c.executionCtx.waitUntil(syncPending(c.env, 200));
+  return c.json({ ok: true, account });
 });
 
 app.get('/api/google/connect', async (c) => {
@@ -666,8 +692,14 @@ app.all('*', async (c) => c.env.ASSETS.fetch(c.req.raw));
 
 // ───────────── Cron ─────────────
 async function scheduled(event: ScheduledController, env: Env, ctx: ExecutionContext) {
+  await ensureMigrated(env.DB, MIGRATIONS);
   if (event.cron === '0 * * * *') {
     ctx.waitUntil((async () => { await refreshAutomations(env); await syncPending(env); })());
+    return;
+  }
+  if (event.cron === '15 * * * *') {
+    // backup su Drive appena i dati cambiano (al massimo uno all'ora)
+    ctx.waitUntil(backupIfChanged(env).catch((e) => console.error('backup su modifiche fallito', e)));
     return;
   }
   // backup notturno

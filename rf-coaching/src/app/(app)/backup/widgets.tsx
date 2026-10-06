@@ -2,14 +2,17 @@
 import { useActionState, useTransition, useState } from "react";
 import { backupNowAction, restoreAction } from "@/server/actions";
 import { Button, Card, Field } from "@/components/ui";
-export function BackupNow() {
+export function BackupNow({ drive = false }: { drive?: boolean }) {
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
   return (
     <div className="flex items-center gap-3">
       {msg && <span className="text-sm text-danger">{msg}</span>}
-      <Button variant="primary" disabled={pending} onClick={() => start(async () => { const r = await backupNowAction(); setMsg(r?.error ?? null); })}>
-        {pending ? "Backup in corso…" : "Backup ora"}
+      {done && !msg && <span className="text-sm text-ok">Salvato ✓</span>}
+      <Button variant="primary" disabled={pending}
+        onClick={() => start(async () => { setDone(false); const r = await backupNowAction(); setMsg(r?.error ?? null); setDone(!r?.error); })}>
+        {pending ? "Backup in corso…" : drive ? "Salva su Google Drive" : "Backup ora"}
       </Button>
     </div>
   );
