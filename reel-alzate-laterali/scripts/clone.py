@@ -9,7 +9,9 @@ Usage:
   OPENVOICE_DIR  clone of github.com/myshell-ai/OpenVoice
   CKPT_DIR       folder with converter/config.json + checkpoint.pth (HF: myshell-ai/OpenVoiceV2)
   REF            reference recording(s) of the target voice, comma separated (1-2 min, clean)
-  OUT_DIR        where converted wavs go (default: public/voice, overwritten in place)
+  VOICE_DIR      folder under public/ with the Kokoro wavs (default: voice)
+  VOICE_JSON     timings file to refresh the mouth envelopes (default: src/reel/voice.json)
+  OUT_DIR        where converted wavs go (default: public/<VOICE_DIR>, overwritten in place)
   TAU            0..1, higher = closer to the source prosody (default 0.3)
 
 Needs: pip install torch librosa soundfile inflect unidecode eng_to_ipa pypinyin jieba cn2an
@@ -32,9 +34,10 @@ from openvoice.api import OpenVoiceBaseClass, ToneColorConverter  # noqa: E402
 FPS = 30
 CKPT = os.environ["CKPT_DIR"]
 REFS = [r.strip() for r in os.environ["REF"].split(",") if r.strip()]
-OUT_DIR = os.environ.get("OUT_DIR", os.path.join(ROOT, "public", "voice"))
+VOICE_DIR = os.environ.get("VOICE_DIR", "voice")
+OUT_DIR = os.environ.get("OUT_DIR", os.path.join(ROOT, "public", VOICE_DIR))
 TAU = float(os.environ.get("TAU", "0.3"))
-SRC_DIR = os.path.join(ROOT, "public", "voice")
+SRC_DIR = os.path.join(ROOT, "public", VOICE_DIR)
 
 os.makedirs(OUT_DIR, exist_ok=True)
 tmp = tempfile.mkdtemp()
@@ -70,7 +73,7 @@ sources = sorted(glob.glob(os.path.join(SRC_DIR, "*.wav")))
 src_se = conv.extract_se([to_wav(p) for p in sources])
 tgt_se = conv.extract_se([to_wav(p) for p in REFS])
 
-voice_json = os.path.join(ROOT, "src", "reel", "voice.json")
+voice_json = os.path.join(ROOT, os.environ.get("VOICE_JSON", "src/reel/voice.json"))
 meta = json.load(open(voice_json))
 by_file = {line["file"]: line for lines in meta.values() for line in lines}
 
@@ -80,7 +83,7 @@ for path in sources:
     conv.convert(audio_src_path=path, src_se=src_se, tgt_se=tgt_se, output_path=out, tau=TAU)
     samples, sr = sf.read(out)
     hop = sr // FPS
-    line = by_file.get(f"voice/{name}")
+    line = by_file.get(f"{VOICE_DIR}/{name}")
     if line and OUT_DIR == SRC_DIR:
         frames = line["frames"]
         rms = np.array([np.sqrt(np.mean(samples[f * hop : (f + 1) * hop] ** 2) + 1e-12) for f in range(frames)])

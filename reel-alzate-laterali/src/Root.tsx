@@ -1,5 +1,6 @@
 import { Composition, Folder, Still } from "remotion";
 import { CharacterHero, CharacterSheet } from "./CharacterSheet";
+import { WomanSheet } from "./WomanSheet";
 import { Reel } from "./reel/Reel";
 import { TIMING, TOTAL_FRAMES } from "./reel/timing";
 import { CorrectScene } from "./reel/scenes/CorrectScene";
@@ -35,6 +36,7 @@ export const RemotionRoot: React.FC = () => {
       <Folder name="Character">
         <Still id="CharacterHero" component={CharacterHero} width={1080} height={1920} />
         <Still id="CharacterSheet" component={CharacterSheet} width={1080} height={1920} />
+        <Still id="WomanSheet" component={WomanSheet} width={1080} height={1920} />
       </Folder>
     </>
   );
