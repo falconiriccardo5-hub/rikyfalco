@@ -1,0 +1,173 @@
+[
+ {
+  "slot": "hook1",
+  "id": "q01",
+  "text": "Ti alleni da mesi",
+  "at": 0.25,
+  "speed": 1.1
+ },
+ {
+  "slot": "hook2",
+  "id": "p02",
+  "text": "ma non cambi?",
+  "at": 3.1,
+  "speed": 1.1,
+  "word": 2
+ },
+ {
+  "slot": "s2a",
+  "id": "r03a",
+  "text": "Stesso esercizio.",
+  "at": 4.3,
+  "speed": 1.1
+ },
+ {
+  "slot": "s2b",
+  "id": "q07",
+  "text": "Stesso peso.",
+  "at": 5.75,
+  "speed": 1.0
+ },
+ {
+  "slot": "s2c",
+  "id": "p04",
+  "text": "Settimana dopo settimana.",
+  "at": 7.25,
+  "speed": 1.2
+ },
+ {
+  "slot": "s3a",
+  "id": "p05",
+  "text": "I mesi passano velocissimi...",
+  "at": 9.4,
+  "speed": 1.2
+ },
+ {
+  "slot": "s3b",
+  "id": "p06",
+  "text": "e il tuo corpo resta identico.",
+  "at": 13.1,
+  "speed": 1.2,
+  "word": 5
+ },
+ {
+  "slot": "s4a1",
+  "id": "q07",
+  "text": "Stesso peso.",
+  "at": 14.2,
+  "speed": 1.0
+ },
+ {
+  "slot": "s4a2",
+  "id": "q08",
+  "text": "Stessi esercizi.",
+  "at": 15.0,
+  "speed": 1.4
+ },
+ {
+  "slot": "s4a3",
+  "id": "p09",
+  "text": "Stesso stimolo.",
+  "at": 15.9,
+  "speed": 1.1
+ },
+ {
+  "slot": "s4b",
+  "id": "p10",
+  "text": "Stimolo uguale, risultato uguale.",
+  "at": 18.4,
+  "speed": 1.15,
+  "word": 3
+ },
+ {
+  "slot": "s5a",
+  "id": "p11",
+  "text": "La soluzione ha un nome...",
+  "at": 19.25,
+  "speed": 1.15
+ },
+ {
+  "slot": "s5b",
+  "id": "q12",
+  "text": "Progressione.",
+  "at": 22.15,
+  "speed": 1.0
+ },
+ {
+  "slot": "s5c",
+  "id": "p13",
+  "text": "Un passo alla volta.",
+  "at": 23.55,
+  "speed": 1.1
+ },
+ {
+  "slot": "s6a",
+  "id": "q14",
+  "text": "Aumenta il carico,",
+  "at": 25.1,
+  "speed": 1.05
+ },
+ {
+  "slot": "s6b",
+  "id": "q15",
+  "text": "Le ripetizioni,",
+  "at": 26.5,
+  "speed": 1.05
+ },
+ {
+  "slot": "s6c",
+  "id": "q16",
+  "text": "Cura la tecnica,",
+  "at": 27.9,
+  "speed": 1.05
+ },
+ {
+  "slot": "s6d",
+  "id": "r17b",
+  "text": "Alza il volume.",
+  "at": 29.3,
+  "speed": 1.0
+ },
+ {
+  "slot": "s6e",
+  "id": "p18",
+  "text": "E recupera bene.",
+  "at": 30.7,
+  "speed": 1.0
+ },
+ {
+  "slot": "s7a",
+  "id": "q19a",
+  "text": "Settimana uno,",
+  "at": 32.35,
+  "speed": 1.1
+ },
+ {
+  "slot": "s7b",
+  "id": "q19b",
+  "text": "settimana quattro,",
+  "at": 33.9,
+  "speed": 1.15
+ },
+ {
+  "slot": "s7c",
+  "id": "q19c",
+  "text": "otto,",
+  "at": 35.9,
+  "speed": 1.0
+ },
+ {
+  "slot": "s7d",
+  "id": "q19d",
+  "text": "dodici: cambia davvero.",
+  "at": 37.3,
+  "speed": 1.15
+ },
+ {
+  "slot": "s8",
+  "id": "p20",
+  "text": "Allenarsi tanto non significa automaticamente allenarsi bene.",
+  "at": 39.12,
+  "speed": 1.18
+ }
+]

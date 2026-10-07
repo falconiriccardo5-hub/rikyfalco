@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {Bg, FullSvg} from '../ui';
-import {C, E, FONT, OUT, mix, prog, useT} from '../brand';
+import {C, E, FONT, OUT, mix, prog, useT, useTalk} from '../brand';
 import {Riky} from '../Riky';
 
 export const S5A = {in0: 19.05, glass: 19.35, w0: 19.85, w1: 21.65, ul1: 21.95};
@@ -26,7 +26,7 @@ export const S5a: React.FC = () => {
   const fy = 885;
   const handLocal: [number, number] = [409 + (tipX - rx) / scale, 1304 + (tipY - fy) / scale];
   const walking = writing ? Math.abs(Math.sin(t * 11)) * 10 : 0;
-  const talk = t > 19.2 && t < 19.8 ? Math.abs(Math.sin(t * 15)) * 0.6 : 0;
+  const talk = useTalk();
   const ulP = prog(t, S5A.ul1, S5A.ul1 + 0.3, E.out);
   const done = t > S5A.w1;
   return (

@@ -4,7 +4,7 @@ import {Bg, FullSvg, Barbell, Stamp} from '../ui';
 import {C, E, FONT, OUT, mix, prog, shake, useT} from '../brand';
 
 export const S4A = {l1: 14.15, l2: 15.0, l3: 15.85};
-export const S4B = {draw0: 16.6, draw1: 18.2, eq: 17.3, zero: 17.8};
+export const S4B = {draw0: 16.6, draw1: 18.4, eq: 17.5, zero: 18.4};
 
 const Line: React.FC<{t0: number; a: string; b: string; y: number; kind: 0 | 1 | 2; icon: React.ReactNode}> = ({t0, a, b, y, kind, icon}) => {
   const t = useT();

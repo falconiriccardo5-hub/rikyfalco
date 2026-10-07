@@ -2,8 +2,8 @@
 
 Video 1920×1080 · 30 fps · 44 s · H.264 + AAC. Costruito con **Remotion** (React/SVG): personaggio Riky disegnato in SVG e animato (braccia con IK), sottotitoli karaoke, transizioni e sound design sintetizzato.
 
-- `export/video-11-ti-alleni-da-mesi.mp4` — video finito
-- `export/anteprima-scene.jpg` — contact sheet delle scene
+- `export/video-11-ti-alleni-da-mesi-voce.mp4` — video finito con voce clonata
+- `export/anteprima-scene-voce.jpg` — contact sheet delle scene
 
 ## Struttura (come da tabella script)
 | Tempo | Scena |
@@ -33,3 +33,11 @@ Nota: `remotion.config.ts` punta al `headless_shell` di Chromium dell'ambiente c
 - Scene: `src/scenes/S1…S8.tsx` · Personaggio: `src/Riky.tsx`
 - Tempi SFX: `audio/make_audio.py` (stessi tempi delle costanti nelle scene)
 - Palette/font: `src/brand.ts` (Inter Black/ExtraBold, nero/crema/denim)
+
+## Voce clonata (pipeline)
+1. `voice/genera_voce.py` — sintetizza le frasi con **Chatterbox multilingual** (licenza MIT) clonando la voce da un campione (`voice/riferimento.wav`, non versionato). Ogni frase viene ritrascritta con Whisper e si tiene la take più fedele al testo e al timbro.
+2. `voice/piano.json` — dove cade ogni frase (istante o parola da allineare ai colpi grafici) e la velocità.
+3. `voice/costruisci_traccia.py` — monta `public/voce.wav`, scrive i tempi parola-per-parola (`src/voice_timing.json`, usati dai sottotitoli) e l'inviluppo per il lip-sync (`src/voice_env.json`).
+4. `npm run audio` — mixa musica + SFX + voce (ducking) in `public/soundtrack.wav`.
+
+Le tracce generate da Chatterbox contengono la filigrana impercettibile "Perth" che segnala l'audio sintetico.

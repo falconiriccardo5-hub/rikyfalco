@@ -1,4 +1,5 @@
 import {Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import voiceEnv from './voice_env.json';
 
 /** Palette Coach Riky: nero, crema, denim (dai pantaloncini del personaggio) + rosso solo per "stagnazione". */
 export const C = {
@@ -51,4 +52,11 @@ export const shake = (t: number, t0: number, amp = 14, dur = 0.35) => {
   if (p < 0 || p > dur) return {x: 0, y: 0};
   const k = (1 - p / dur) ** 2 * amp;
   return {x: (rnd(Math.floor(p * 60)) - 0.5) * 2 * k, y: (rnd(Math.floor(p * 60) + 99) - 0.5) * 2 * k};
+};
+
+/** Apertura bocca (0..0.9) di Riky legata all'inviluppo della voce: lip-sync semplice ma credibile. */
+export const useTalk = () => {
+  const f = useCurrentFrame();
+  const v = (voiceEnv as number[])[f] ?? 0;
+  return Math.min(0.9, v * 0.95);
 };

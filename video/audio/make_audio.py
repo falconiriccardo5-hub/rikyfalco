@@ -18,6 +18,7 @@ import wave
 
 import numpy as np
 
+import json
 SR = 44100
 DUR = 44.0
 TOTAL = int((DUR + 1.5) * SR)
@@ -279,10 +280,15 @@ def reverb_ir(d=0.9):
 
 
 # ----------------------------------------------------------------------------- Timeline (secondi assoluti)
+_VT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src', 'voice_timing.json')
+VT = {x['slot']: x for x in json.load(open(_VT_PATH))} if os.path.exists(_VT_PATH) else {}
+S8_CUT = 43.1  # = S8.cut in src/scenes/S8.tsx
+FINAL = 43.0   # accordo finale (griglia 8vi)
+
 TRANS = [  # (t, tipo)
     (4.0, 'wipeR'), (6.5, 'stripes'), (9.0, 'iris'), (11.5, 'wipeU'), (14.0, 'wipeL'), (16.5, 'stripes'),
     (19.0, 'iris'), (22.0, 'wipeR'), (25.0, 'wipeU'), (26.4, 'wipeR'), (27.8, 'wipeL'), (29.2, 'wipeR'),
-    (30.6, 'wipeL'), (32.0, 'stripes'), (35.5, 'wipeL'), (39.0, 'iris'), (41.5, 'wipeR'),
+    (30.6, 'wipeL'), (32.0, 'stripes'), (35.5, 'wipeL'), (39.0, 'iris'), (S8_CUT, 'wipeR'),
 ]
 SHORT = {26.4, 27.8, 29.2, 30.6}
 
@@ -323,15 +329,14 @@ def build_sfx():
     S.add(flip(), 2.0, 0.8, 0.0)
     for i in range(7):
         S.add(tick(2100 + 90 * i), 2.4 + i * 0.1, 0.6, -0.3)     # stamp Marzo
-    for tw, f in zip([0.25, 0.5, 0.85, 1.05], [560, 640, 720, 850]):
-        S.add(pop(f), tw, 0.6)                                    # parole hook
-    S.add(riser(1.15), 1.45, 0.8)                                 # tensione verso "MA NON CAMBI?"
+    h2 = VT.get('hook2', {'words': [2.6, 2.85, 3.1]})['words']
+    S.add(riser(max(0.7, h2[0] - 1.45)), 1.45, 0.8)               # tensione verso "MA NON CAMBI?"
     S.add(whoosh(0.4, 300, 2500, 0.6), 1.95, 0.6, 0.5)            # Riky entra
     S.add(bloop(240, 640), 2.35, 0.6, 0.5)
-    S.add(impact(0.8, 56), 2.6, 0.7)                              # MA
-    S.add(pop(300, 0.2), 2.85, 0.8)                               # NON
-    S.add(impact(1.3, 46, 1.2), 3.1, 1.0)                         # CAMBI?
-    S.add(bloop(500, 220, 0.3), 3.12, 0.6, 0.5)                   # "?" vibra
+    S.add(impact(0.8, 56), h2[0], 0.7)                            # MA
+    S.add(pop(300, 0.2), h2[1], 0.8)                              # NON
+    S.add(impact(1.3, 46, 1.2), h2[2], 1.0)                       # CAMBI?
+    S.add(bloop(500, 220, 0.3), h2[2] + 0.02, 0.6, 0.5)                   # "?" vibra
 
     # --- S2a (4–9): palestra
     S.add(whoosh(0.3, 700, 3600, 0.5), 4.2, 0.5, -0.5)
@@ -376,11 +381,11 @@ def build_sfx():
         S.add(whoosh(0.3, 500, 4500, 0.7), tl - 0.15, 0.7)
         S.add(impact(0.9, 50, 1.0), tl + 0.1, 0.95)
     # --- S4b: ECG + flatline
-    for tb in (16.75, 17.15, 17.55):
-        S.add(beep(1000), tb, 0.6)
-    S.add(bloop(300, 700, 0.2), 17.3, 0.5)
-    S.add(flatline(1.25), 17.78, 0.55)
-    S.add(stamp(), 17.8, 0.9)
+    for tb in (16.6, 17.0):
+        S.add(beep(1000), tb, 0.45)
+    S.add(bloop(300, 700, 0.2), 17.5, 0.5)
+    S.add(flatline(0.75), 18.4, 0.5)
+    S.add(stamp(), 18.4, 0.9)
 
     # --- S5a (19–22): Riky scrive
     S.add(whoosh(0.5, 300, 2800, 0.5), 19.05, 0.55, -0.6)
@@ -432,17 +437,15 @@ def build_sfx():
     S.add(sparkle(1046.5, 4), 37.95, 0.6)
 
     # --- S8 (39–44): chiusura
-    for tw, f in zip([39.25, 39.5, 39.78, 40.05, 40.35, 40.95], [420, 470, 520, 560, 620, 680]):
-        S.add(pop(f, 0.12), tw, 0.65)
-        S.add(tick(1800), tw, 0.5)
-    S.add(riser(0.95, 300, 5000), 40.35, 0.9)
-    S.add(impact(1.5, 44, 1.3), 41.3, 1.0)                        # "BENE."
-    S.add(bloop(240, 700), 41.68, 0.7)
-    S.add(impact(0.9, 55), 41.88, 0.85)                           # logo
-    S.add(sparkle(1046.5, 5), 42.0, 0.8)
-    S.add(pop(700, 0.14), 42.3, 0.7)
-    S.add(pop(800, 0.14), 42.75, 0.7)
-    S.add(chime(523.25, 2.2), 42.0, 0.35)
+    q = VT.get('s8', {'words': [39.25, 39.5, 39.78, 40.05, 40.35, 40.95, 42.6]})['words']
+    S.add(riser(max(0.8, q[6] - 0.05 - 41.7)), 41.7, 0.8)
+    S.add(impact(1.5, 44, 1.3), q[6], 0.95)                       # "BENE."
+    S.add(bloop(240, 700), S8_CUT + 0.1, 0.7)
+    S.add(impact(0.9, 55), S8_CUT + 0.16, 0.85)                   # logo
+    S.add(sparkle(1046.5, 5), S8_CUT + 0.3, 0.8)
+    S.add(pop(700, 0.14), S8_CUT + 0.32, 0.7)
+    S.add(pop(800, 0.14), S8_CUT + 0.54, 0.7)
+    S.add(chime(523.25, 2.2), S8_CUT + 0.3, 0.35)
 
     # riverbero leggero
     ir = reverb_ir()
@@ -461,7 +464,7 @@ CH = {
     'G': (98.00, [196.00, 246.94, 293.66, 392.00]),
 }
 CHORDS = [(0, 'Am'), (2, 'F'), (4, 'C'), (6, 'G'), (8, 'Am'), (10, 'F'), (12, 'C'), (14, 'Am'), (19, 'C'), (21, 'G'), (23, 'Am'),
-          (25, 'F'), (27, 'C'), (29, 'G'), (31, 'Am'), (32, 'C'), (34, 'G'), (36, 'Am'), (38, 'F'), (39, 'F'), (41.5, 'C')]
+          (25, 'F'), (27, 'C'), (29, 'G'), (31, 'Am'), (32, 'C'), (34, 'G'), (36, 'Am'), (38, 'F'), (39, 'F'), (FINAL, 'C')]
 
 
 def chord_at(t):
@@ -544,7 +547,7 @@ def build_music():
         if t < 25: return 'D'
         if t < 32: return 'E'
         if t < 39: return 'F'
-        if t < 41.5: return 'G'
+        if t < FINAL: return 'G'
         return 'H'
 
     step = 0.25
@@ -575,7 +578,7 @@ def build_music():
                     drums.add(clap, t, 0.6, 0.1)
             elif s == 'G' and beat_in_bar == 0:
                 drums.add(kick, t, 0.6); kicks.append(t)
-            elif s == 'H' and abs(t - 41.5) < 1e-6:
+            elif s == 'H' and abs(t - FINAL) < 1e-6:
                 drums.add(kick, t, 1.0); kicks.append(t)
         # hats
         if s == 'A' and not on_beat:
@@ -599,8 +602,8 @@ def build_music():
             harm.add(k_bass(root / 2, 1.95), t, 0.6)
         if s == 'D' and t >= 22 and on_beat:
             harm.add(k_bass(root, 0.45), t, 0.6)
-        if s == 'H' and abs(t - 41.5) < 1e-6:
-            harm.add(k_bass(root, 2.5), t, 0.7)
+        if s == 'H' and abs(t - FINAL) < 1e-6:
+            harm.add(k_bass(root, 1.8), t, 0.7)
         # --- arpeggio / pluck
         order = [0, 1, 2, 3, 2, 1, 2, 3]
         if s == 'D' and t >= 19.5:
@@ -613,7 +616,7 @@ def build_music():
             harm.add(k_pluck(tones[order[i % 8]] * 2, 0.35, 2.0), t, 0.30, -0.5 + 0.25 * (i % 5))
             if i % 2 == 1:
                 harm.add(k_pluck(tones[0] * 4, 0.25, 2.0), t, 0.12, 0.5)
-        if s == 'H' and abs(t - 41.5) < 1e-6:
+        if s == 'H' and abs(t - FINAL) < 1e-6:
             for q, f in enumerate(CH['C'][1] + [659.25, 783.99]):
                 harm.add(k_pluck(f, 0.9, 2.0), t + q * 0.03, 0.28, -0.5 + 0.2 * q)
         i += 1
@@ -629,7 +632,7 @@ def build_music():
 
     # --- pad continuo per ogni accordo
     pad = Bus()
-    gains = automation([(0, 0.0), (0.4, 0.55), (4, 0.5), (14, 0.45), (14.1, 0.62), (19, 0.62), (19.1, 0.5), (25, 0.45), (32, 0.66), (39, 0.7), (41.5, 0.85), (43.0, 0.8), (44.0, 0.0)])
+    gains = automation([(0, 0.0), (0.4, 0.55), (4, 0.5), (14, 0.45), (14.1, 0.62), (19, 0.62), (19.1, 0.5), (25, 0.45), (32, 0.66), (39, 0.7), (FINAL, 0.85), (44.0, 0.5), (44.5, 0.0)])
     padL = np.zeros(TOTAL); padR = np.zeros(TOTAL)
     for idx, (ct, nm) in enumerate(CHORDS):
         nxt = CHORDS[idx + 1][0] if idx + 1 < len(CHORDS) else DUR + 1.0
@@ -665,8 +668,26 @@ def build_music():
     R = drums.R + (harm.R + padR) * duck
 
     # fade finale e taglio sotto i 35 Hz
-    fo = automation([(0, 1.0), (43.0, 1.0), (44.3, 0.0)])
+    fo = automation([(0, 1.0), (43.7, 1.0), (44.5, 0.0)])
     return L * fo, R * fo
+
+
+def load_voice():
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'public', 'voce.wav')
+    if not os.path.exists(path):
+        return None
+    with wave.open(path) as w:
+        x = np.frombuffer(w.readframes(w.getnframes()), dtype='<i2').astype(np.float64) / 32768
+    v = np.zeros(TOTAL)
+    v[: min(len(x), TOTAL)] = x[:TOTAL]
+    return hp(v, 70)
+
+
+def voice_env(v):
+    e = lp(np.abs(v), 9)            # inviluppo lento
+    e = np.clip(e / (np.percentile(e[e > 1e-4], 85) if np.any(e > 1e-4) else 1), 0, 1)
+    e = lp(e, 14)
+    return np.clip(e * 1.3, 0, 1)
 
 
 def main():
@@ -674,9 +695,26 @@ def main():
     S = build_sfx()
     mL, mR = build_music()
     mL = hp(mL, 35); mR = hp(mR, 35)
-    mus_gain = 0.42
-    L = S.L * 0.9 + mL * mus_gain
-    R = S.R * 0.9 + mR * mus_gain
+    vo = load_voice()
+    if vo is None:
+        sfx_g, mus_g, d_s, d_m = 0.9, 0.42, np.ones(TOTAL), np.ones(TOTAL)
+        vo = np.zeros(TOTAL)
+    else:
+        e = voice_env(vo)
+        sfx_g, mus_g = 0.42, 0.26
+        d_s = 1 - 0.55 * e   # SFX ~ -7 dB sotto la voce
+        d_m = 1 - 0.72 * e   # musica ~ -11 dB sotto la voce
+    L = S.L * sfx_g * d_s + mL * mus_g * d_m + vo * 1.0
+    R = S.R * sfx_g * d_s + mR * mus_g * d_m + vo * 1.0
+    # controllo bilanciamento: nelle finestre con voce, voce vs (musica + SFX)
+    rest = (S.L * sfx_g * d_s + mL * mus_g * d_m)
+    hopn = int(0.05 * SR); rr = []
+    for i in range(0, TOTAL - hopn, hopn):
+        v = np.sqrt((vo[i:i + hopn] ** 2).mean())
+        if v > 0.03:
+            rr.append(20 * np.log10(v / (np.sqrt((rest[i:i + hopn] ** 2).mean()) + 1e-9)))
+    if rr:
+        print(f'voce vs resto (mediana): {np.median(rr):+.1f} dB · 10° percentile: {np.percentile(rr, 10):+.1f} dB')
     # soft clip
     L = np.tanh(L * 0.9); R = np.tanh(R * 0.9)
     peak = max(np.max(np.abs(L)), np.max(np.abs(R)))
@@ -687,7 +725,6 @@ def main():
     with wave.open(raw, 'wb') as w:
         w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
         w.writeframes(pcm.tobytes())
-    # loudness ~ -14 LUFS (standard social) con ffmpeg
     try:
         subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', raw, '-af', 'loudnorm=I=-14:TP=-1.5:LRA=9',
                         '-ar', str(SR), '-ac', '2', '-t', f'{DUR + 0.5}', out], check=True)

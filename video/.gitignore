@@ -1,3 +1,10 @@
 node_modules/
 out/
-voice/
+# campione vocale originale e takes intermedi: non vanno su GitHub
+voice/*.mp3
+voice/*.wav
+voice/*.f32
+voice/*.log
+voice/frasi/
+voice/trascrizione.json
+voice/mix_trascrizione.json

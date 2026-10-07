@@ -1,0 +1,98 @@
+[
+ {
+  "n": 100,
+  "id": "q01",
+  "text": "Ti alleni da mesi",
+  "cfg": 0.4
+ },
+ {
+  "n": 101,
+  "id": "q03",
+  "text": "Stesso esercizio.",
+  "cfg": 0.4
+ },
+ {
+  "n": 102,
+  "id": "q07",
+  "text": "Stesso peso.",
+  "cfg": 0.4
+ },
+ {
+  "n": 103,
+  "id": "q08",
+  "text": "Stessi esercizi.",
+  "cfg": 0.4
+ },
+ {
+  "n": 104,
+  "id": "q09",
+  "text": "Stesso stimolo.",
+  "cfg": 0.4
+ },
+ {
+  "n": 105,
+  "id": "q12",
+  "text": "Progressione.",
+  "cfg": 0.4
+ },
+ {
+  "n": 106,
+  "id": "q13",
+  "text": "Un passo alla volta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 107,
+  "id": "q14",
+  "text": "Aumenta il carico,",
+  "cfg": 0.4
+ },
+ {
+  "n": 108,
+  "id": "q15",
+  "text": "Le ripetizioni,",
+  "cfg": 0.4
+ },
+ {
+  "n": 109,
+  "id": "q16",
+  "text": "Cura la tecnica,",
+  "cfg": 0.4
+ },
+ {
+  "n": 110,
+  "id": "q17",
+  "text": "Alza il volume,",
+  "cfg": 0.4
+ },
+ {
+  "n": 111,
+  "id": "q18",
+  "text": "E recupera bene.",
+  "cfg": 0.4
+ },
+ {
+  "n": 112,
+  "id": "q19a",
+  "text": "Settimana uno,",
+  "cfg": 0.4
+ },
+ {
+  "n": 113,
+  "id": "q19b",
+  "text": "settimana quattro,",
+  "cfg": 0.4
+ },
+ {
+  "n": 114,
+  "id": "q19c",
+  "text": "otto,",
+  "cfg": 0.4
+ },
+ {
+  "n": 115,
+  "id": "q19d",
+  "text": "dodici: cambia davvero.",
+  "cfg": 0.4
+ }
+]

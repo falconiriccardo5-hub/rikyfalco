@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {Bg, FullSvg, Dumbbell} from '../ui';
-import {C, E, FONT, OUT, mix, prog, shake, useT} from '../brand';
+import {C, E, FONT, OUT, mix, prog, shake, useT, useTalk} from '../brand';
 import {Riky} from '../Riky';
 import {WallCalendar, Month} from '../Calendar';
 
@@ -23,7 +23,7 @@ export const S1: React.FC = () => {
   const q = prog(t, 3.1, 3.4, E.back);
   const qs = shake(t, 3.1, 10, 0.4);
   const blink = (t % 2.6) > 2.5 ? 1 : 0;
-  const talk = t > 0.25 && t < 1.5 ? Math.abs(Math.sin(t * 14)) * 0.7 : 0;
+  const talk = useTalk();
   return (
     <AbsoluteFill>
       <Bg />
@@ -35,7 +35,7 @@ export const S1: React.FC = () => {
           x={1450}
           y={mix(1300, 1010, rIn)}
           scale={0.62}
-          mouth={0}
+          mouth={talk}
           smile={mix(1, 0, shrug)}
           brow={shrug * 14}
           browTilt={-shrug * 6}

@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {Bg, FullSvg, Barbell, Check, Stamp, cardStyle} from '../ui';
-import {C, E, FONT, OUT, mix, prog, shake, useT} from '../brand';
+import {C, E, FONT, OUT, mix, prog, shake, useT, useTalk} from '../brand';
 import {Riky, armPoints} from '../Riky';
 
 export const REP0 = 4.15; // inizio primo rep
@@ -59,6 +59,7 @@ const curl = (t: number) => {
 
 export const S2a: React.FC = () => {
   const t = useT();
+  const talk = useTalk();
   const f = curl(t);
   const reps = t < REP0 ? 0 : Math.floor((t - REP0) / REP_LEN + 0.5);
   const sa = {angles: [14, f] as [number, number]};
@@ -80,7 +81,7 @@ export const S2a: React.FC = () => {
           scale={0.72}
           armL={sa}
           armR={sa}
-          mouth={0}
+          mouth={talk}
           smile={0.2}
           brow={-4 + f / 40}
           browTilt={f > 20 ? 5 : 0}
@@ -116,6 +117,7 @@ export const S2a: React.FC = () => {
 
 export const S2b: React.FC = () => {
   const t = useT();
+  const talk = useTalk();
   const rows = [
     {t0: CARDS[0], w: 'SETT. 1'},
     {t0: CARDS[1], w: 'SETT. 4'},
@@ -132,6 +134,7 @@ export const S2b: React.FC = () => {
           y={885}
           scale={0.7}
           smile={0}
+          mouth={talk * 0.8}
           lid={0.5}
           brow={-6}
           browTilt={-4}

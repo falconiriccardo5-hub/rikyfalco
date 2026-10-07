@@ -1,12 +1,30 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {Bg, FullSvg} from '../ui';
-import {C, E, FONT, OUT, mix, prog, shake, useT} from '../brand';
+import {C, E, FONT, OUT, mix, prog, shake, useT, useTalk} from '../brand';
 import {Riky} from '../Riky';
 
-export const S8 = {cut: 41.5, riky: 41.65, logo: 41.85, handle: 42.3, cta: 42.75};
+export const S8 = {cut: 43.1, riky: 43.18, logo: 43.24, handle: 43.4, cta: 43.62, pill: 40.9};
 
-export const S8a: React.FC = () => <Bg color={C.ink} dot="rgba(255,255,255,0.07)" drift={18} />;
+export const S8a: React.FC = () => {
+  const t = useT();
+  const p = prog(t, S8.pill, S8.pill + 0.35, E.back);
+  return (
+    <AbsoluteFill>
+      <Bg color={C.ink} dot="rgba(255,255,255,0.07)" drift={18} />
+      <div style={{position: 'absolute', left: 0, right: 0, bottom: 90, display: 'flex', justifyContent: 'center', opacity: p, transform: `translateY(${mix(40, 0, p)}px)`}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 20, background: C.cream, borderRadius: 999, padding: '12px 36px 12px 18px', boxShadow: `8px 8px 0 ${C.blue}`}}>
+          <svg width={56} height={56} viewBox="0 0 64 64">
+            <rect x={4} y={4} width={56} height={56} rx={17} fill="none" stroke={C.ink} strokeWidth={5} />
+            <circle cx={32} cy={32} r={13} fill="none" stroke={C.ink} strokeWidth={5} />
+            <circle cx={47} cy={17} r={3.5} fill={C.ink} />
+          </svg>
+          <span style={{fontFamily: FONT, fontWeight: 800, fontSize: 46, color: C.ink}}>@riccardofalconi_coach</span>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
 
 export const S8b: React.FC = () => {
   const t = useT();
@@ -15,7 +33,7 @@ export const S8b: React.FC = () => {
   const hp = prog(t, S8.handle, S8.handle + 0.3, E.back);
   const cp = prog(t, S8.cta, S8.cta + 0.3, E.back);
   const wave = Math.sin(t * 12) * 34;
-  const talk = t > 42 && t < 43.4 ? Math.abs(Math.sin(t * 14)) * 0.6 : 0;
+  const talk = useTalk();
   const sk = shake(t, S8.logo, 8, 0.3);
   return (
     <AbsoluteFill>
