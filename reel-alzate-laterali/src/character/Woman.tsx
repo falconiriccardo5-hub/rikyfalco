@@ -26,6 +26,8 @@ export type WomanProps = {
   /** 0..1 realistic toning (weeks of training) */
   readonly tone?: number;
   readonly face?: WomanFace;
+  /** Lip-sync: mouth opens with `talk` while the brows keep the `face` expression */
+  readonly speaking?: boolean;
   readonly talk?: number;
   readonly blink?: boolean;
   /** Ponytail swing in degrees */
@@ -307,7 +309,7 @@ const HeadFront: React.FC<{ p: WomanProps }> = ({ p }) => {
       <Eye x={224} y={168} blink={Boolean(p.blink)} outer={1} wide={face === "shock"} />
       <circle cx={156} cy={192} r={11} fill={C.blush} opacity={0.6} />
       <circle cx={244} cy={192} r={11} fill={C.blush} opacity={0.6} />
-      <Mouth face={face} talk={p.talk ?? 0} cx={202} y={200} w={15} />
+      <Mouth face={p.speaking ? "talk" : face} talk={p.talk ?? 0} cx={202} y={200} w={15} />
     </g>
   );
 };
@@ -345,7 +347,7 @@ const HeadSide: React.FC<{ p: WomanProps }> = ({ p }) => {
       <Brows face={face} xs={[244]} y={140} />
       <Eye x={244} y={166} blink={Boolean(p.blink)} outer={1} />
       <circle cx={236} cy={192} r={10} fill={C.blush} opacity={0.6} />
-      <Mouth face={face} talk={p.talk ?? 0} cx={256} y={204} w={10} />
+      <Mouth face={p.speaking ? "talk" : face} talk={p.talk ?? 0} cx={256} y={204} w={10} />
     </g>
   );
 };

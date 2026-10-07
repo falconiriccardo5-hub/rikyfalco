@@ -3,7 +3,8 @@
  * `say` is what the voice reads. `at` is the earliest frame (scene-local) the line may start.
  * Run `npm run voice` after editing to regenerate audio + timings.
  */
-export type Line = { text: string; say: string; at?: number };
+export type Speaker = "riky" | "lei";
+export type Line = { text: string; say: string; at?: number; speaker?: Speaker };
 export type SceneScript = { id: string; minFrames: number; lines: Line[] };
 
 export const SCRIPT: SceneScript[] = [

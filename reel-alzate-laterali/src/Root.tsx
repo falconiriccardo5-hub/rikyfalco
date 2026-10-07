@@ -1,6 +1,8 @@
 import { Composition, Folder, Still } from "remotion";
 import { CharacterHero, CharacterSheet } from "./CharacterSheet";
 import { WomanSheet } from "./WomanSheet";
+import { Reel2 } from "./reel2/Reel2";
+import { TOTAL_FRAMES2 } from "./reel2/timing";
 import { Reel } from "./reel/Reel";
 import { TIMING, TOTAL_FRAMES } from "./reel/timing";
 import { CorrectScene } from "./reel/scenes/CorrectScene";
@@ -22,6 +24,14 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         fps={30}
         durationInFrames={TOTAL_FRAMES}
+      />
+      <Composition
+        id="ReelPesiTroppoGrossa"
+        component={Reel2}
+        width={1080}
+        height={1920}
+        fps={30}
+        durationInFrames={TOTAL_FRAMES2}
       />
       <Folder name="Scenes">
         <Composition id="Intro" component={IntroScene} width={1080} height={1920} fps={30} durationInFrames={TIMING.intro.duration} />

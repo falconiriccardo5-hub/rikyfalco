@@ -30,6 +30,11 @@ KENNEY = {
     "clank_light": "kenney_impact-sounds/impactMetal_light_000.ogg",
     "crack": "kenney_impact-sounds/impactWood_heavy_001.ogg",
     "heart": "kenney_impact-sounds/impactSoft_heavy_001.ogg",
+    "powerup": "kenney_digital-audio/powerUp7.ogg",
+    "boom": "kenney_sci-fi-sounds/lowFrequency_explosion_000.ogg",
+    "poof": "kenney_interface-sounds/minimize_006.ogg",
+    "stamp": "kenney_impact-sounds/impactPunch_medium_000.ogg",
+    "bell": "kenney_impact-sounds/impactBell_heavy_000.ogg",
 }
 
 for name, src in KENNEY.items():
