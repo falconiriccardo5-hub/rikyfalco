@@ -4,7 +4,7 @@ name: Installabile Windows
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, 'claude/**']
     paths: ['app/**', '.github/workflows/windows-installer.yml']
 
 jobs:
