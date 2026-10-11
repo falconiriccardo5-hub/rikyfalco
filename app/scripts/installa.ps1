@@ -126,23 +126,35 @@ try {
     Titolo '4/6  Modello Whisper (saltato)'
   } else {
     Titolo '3/6  whisper.cpp (trascrizione locale)'
-    $esistente = Get-ChildItem -Path $WhisperDir -Recurse -Filter 'whisper-cli.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+    $esistente = Get-ChildItem -Path $WhisperDir -Recurse -Include 'whisper-cli.exe', 'main.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($esistente) {
       $cli = $esistente.FullName
       Ok "whisper.cpp gia' presente: $cli"
     } else {
-      Info "Ricerca dell'ultima release di whisper.cpp..."
-      $rel = Invoke-RestMethod -Uri 'https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest' -Headers @{ 'User-Agent' = 'FlowCut-installer' } -UseBasicParsing
-      $asset = $rel.assets | Where-Object { $_.name -eq 'whisper-bin-x64.zip' } | Select-Object -First 1
-      if (-not $asset) { throw "Archivio whisper-bin-x64.zip non trovato nella release $($rel.tag_name)." }
-      $zip = Join-Path $env:TEMP 'whisper-bin-x64.zip'
-      Info "Download di whisper.cpp $($rel.tag_name)..."
+      Info "Ricerca della release di whisper.cpp per Windows..."
+      $releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/ggml-org/whisper.cpp/releases?per_page=10' -Headers @{ 'User-Agent' = 'FlowCut-installer' } -UseBasicParsing
+      $rel = $null
+      $asset = $null
+      foreach ($r in $releases) {
+        if ($r.draft -or $r.prerelease) { continue }
+        # Archivio Windows x64 per CPU (il nome cambia tra le versioni).
+        $cand = $r.assets | Where-Object {
+          $_.name -match '\.zip$' -and $_.name -match 'x64' -and $_.name -match 'bin' -and
+          $_.name -notmatch 'cublas|cuda|blas|vulkan|openvino|sycl|arm|xcframework|jar'
+        } | Sort-Object { $_.name.Length } | Select-Object -First 1
+        if ($cand) { $rel = $r; $asset = $cand; break }
+        Info "  $($r.tag_name): nessun archivio per Windows x64 ($(@($r.assets | ForEach-Object { $_.name }) -join ', '))"
+      }
+      if (-not $asset) { throw 'Nessun archivio di whisper.cpp per Windows x64 trovato nelle ultime release.' }
+      $zip = Join-Path $env:TEMP $asset.name
+      Info "Download di whisper.cpp $($rel.tag_name) ($($asset.name))..."
       Scarica $asset.browser_download_url $zip
       if (Test-Path $WhisperDir) { Remove-Item -Recurse -Force $WhisperDir }
       New-Item -ItemType Directory -Force -Path $WhisperDir | Out-Null
       Expand-Archive -Path $zip -DestinationPath $WhisperDir -Force
       Remove-Item $zip -Force
       $trovato = Get-ChildItem -Path $WhisperDir -Recurse -Filter 'whisper-cli.exe' | Select-Object -First 1
+      if (-not $trovato) { $trovato = Get-ChildItem -Path $WhisperDir -Recurse -Filter 'main.exe' | Select-Object -First 1 }
       if (-not $trovato) { throw "whisper-cli.exe non trovato nell'archivio scaricato." }
       $cli = $trovato.FullName
       Ok "whisper.cpp installato: $cli"
