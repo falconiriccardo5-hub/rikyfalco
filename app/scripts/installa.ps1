@@ -160,6 +160,24 @@ try {
       Ok "whisper.cpp installato: $cli"
     }
 
+    # whisper-cli.exe richiede le librerie Microsoft Visual C++ (senza, termina subito senza messaggi).
+    $vc = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64' -ErrorAction SilentlyContinue
+    if ($vc -and $vc.Installed -eq 1) {
+      Ok "Librerie Visual C++ presenti ($($vc.Version))"
+    } else {
+      Info 'Installazione delle librerie Microsoft Visual C++ (richiesta da whisper.cpp)...'
+      $redist = Join-Path $env:TEMP 'vc_redist.x64.exe'
+      Scarica 'https://aka.ms/vs/17/release/vc_redist.x64.exe' $redist
+      $p = Start-Process -FilePath $redist -ArgumentList '/install', '/quiet', '/norestart' -Wait -PassThru
+      if ($p.ExitCode -ne 0 -and $p.ExitCode -ne 3010 -and $p.ExitCode -ne 1638) { Avviso "Installazione Visual C++ non riuscita (codice $($p.ExitCode)): installala da https://aka.ms/vs/17/release/vc_redist.x64.exe" }
+      else { Ok 'Librerie Visual C++ installate' }
+    }
+    # Verifica che whisper-cli parta davvero.
+    $prova = & $cli --help 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0 -and $prova -notmatch 'usage|options') {
+      Avviso "whisper-cli non si avvia (codice $LASTEXITCODE). Riavvia il PC e rilancia lo script; se persiste usa il motore faster-whisper."
+    } else { Ok 'whisper-cli funzionante' }
+
     Titolo '4/6  Modello Whisper'
     if (-not $Modello) {
       if ($NonInterattivo) { $Modello = 'small' } else {

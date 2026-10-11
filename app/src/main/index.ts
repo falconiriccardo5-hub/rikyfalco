@@ -15,7 +15,7 @@ import { handleMediaProtocol, registerMediaScheme } from './protocol'
 import { JobManager } from './remote/jobs'
 import { RemoteServer } from './remote/server'
 import { Store } from './store'
-import { checkFasterWhisper } from './transcribe/whisper'
+import { checkFasterWhisper, describeWhisperExit } from './transcribe/whisper'
 
 registerMediaScheme()
 
@@ -154,7 +154,7 @@ async function checkTools(): Promise<ToolStatus> {
       try {
         const r = await runProcess(s.whisperCliPath, ['--help'])
         status.whisperCpp.ok = /usage|options/i.test(r.stdout + r.stderr)
-        if (!status.whisperCpp.ok) status.whisperCpp.error = 'Il file non sembra whisper-cli'
+        if (!status.whisperCpp.ok) status.whisperCpp.error = describeWhisperExit(r.code) ?? `Il file non sembra whisper-cli (codice ${r.code})`
       } catch (e) {
         status.whisperCpp.error = (e as Error).message
       }

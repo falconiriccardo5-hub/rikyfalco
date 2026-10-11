@@ -80,6 +80,17 @@ export function wordsFromWhisperJson(j: WhisperCppJson): Word[] {
   return out
 }
 
+/** Spiega i codici d'uscita tipici di Windows quando whisper-cli non parte. */
+export function describeWhisperExit(code: number): string | null {
+  const u = code < 0 ? code + 0x100000000 : code
+  if (u === 0xc0000135 || u === 0xc000007b)
+    return 'mancano le librerie Microsoft Visual C++ (o una DLL di whisper.cpp). Installa "Visual C++ Redistributable x64" da https://aka.ms/vs/17/release/vc_redist.x64.exe oppure rilancia INSTALLA-FLOWCUT.bat, e verifica che whisper-cli.exe sia nella sua cartella originale insieme alle DLL.'
+  if (u === 0xc000001d) return 'il processore non supporta le istruzioni richieste da questa versione di whisper.cpp (AVX). Usa il motore faster-whisper.'
+  if (u === 0xc0000005) return 'whisper.cpp si è chiuso inaspettatamente: il modello potrebbe essere danneggiato. Riscaricalo dalle Impostazioni.'
+  if (u === 0xc0000409) return 'whisper.cpp si è interrotto (memoria insufficiente o modello non valido). Prova un modello più piccolo.'
+  return null
+}
+
 export async function transcribeWhisperCpp(
   cli: string,
   model: string,
@@ -118,7 +129,10 @@ export async function transcribeWhisperCpp(
       if (!extra.length && preset) o.onLog('whisper.cpp: DTW non disponibile, tempi delle parole meno precisi')
       return { words: wordsFromWhisperJson(j), language: j.result?.language ?? o.language }
     }
-    lastErr = res.stderr.split('\n').filter(Boolean).slice(-5).join(' | ')
+    const hint = describeWhisperExit(res.code)
+    const tail = (res.stderr + '\n' + res.stdout).split('\n').map((l) => l.trim()).filter(Boolean).slice(-5).join(' | ')
+    lastErr = hint ?? (tail || `codice di uscita ${res.code}, nessun messaggio`)
+    if (hint) break
     if (!/unknown argument|invalid argument|unrecognized|dtw|flash/i.test(res.stderr)) break
   }
   throw new Error(`whisper.cpp terminato con errore: ${lastErr}`)

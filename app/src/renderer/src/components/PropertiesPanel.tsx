@@ -104,7 +104,8 @@ function NodeProperties({ node }: { node: WorkflowNode }): React.JSX.Element {
           <div className="callout warn" style={{ marginBottom: 12 }}>
             <AlertTriangle size={14} />
             <div className="txt">
-              Il motore di trascrizione non è configurato.{' '}
+              Il motore di trascrizione non è configurato o non funziona
+              {tools?.whisperCpp.error && node.settings.engine !== 'faster-whisper' ? `: ${tools.whisperCpp.error}` : '.'}{' '}
               <button className="btn xs" onClick={() => openSettings(true)}>Apri impostazioni</button>
             </div>
           </div>
