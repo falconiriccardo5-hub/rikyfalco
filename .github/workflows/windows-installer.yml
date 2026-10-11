@@ -62,3 +62,26 @@ jobs:
           $env:SPEECH_WAV = "$env:RUNNER_TEMP\jfk.wav"
           $env:REQUIRE_WHISPER = '1'
           npx vitest run tests/transcribe.test.ts
+
+  # Il .bat scaricato da solo (senza il resto del progetto) deve scaricare il codice e installare.
+  bat-autonomo:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Esegui INSTALLA-FLOWCUT.bat da una cartella vuota
+        shell: cmd
+        run: |
+          mkdir "%RUNNER_TEMP%\solo-bat"
+          copy INSTALLA-FLOWCUT.bat "%RUNNER_TEMP%\solo-bat\"
+          cd /d "%RUNNER_TEMP%\solo-bat"
+          echo.| call INSTALLA-FLOWCUT.bat -NonInterattivo -Modello tiny -NonAvviare -SenzaInstallabile
+          if errorlevel 1 exit /b 1
+      - name: Verifica
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "$env:LOCALAPPDATA\FlowCut\sorgente\app\node_modules\ffmpeg-static")) { throw 'dipendenze mancanti' }
+          $s = Get-Content "$env:APPDATA\FlowCut\settings.json" -Raw | ConvertFrom-Json
+          if (-not (Test-Path $s.whisperCliPath)) { throw 'whisper-cli mancante' }
+          if (-not (Test-Path $s.whisperModelPath)) { throw 'modello mancante' }
+          & $s.whisperCliPath --help | Select-Object -First 3
+          Write-Host 'OK: codice scaricato, dipendenze, whisper e modello installati'

@@ -33,13 +33,15 @@ Requisiti: Windows 10/11 a 64 bit e una connessione a Internet per il primo down
 
 ### Installazione automatica (consigliata)
 
-1. Scarica il repository (pulsante **Code → Download ZIP** su GitHub) ed estrailo.
-2. Fai doppio clic su **`INSTALLA-FLOWCUT.bat`** nella cartella principale.
+Basta **un solo file**: scarica [`INSTALLA-FLOWCUT.bat`](INSTALLA-FLOWCUT.bat) (pulsante *Download raw file* su GitHub), mettilo dove vuoi e fai doppio clic. Il codice di FlowCut viene scaricato automaticamente in `%LOCALAPPDATA%\FlowCut\sorgente`.
+
+In alternativa scarica tutto il repository (**Code → Download ZIP**), estrailo e fai doppio clic su `INSTALLA-FLOWCUT.bat` nella cartella principale.
 
 Lo script fa tutto da solo:
 
 | Passaggio | Cosa installa |
 | --- | --- |
+| 0 | Il **codice di FlowCut** da GitHub (solo se il .bat è da solo) |
 | 1 | **Node.js LTS**, se manca (con winget o con l'installer ufficiale) |
 | 2 | Dipendenze dell'app, compreso **FFmpeg** per Windows |
 | 3 | **whisper.cpp** (ultima release ufficiale) in `%LOCALAPPDATA%\FlowCut\whisper` |
