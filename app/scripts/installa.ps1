@@ -128,7 +128,9 @@ try {
     Titolo '4/6  Modello Whisper (saltato)'
   } else {
     Titolo '3/6  whisper.cpp (trascrizione locale)'
-    $esistente = Get-ChildItem -Path $WhisperDir -Recurse -Include 'whisper-cli.exe', 'main.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+    # Preferisce whisper-cli.exe: nelle release recenti main.exe stampa solo un avviso di deprecazione.
+    $esistente = Get-ChildItem -Path $WhisperDir -Recurse -Filter 'whisper-cli.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $esistente) { $esistente = Get-ChildItem -Path $WhisperDir -Recurse -Filter 'main.exe' -ErrorAction SilentlyContinue | Select-Object -First 1 }
     if ($esistente) {
       $cli = $esistente.FullName
       Ok "whisper.cpp gia' presente: $cli"

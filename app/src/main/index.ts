@@ -18,7 +18,7 @@ import { Store } from './store'
 import { downloadVoice, installPiper } from './voice/install'
 import { voiceInstalled } from './voice/piper'
 import { PIPER_VOICES } from '../shared/voices'
-import { checkFasterWhisper, describeWhisperExit } from './transcribe/whisper'
+import { checkFasterWhisper, describeWhisperExit, resolveWhisperCli } from './transcribe/whisper'
 
 registerMediaScheme()
 
@@ -153,10 +153,12 @@ async function checkTools(): Promise<ToolStatus> {
     status.ffprobe.error = (e as Error).message
   }
   if (s.whisperCliPath) {
-    if (!fs.existsSync(s.whisperCliPath)) status.whisperCpp.error = 'File non trovato'
+    const cli = resolveWhisperCli(s.whisperCliPath)
+    status.whisperCpp.path = cli
+    if (!fs.existsSync(cli)) status.whisperCpp.error = 'File non trovato'
     else {
       try {
-        const r = await runProcess(s.whisperCliPath, ['--help'])
+        const r = await runProcess(cli, ['--help'])
         status.whisperCpp.ok = /usage|options/i.test(r.stdout + r.stderr)
         if (!status.whisperCpp.ok) status.whisperCpp.error = describeWhisperExit(r.code) ?? `Il file non sembra whisper-cli (codice ${r.code})`
       } catch (e) {

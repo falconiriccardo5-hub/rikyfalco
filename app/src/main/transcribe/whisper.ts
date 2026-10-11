@@ -91,11 +91,26 @@ export function describeWhisperExit(code: number): string | null {
   return null
 }
 
+/**
+ * Le release recenti di whisper.cpp includono ancora `main.exe`, che però si
+ * limita a stampare un avviso di deprecazione: si usa `whisper-cli` accanto.
+ */
+export function resolveWhisperCli(cli: string): string {
+  if (!cli) return cli
+  const name = path.basename(cli).toLowerCase()
+  if (name === 'main.exe' || name === 'main') {
+    const alt = path.join(path.dirname(cli), name.endsWith('.exe') ? 'whisper-cli.exe' : 'whisper-cli')
+    if (fs.existsSync(alt)) return alt
+  }
+  return cli
+}
+
 export async function transcribeWhisperCpp(
   cli: string,
   model: string,
   o: TranscribeOptions
 ): Promise<{ words: Word[]; language: string }> {
+  cli = resolveWhisperCli(cli)
   if (!cli || !fs.existsSync(cli)) {
     throw new Error('whisper.cpp non configurato: imposta il percorso di whisper-cli nelle Impostazioni (vedi README).')
   }
@@ -129,7 +144,11 @@ export async function transcribeWhisperCpp(
       if (!extra.length && preset) o.onLog('whisper.cpp: DTW non disponibile, tempi delle parole meno precisi')
       return { words: wordsFromWhisperJson(j), language: j.result?.language ?? o.language }
     }
-    const hint = describeWhisperExit(res.code)
+    const hint =
+      describeWhisperExit(res.code) ??
+      (/binary '?main(\.exe)?'? is deprecated/i.test(res.stderr + res.stdout)
+        ? 'il file indicato è "main.exe", che nelle versioni recenti di whisper.cpp non trascrive più. Nelle Impostazioni scegli "whisper-cli.exe" (nella stessa cartella) oppure rilancia INSTALLA-FLOWCUT.bat.'
+        : null)
     const tail = (res.stderr + '\n' + res.stdout).split('\n').map((l) => l.trim()).filter(Boolean).slice(-5).join(' | ')
     lastErr = hint ?? (tail || `codice di uscita ${res.code}, nessun messaggio`)
     if (hint) break

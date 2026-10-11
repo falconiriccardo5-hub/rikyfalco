@@ -10,6 +10,26 @@ Su stdout vengono stampate righe "PROGRESS <0..1>" lette dall'app.
 import argparse
 import json
 import sys
+import wave
+
+
+def load_wav(path):
+    """Legge il WAV 16 kHz mono preparato dall'app senza passare da PyAV.
+
+    Alcune combinazioni di faster-whisper e PyAV (av >= 14) falliscono con
+    "open() got an unexpected keyword argument 'metadata_errors'": passando
+    direttamente i campioni l'errore non si presenta.
+    """
+    try:
+        import numpy as np
+
+        with wave.open(path, "rb") as w:
+            if w.getframerate() != 16000 or w.getnchannels() != 1 or w.getsampwidth() != 2:
+                return path
+            data = w.readframes(w.getnframes())
+        return np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
+    except Exception:
+        return path
 
 
 def main() -> int:
@@ -27,7 +47,7 @@ def main() -> int:
     print(f"LOG caricamento modello {a.model}", flush=True)
     model = WhisperModel(a.model, device="auto", compute_type="auto", cpu_threads=a.threads)
     segments, info = model.transcribe(
-        a.audio,
+        load_wav(a.audio),
         language=None if a.language == "auto" else a.language,
         word_timestamps=True,
         vad_filter=False,
