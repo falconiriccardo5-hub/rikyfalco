@@ -1,11 +1,11 @@
 // Individuazione degli eseguibili FFmpeg/FFprobe e funzioni di alto livello.
 // Ordine di ricerca: percorso nelle impostazioni → binari inclusi nell'app
-// (ffmpeg-static / ffprobe-static) → PATH di sistema.
+// (ffmpeg-static / @ffprobe-installer) → PATH di sistema.
 
 import fs from 'fs'
 import path from 'path'
 import ffmpegStatic from 'ffmpeg-static'
-import ffprobeStatic from 'ffprobe-static'
+import ffprobeInstaller from '@ffprobe-installer/ffprobe'
 import { CancelledError, ffmpegErrorSummary, runProcess, type ProcOptions } from './run'
 
 export interface ToolPaths {
@@ -20,7 +20,7 @@ function fixAsar(p: string): string {
 
 function bundled(name: 'ffmpeg' | 'ffprobe'): string | null {
   try {
-    const p: string | null = name === 'ffmpeg' ? (ffmpegStatic as unknown as string | null) : ffprobeStatic.path
+    const p: string | null = name === 'ffmpeg' ? (ffmpegStatic as unknown as string | null) : ffprobeInstaller.path
     if (p) {
       const fixed = fixAsar(p)
       if (fs.existsSync(fixed)) return fixed

@@ -1,0 +1,50 @@
+# Configurazione per creare l'installabile (npm run dist:win su Windows).
+appId: it.flowcut.app
+productName: FlowCut
+copyright: Copyright © 2026
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**/*
+  - package.json
+  - node_modules/**/*
+  - "!node_modules/**/{README,readme,CHANGELOG,changelog}*"
+  - "!node_modules/**/*.{md,ts,map}"
+  - "!**/node_modules/.cache"
+  - "!src/**"
+  - "!tests/**"
+  - "!scripts/**"
+  - "!.test-work/**"
+extraResources:
+  - from: resources/fonts
+    to: fonts
+  - from: resources/python
+    to: python
+# I binari di FFmpeg devono stare fuori dall'archivio asar per poter essere eseguiti.
+asarUnpack:
+  - node_modules/ffmpeg-static/**
+  - node_modules/@ffprobe-installer/**
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icon.png
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: FlowCut
+  artifactName: FlowCut-Setup-${version}.${ext}
+linux:
+  target: [dir, AppImage]
+  icon: build/icon.png
+  category: AudioVideo
+mac:
+  target: [dmg]
+  icon: build/icon.png
+  category: public.app-category.video
+npmRebuild: false
+publish: null

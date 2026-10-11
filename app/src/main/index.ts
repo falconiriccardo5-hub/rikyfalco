@@ -55,6 +55,7 @@ function createWindow(): void {
     show: false,
     backgroundColor: dark ? '#0d0d0f' : '#f5f5f7',
     title: 'FlowCut',
+    icon: app.isPackaged ? undefined : path.join(app.getAppPath(), 'build', 'icon.png'),
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     titleBarOverlay:
       process.platform === 'darwin' ? undefined : { color: '#00000000', symbolColor: dark ? '#e8e8ea' : '#1d1d1f', height: 44 },

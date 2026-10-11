@@ -33,7 +33,7 @@ export function canvasFor(tl: Timeline, resolution: string, fit: string, fps: un
 export function videoCodecArgs(codec: string, crf: number, preset: string): string[] {
   switch (codec) {
     case 'libx265':
-      return ['-c:v', 'libx265', '-preset', preset, '-crf', String(crf), '-tag:v', 'hvc1', '-pix_fmt', 'yuv420p']
+      return ['-c:v', 'libx265', '-preset', preset, '-crf', String(crf), '-tag:v', 'hvc1', '-pix_fmt', 'yuv420p', '-x265-params', 'log-level=error']
     case 'h264_nvenc':
     case 'hevc_nvenc':
       return ['-c:v', codec, '-preset', 'p5', '-rc', 'vbr', '-cq', String(crf), '-b:v', '0', '-pix_fmt', 'yuv420p']

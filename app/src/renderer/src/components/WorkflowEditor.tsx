@@ -3,7 +3,7 @@ import {
   Background, BackgroundVariant, Controls, MiniMap, ReactFlow, applyNodeChanges, useReactFlow,
   type Edge, type EdgeChange, type Node, type NodeChange, type Connection
 } from '@xyflow/react'
-import { ArrowDown, ArrowUp, Copy, LayoutGrid, Maximize, Play, PlayCircle, Power, RotateCcw, Trash2 } from 'lucide-react'
+import { ArrowDown, ArrowUp, Copy, LayoutGrid, Map as MapIcon, Maximize, Play, PlayCircle, Power, RotateCcw, Trash2 } from 'lucide-react'
 import { NODE_DEFS } from '@shared/nodeDefs'
 import { parentOf, topoOrder } from '@shared/graph'
 import type { NodeType, Workflow } from '@shared/types'
@@ -53,6 +53,8 @@ export function WorkflowEditor(): React.JSX.Element {
   const [nodes, setNodes] = useState<Node[]>([])
   const [menu, setMenu] = useState<Menu | null>(null)
   const [selEdges, setSelEdges] = useState<string[]>([])
+  const [showMap, setShowMap] = useState(() => localStorage.getItem('minimap') === '1')
+  useEffect(() => localStorage.setItem('minimap', showMap ? '1' : '0'), [showMap])
 
   useEffect(() => {
     setNodes((prev) =>
@@ -130,6 +132,9 @@ export function WorkflowEditor(): React.JSX.Element {
         >
           <LayoutGrid size={14} /> Riordina
         </button>
+        <button className={`btn ghost sm ${showMap ? 'active' : ''}`} onClick={() => setShowMap(!showMap)} title="Mostra/nascondi la mappa del workflow">
+          <MapIcon size={14} /> Mappa
+        </button>
       </div>
       <ReactFlow
         nodes={nodes}
@@ -161,7 +166,7 @@ export function WorkflowEditor(): React.JSX.Element {
       >
         <Background variant={BackgroundVariant.Dots} gap={20} size={1.6} color="var(--canvas-dot)" />
         <Controls showInteractive={false} position="bottom-right" />
-        <MiniMap pannable zoomable position="top-right" nodeColor="var(--panel-3)" maskColor="rgba(0,0,0,0.25)" style={{ width: 150, height: 96 }} />
+        {showMap && <MiniMap pannable zoomable position="bottom-left" nodeColor="var(--panel-3)" maskColor="rgba(0,0,0,0.25)" style={{ width: 150, height: 96 }} />}
       </ReactFlow>
       {!workflow.nodes.length && <div className="canvas-hint">Trascina i nodi dalla scheda "Nodi" per costruire il workflow</div>}
       {menu && node && (

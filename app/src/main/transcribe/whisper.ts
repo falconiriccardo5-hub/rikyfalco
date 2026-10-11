@@ -92,7 +92,10 @@ export async function transcribeWhisperCpp(
     throw new Error('Modello Whisper non trovato: scaricalo dalle Impostazioni o indica il file ggml-*.bin.')
   }
   const base = path.join(o.outDir, 'whisper')
-  const common = ['-m', model, '-f', o.wavPath, '-l', o.language || 'auto', '-t', String(o.threads), '-ojf', '-of', base, '-pp']
+  // Percorsi relativi alla cartella di lavoro: su Windows whisper.cpp può non aprire
+  // file con caratteri accentati nel percorso assoluto (es. nome utente).
+  const relWav = path.relative(o.outDir, o.wavPath) || o.wavPath
+  const common = ['-m', model, '-f', relWav, '-l', o.language || 'auto', '-t', String(o.threads), '-ojf', '-of', 'whisper', '-pp']
   if (o.prompt.trim()) common.push('--prompt', o.prompt.trim())
   const preset = dtwPreset(model)
   // Tentativi: DTW (tempi precisi) → DTW con build più vecchie → senza DTW.
@@ -103,6 +106,7 @@ export async function transcribeWhisperCpp(
     o.onLog(`whisper.cpp: ${path.basename(cli)} ${args.join(' ')}`)
     fs.rmSync(base + '.json', { force: true })
     const res = await runProcess(cli, args, {
+      cwd: o.outDir,
       signal: o.signal,
       onStderr: (s) => {
         const m = /progress\s*=\s*(\d+)%/.exec(s)

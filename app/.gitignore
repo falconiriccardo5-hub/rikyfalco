@@ -3,3 +3,5 @@ out
 dist
 *.log
 .test-work
+e2e-shots*
+*.tsbuildinfo
