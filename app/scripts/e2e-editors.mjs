@@ -5,13 +5,14 @@ import { execFileSync } from 'child_process'
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import { _electron as electron } from 'playwright-core'
 import electronPath from 'electron'
 import ffprobe from '@ffprobe-installer/ffprobe'
 
 const shots = path.resolve(process.argv[2] ?? 'e2e-shots-editors')
 fs.mkdirSync(shots, { recursive: true })
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'flowcut-e2e2-'))
 const projectsDir = path.join(tmp, 'progetti')
 fs.mkdirSync(projectsDir, { recursive: true })
