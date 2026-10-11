@@ -22,6 +22,11 @@ const DEFAULT_SETTINGS: AppSettings = {
   recentProjects: []
 }
 
+/** Legge un file JSON ignorando l'eventuale BOM (file salvati da PowerShell o Blocco note). */
+function readJson<T>(file: string): T {
+  return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, '')) as T
+}
+
 function writeJsonAtomic(file: string, data: unknown): void {
   fs.mkdirSync(path.dirname(file), { recursive: true })
   const tmp = file + '.tmp'
@@ -40,7 +45,7 @@ export class Store {
 
   getSettings(): AppSettings {
     try {
-      const raw = JSON.parse(fs.readFileSync(this.settingsFile, 'utf8')) as Partial<AppSettings>
+      const raw = readJson<Partial<AppSettings>>(this.settingsFile)
       return { ...DEFAULT_SETTINGS, threads: defaultThreads(), ...raw }
     } catch {
       return { ...DEFAULT_SETTINGS, threads: defaultThreads() }
@@ -91,7 +96,7 @@ export class Store {
     if (!fs.existsSync(file)) throw new Error(`Nessun progetto FlowCut in: ${dir}`)
     let project: ProjectDoc
     try {
-      project = JSON.parse(fs.readFileSync(file, 'utf8')) as ProjectDoc
+      project = readJson<ProjectDoc>(file)
     } catch (e) {
       throw new Error(`File di progetto danneggiato: ${(e as Error).message}`)
     }
@@ -143,7 +148,7 @@ export class Store {
       .filter((f) => f.endsWith('.json'))
       .map((f) => {
         try {
-          return JSON.parse(fs.readFileSync(path.join(this.templatesDir, f), 'utf8')) as WorkflowTemplate
+          return readJson<WorkflowTemplate>(path.join(this.templatesDir, f))
         } catch {
           return null
         }
@@ -176,7 +181,7 @@ export class Store {
   }
 
   importTemplate(file: string): WorkflowTemplate {
-    const t = JSON.parse(fs.readFileSync(file, 'utf8')) as WorkflowTemplate
+    const t = readJson<WorkflowTemplate>(file)
     if (!t.workflow?.nodes) throw new Error('File non valido: manca il workflow.')
     return this.saveTemplate(t.name || path.basename(file, '.json'), t.description ?? '', t.workflow)
   }

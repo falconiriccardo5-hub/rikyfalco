@@ -15,12 +15,21 @@ const model = process.env.WHISPER_MODEL
 const wav = process.env.SPEECH_WAV
 const enabled = !!(cli && model && wav && fs.existsSync(cli) && fs.existsSync(model) && fs.existsSync(wav))
 
+if (process.env.REQUIRE_WHISPER && !enabled) {
+  describe('trascrizione con whisper.cpp', () => {
+    it('è configurata (REQUIRE_WHISPER)', () => {
+      throw new Error(`whisper non configurato: WHISPER_CLI=${cli} WHISPER_MODEL=${model} SPEECH_WAV=${wav}`)
+    })
+  })
+}
+
 describe.skipIf(!enabled)('trascrizione con whisper.cpp', () => {
   it('trascrive, crea sottotitoli, taglia le pause senza toccare le parole ed esporta', async () => {
     const dir = path.join(TEST_DIR, 'proj_whisper')
     fs.rmSync(dir, { recursive: true, force: true })
     const video = path.join(TEST_DIR, 'media', 'speech.mp4')
     if (!fs.existsSync(video)) {
+      fs.mkdirSync(path.dirname(video), { recursive: true })
       // 2 s di silenzio + parlato + 2 s di silenzio, su sfondo grigio.
       await ffmpeg(tools, [
         '-f', 'lavfi', '-i', 'color=c=0x334455:s=960x540:r=25:d=15',

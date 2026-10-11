@@ -29,7 +29,29 @@ Il codice si trova nella cartella [`app/`](app). Architettura e scelte tecniche 
 
 ## 1. Installazione su Windows
 
-Requisiti: Windows 10/11 a 64 bit. Per avviare l'app dal codice o creare l'installabile serve anche **Node.js 20 o superiore** ([nodejs.org](https://nodejs.org), versione LTS).
+Requisiti: Windows 10/11 a 64 bit e una connessione a Internet per il primo download.
+
+### Installazione automatica (consigliata)
+
+1. Scarica il repository (pulsante **Code → Download ZIP** su GitHub) ed estrailo.
+2. Fai doppio clic su **`INSTALLA-FLOWCUT.bat`** nella cartella principale.
+
+Lo script fa tutto da solo:
+
+| Passaggio | Cosa installa |
+| --- | --- |
+| 1 | **Node.js LTS**, se manca (con winget o con l'installer ufficiale) |
+| 2 | Dipendenze dell'app, compreso **FFmpeg** per Windows |
+| 3 | **whisper.cpp** (ultima release ufficiale) in `%LOCALAPPDATA%\FlowCut\whisper` |
+| 4 | Il **modello Whisper** che scegli (base, small o large-v3-turbo) in `%APPDATA%\FlowCut\models` |
+| 5 | Le **impostazioni** dell'app, già configurate per la trascrizione |
+| 6 | L'**installabile** `FlowCut-Setup-x.y.z.exe`, poi l'installazione di FlowCut con collegamento sul desktop e nel menu Start |
+
+Al termine FlowCut si avvia già pronto, trascrizione compresa. Se qualcosa va storto (ad esempio cade la connessione), rilancia lo script: i passaggi già completati vengono saltati.
+
+Opzioni avanzate (da riga di comando): `INSTALLA-FLOWCUT.bat -Modello large-v3-turbo-q5_0`, `-SenzaWhisper`, `-SenzaInstallabile` (usa l'app senza installarla), `-NonInterattivo`.
+
+Le opzioni che seguono servono solo se preferisci procedere a mano. Richiedono **Node.js 20 o superiore** ([nodejs.org](https://nodejs.org), versione LTS).
 
 ### Opzione A — avvio diretto dal codice
 
@@ -47,7 +69,11 @@ Requisiti: Windows 10/11 a 64 bit. Per avviare l'app dal codice o creare l'insta
 
 L'installabile include già FFmpeg, FFprobe e i font. Non servono altri programmi, a parte Whisper per la trascrizione.
 
+La build Windows è verificata su GitHub Actions (`windows-latest`): test con FFmpeg reale, creazione dell'installabile, esecuzione di `INSTALLA-FLOWCUT.bat`, installazione silenziosa e trascrizione reale con whisper.cpp.
+
 ## 2. Configurare la trascrizione (Whisper)
+
+Se hai usato `INSTALLA-FLOWCUT.bat` è già configurata e puoi saltare questa sezione.
 
 La trascrizione serve ai nodi **Trascrizione** e **Sottotitoli** (e, se presente, a "Taglio pause" per non tagliare dentro le parole). Avviene sul tuo PC.
 

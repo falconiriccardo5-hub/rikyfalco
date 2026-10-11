@@ -29,3 +29,36 @@ jobs:
           name: FlowCut-Setup-Windows
           path: app/dist/*.exe
           if-no-files-found: error
+
+  # Prova reale di INSTALLA-FLOWCUT.bat: whisper.cpp, modello, installabile,
+  # installazione silenziosa e trascrizione su Windows.
+  script-installazione:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Esegui lo script di installazione
+        shell: pwsh
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File app\scripts\installa.ps1 -NonInterattivo -Modello tiny -NonAvviare
+      - name: Verifica installazione
+        shell: pwsh
+        run: |
+          $s = Get-Content "$env:APPDATA\FlowCut\settings.json" -Raw | ConvertFrom-Json
+          if (-not (Test-Path $s.whisperCliPath)) { throw 'whisper-cli mancante' }
+          if (-not (Test-Path $s.whisperModelPath)) { throw 'modello mancante' }
+          $exe = Get-ChildItem "$env:LOCALAPPDATA\Programs" -Recurse -Filter FlowCut.exe | Select-Object -First 1
+          if (-not $exe) { throw 'FlowCut.exe non installato' }
+          Write-Host "FlowCut: $($exe.FullName)"
+          Write-Host "whisper: $($s.whisperCliPath)"
+          "WHISPER_CLI=$($s.whisperCliPath)" >> $env:GITHUB_ENV
+          "WHISPER_MODEL=$($s.whisperModelPath)" >> $env:GITHUB_ENV
+      - name: Trascrizione reale su Windows
+        shell: pwsh
+        working-directory: app
+        run: |
+          curl.exe -L --fail -o "$env:RUNNER_TEMP\jfk.wav" https://github.com/ggml-org/whisper.cpp/raw/master/samples/jfk.wav
+          $env:SPEECH_WAV = "$env:RUNNER_TEMP\jfk.wav"
+          $env:REQUIRE_WHISPER = '1'
+          npx vitest run tests/transcribe.test.ts
