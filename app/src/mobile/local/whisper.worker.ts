@@ -1,7 +1,11 @@
 // Trascrizione sul telefono con transformers.js (Whisper in WebAssembly).
-// La libreria viene caricata dalla CDN al primo uso e poi resta in cache.
+// Libreria e runtime ONNX sono inclusi nella web app; il modello viene
+// scaricato da Hugging Face al primo uso e poi resta in cache.
 
-const CDN = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/+esm'
+import { env, pipeline } from '@huggingface/transformers'
+// Runtime ONNX servito dalla web app (nessuna CDN: funziona anche offline).
+import ortMjs from '../../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs?url'
+import ortWasm from '../../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url'
 
 interface RunMsg {
   type: 'run'
@@ -24,9 +28,12 @@ function post(m: unknown): void {
 }
 
 async function getPipe(model: string): Promise<{ pipe: Pipe; wordLevel: boolean }> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tf: any = await import(/* @vite-ignore */ CDN)
-  tf.env.allowLocalModels = false
+  env.allowLocalModels = false
+  const onnx = env.backends.onnx as { wasm?: { wasmPaths?: unknown; numThreads?: number } }
+  if (onnx.wasm) {
+    onnx.wasm.wasmPaths = { mjs: new URL(ortMjs, self.location.href).href, wasm: new URL(ortWasm, self.location.href).href }
+    onnx.wasm.numThreads = 1
+  }
   const files = new Map<string, number>()
   const progress_callback = (p: { status: string; file?: string; progress?: number }): void => {
     if (p.status === 'progress' && p.file) {
@@ -40,7 +47,7 @@ async function getPipe(model: string): Promise<{ pipe: Pipe; wordLevel: boolean 
     const key = id
     if (cache.has(key)) return { pipe: cache.get(key)!, wordLevel }
     try {
-      const pipe = (await tf.pipeline('automatic-speech-recognition', id, { dtype: 'q8', device: 'wasm', progress_callback })) as Pipe
+      const pipe = (await pipeline('automatic-speech-recognition', id, { dtype: 'q8', device: 'wasm', progress_callback })) as unknown as Pipe
       cache.set(key, pipe)
       return { pipe, wordLevel }
     } catch (e) {

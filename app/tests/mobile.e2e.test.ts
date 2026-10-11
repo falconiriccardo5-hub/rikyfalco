@@ -2,6 +2,7 @@
 // Richiede `npm run build:mobile`. Eseguito solo con MOBILE_E2E=1.
 //   MOBILE_E2E=1 [SHOTS=cartella] [SPEECH_VIDEO=video-parlato.mp4] npx vitest run tests/mobile.e2e.test.ts
 
+import { execFileSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -46,7 +47,18 @@ async function shot(page: Page, name: string): Promise<void> {
 }
 
 async function newPage(): Promise<Page> {
-  const ctx = await browser.newContext({ ...devices['iPhone 14'], colorScheme: 'dark' })
+  const ctx = await browser.newContext({ ...devices['iPhone 14'], colorScheme: 'dark', serviceWorkers: 'block' })
+  // Nell'ambiente di test il browser non usa il proxy: i modelli Whisper (Hugging Face) passano da curl.
+  await ctx.route(/^https:\/\/([\w.-]*huggingface\.co|[\w.-]*hf\.co)\//, async (route) => {
+    const url = route.request().url()
+    try {
+      const body = execFileSync('curl', ['-sSL', '--fail', url], { maxBuffer: 1e9 })
+      const type = /\.json$/.test(url) ? 'application/json' : 'application/octet-stream'
+      await route.fulfill({ status: 200, body, headers: { 'content-type': type, 'access-control-allow-origin': '*' } })
+    } catch {
+      await route.fulfill({ status: 404, body: '' })
+    }
+  })
   const page = await ctx.newPage()
   page.on('pageerror', (e) => console.log('[pageerror]', e.message))
   page.on('console', (m) => m.type() === 'error' && console.log('[console]', m.text()))
@@ -151,6 +163,7 @@ describe.skipIf(!enabled)('web app iPhone', () => {
     expect(summary).toMatch(/Sottotitoli: \d+/)
     const r = await probeResult(page, 'sottotitoli-telefono.mp4')
     expect(r.duration).toBeGreaterThan(5)
+    expect(r.duration).toBeLessThan(14)
     await shot(page, 'telefono-sottotitoli')
     await page.context().close()
   }, 1000000)

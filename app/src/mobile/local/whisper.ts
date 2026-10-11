@@ -29,7 +29,8 @@ export function transcribe(
     }
     const onMsg = (ev: MessageEvent): void => {
       const m = ev.data
-      if (m.type === 'progress' && m.phase === 'download') onProgress(0.3 * m.progress, `Download modello Whisper ${Math.round(m.progress * 100)}%`)
+      if (m.type === 'log') console.warn('[whisper]', m.message)
+      else if (m.type === 'progress' && m.phase === 'download') onProgress(0.3 * m.progress, `Download modello Whisper ${Math.round(m.progress * 100)}%`)
       else if (m.type === 'progress' && m.phase === 'transcribe') {
         // La libreria non riporta l'avanzamento: stima basata sulla durata dell'audio.
         const start = Date.now()
@@ -47,6 +48,10 @@ export function transcribe(
       }
     }
     w.addEventListener('message', onMsg)
+    w.onerror = (e) => {
+      done()
+      reject(new Error(`Errore nel modulo di trascrizione: ${e.message || 'caricamento non riuscito'}`))
+    }
     const copy = new Float32Array(audio)
     w.postMessage({ type: 'run', audio: copy, model, language }, [copy.buffer])
   })

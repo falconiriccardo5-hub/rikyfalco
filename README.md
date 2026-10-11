@@ -9,6 +9,8 @@ Importa video → Analisi → Trascrizione → Taglio pause → Sottotitoli → 
 → Zoom e animazioni → Miglioramento audio → Musica → Transizioni → Schermata finale → Esportazione
 ```
 
+Si usa su **Windows** e anche su **iPhone**, come web app installabile da Safari senza App Store ([sezione 6](#6-usare-flowcut-dalliphone)).
+
 Il codice si trova nella cartella [`app/`](app). Architettura e scelte tecniche sono in [`docs/ARCHITETTURA.md`](docs/ARCHITETTURA.md).
 
 ---
@@ -20,10 +22,11 @@ Il codice si trova nella cartella [`app/`](app). Architettura e scelte tecniche 
 3. [Guida rapida](#3-guida-rapida)
 4. [I nodi](#4-i-nodi)
 5. [Workflow riutilizzabili](#5-workflow-riutilizzabili)
-6. [Stato del progetto: cosa funziona e cosa manca](#6-stato-del-progetto-cosa-funziona-e-cosa-manca)
-7. [Sviluppo e test](#7-sviluppo-e-test)
-8. [Risoluzione dei problemi](#8-risoluzione-dei-problemi)
-9. [Licenze](#9-licenze)
+6. [Usare FlowCut dall'iPhone](#6-usare-flowcut-dalliphone)
+7. [Stato del progetto: cosa funziona e cosa manca](#7-stato-del-progetto-cosa-funziona-e-cosa-manca)
+8. [Sviluppo e test](#8-sviluppo-e-test)
+9. [Risoluzione dei problemi](#9-risoluzione-dei-problemi)
+10. [Licenze](#10-licenze)
 
 ---
 
@@ -148,7 +151,55 @@ Il flusso tipico per i tuoi video YouTube:
 2. salvalo come modello;
 3. a ogni nuovo video: *Nuovo progetto* con quel modello → trascina il video → **Esegui workflow** → controlla tagli e sottotitoli → **Esporta**.
 
-## 6. Stato del progetto: cosa funziona e cosa manca
+## 6. Usare FlowCut dall'iPhone
+
+FlowCut si usa anche su iPhone come **web app installabile da Safari**, senza App Store: si aggiunge alla schermata Home e si apre a tutto schermo come un'app. Funziona in due modi, scegli nella scheda *Crea*.
+
+![FlowCut su iPhone](docs/screenshots/iphone.png)
+
+### Modalità "Sul PC" (consigliata)
+
+L'iPhone fa da telecomando: carichi un video dal rullino, scegli workflow, lingua e formato, e il PC fa il montaggio completo con tutte le funzioni. Puoi seguire l'avanzamento nodo per nodo e, a montaggio finito, salvare il video nel rullino.
+
+1. Sul PC apri FlowCut e premi l'**icona del telefono** in alto a destra.
+2. Attiva **Consenti l'accesso dal telefono**. Se Windows chiede il permesso di rete, scegli *Reti private*.
+3. Sull'iPhone, collegato alla **stessa rete Wi-Fi**, inquadra il **codice QR** con la fotocamera (oppure apri in Safari l'indirizzo mostrato, es. `http://192.168.1.20:7878`).
+4. Inserisci il **codice di abbinamento** a 6 cifre. Il codice vale una sola volta; l'iPhone resta abbinato finché non lo scolleghi.
+5. In Safari tocca **Condividi → Aggiungi alla schermata Home**.
+
+![Accesso dal telefono sul PC](docs/screenshots/iphone-pc.png)
+
+Come funziona:
+- I video ricevuti diventano progetti in `Documenti\FlowCut\Telefono` e restano consultabili anche dal PC.
+- Senza un brano nel modello, il nodo Musica viene saltato.
+- Senza Whisper configurato sul PC, trascrizione e sottotitoli vengono saltati, con un avviso sul telefono.
+- **Sicurezza:** le API rispondono solo ai dispositivi abbinati. Dal pannello puoi generare un nuovo codice o scollegare tutti i telefoni.
+- **Fuori casa:** il PC si raggiunge con una VPN come [Tailscale](https://tailscale.com) (gratuita), usando l'indirizzo Tailscale del PC.
+
+### Modalità "Sul telefono" (senza PC)
+
+Il montaggio avviene **interamente sull'iPhone**, anche offline dopo il primo utilizzo. Usa FFmpeg in WebAssembly e Whisper tramite transformers.js, con lo **stesso compilatore** della versione desktop.
+
+Funzioni disponibili:
+- taglio automatico delle pause, senza tagliare dentro le parole;
+- sottotitoli automatici con la parola attiva evidenziata;
+- zoom alternati sui tagli;
+- audio migliorato (filtro passa-alto, riduzione rumore, compressore, loudness −14 LUFS);
+- formato originale o verticale 9:16, in 720p o 1080p.
+
+Al primo uso dei sottotitoli il modello Whisper viene scaricato da Hugging Face (tiny ≈ 40 MB, base ≈ 80 MB, small ≈ 250 MB) e poi resta in memoria.
+
+Per usarla senza il PC, la web app va installata da un indirizzo **HTTPS** (requisito di Safari per l'uso offline). Il repository contiene la GitHub Action `web-app-iphone.yml`, che la pubblica su **GitHub Pages**:
+
+1. unisci il ramo in `main`;
+2. su GitHub apri **Settings → Pages → Source: GitHub Actions** (una sola volta);
+3. la web app sarà su `https://falconiriccardo5-hub.github.io/rikyfalco/`: aprila in Safari e aggiungila alla schermata Home.
+
+La versione installata da GitHub Pages lavora solo sul telefono. Per la modalità PC apri l'indirizzo del PC: scheda *Crea → Sul PC*, dove puoi inserirlo e aprirlo.
+
+> **Limiti della modalità telefono (iOS):** l'elaborazione è molto più lenta del PC ed è pensata per clip di pochi minuti. Tieni l'app aperta e lo schermo acceso. I video molto grandi possono superare la memoria disponibile per Safari. Per video lunghi, musica, testi, transizioni e schermata finale usa la modalità PC.
+
+## 7. Stato del progetto: cosa funziona e cosa manca
 
 ### Verificato in questo ambiente (Linux, FFmpeg 7.0.2)
 
@@ -160,11 +211,22 @@ Il flusso tipico per i tuoi video YouTube:
 
 ![Fotogrammi esportati](docs/screenshots/export-grafiche.jpg)
 
+- **Web app per iPhone**, testata in un browser con emulazione iPhone 14 (`tests/mobile.e2e.test.ts`):
+  - modalità PC: abbinamento, caricamento, lavoro completo di 12 nodi, video 1080×1920 scaricato;
+  - modalità telefono: video verticale 720×1280 con pause tagliate in circa 22 secondi;
+  - Whisper nel browser: 23 parole trascritte, 4 sottotitoli incisi.
+
+  A parte, sul server: abbinamento, token, caricamento e Range (`tests/remote.test.ts`); il pannello QR nell'app desktop reale.
+
+![Sottotitoli generati sul telefono](docs/screenshots/iphone-sottotitoli.jpg)
+
 ### Non verificato qui (da provare sul tuo PC)
 
 - **Esecuzione e installabile su Windows:** in questo ambiente non c'è Windows. Il codice gestisce i percorsi Windows (cartelle con spazi o accenti, unità diverse, `.exe`) e la configurazione NSIS è pronta, ma il primo avvio reale va fatto da te o tramite la GitHub Action.
 - **Encoder GPU** (NVENC/QSV/AMF): non c'è una GPU in questo ambiente. L'app li verifica con una codifica di prova e li segnala se non funzionano.
 - **faster-whisper:** lo script è incluso ma non è stato eseguito qui.
+- **Safari su un iPhone vero:** i test usano Chromium con emulazione dell'iPhone, perché Safari/WebKit non è disponibile in questo ambiente. Su un iPhone reale vanno verificati la velocità della modalità telefono, i limiti di memoria di Safari e il salvataggio nel rullino tramite il foglio di condivisione.
+- **GitHub Pages:** il workflow di pubblicazione è pronto, ma funziona solo dopo l'unione in `main` e l'attivazione di Pages nelle impostazioni del repository.
 
 ### Non ancora implementato / limitazioni note
 
@@ -176,7 +238,7 @@ Il flusso tipico per i tuoi video YouTube:
 - Le parole chiave suggerite si basano sulla frequenza nel parlato, non su un modello AI.
 - Lo zoom usa `zoompan`, che può avere un leggero tremolio sugli zoom lenti. L'opzione *Qualità alta* lo riduce, al costo di una codifica più lenta.
 
-## 7. Sviluppo e test
+## 8. Sviluppo e test
 
 ```bash
 cd app
@@ -186,6 +248,8 @@ npm run typecheck    # controllo dei tipi
 npm test             # test unitari e d'integrazione (FFmpeg reale)
 npm run build        # compilazione in out/
 npm run dist:win     # installabile Windows (da eseguire su Windows)
+npm run dev:mobile   # web app iPhone in sviluppo (apri l'indirizzo di rete dal telefono)
+npm run build:mobile # web app iPhone in out/mobile
 ```
 
 Test opzionali:
@@ -193,6 +257,8 @@ Test opzionali:
 ```bash
 # trascrizione reale (richiede whisper-cli e un modello)
 WHISPER_CLI=/percorso/whisper-cli WHISPER_MODEL=/percorso/ggml-base.en.bin SPEECH_WAV=/percorso/jfk.wav npx vitest run tests/transcribe.test.ts
+# web app iPhone in un browser con emulazione iPhone (dopo npm run build:mobile)
+MOBILE_E2E=1 SPEECH_VIDEO=/percorso/video-parlato.mp4 npx vitest run tests/mobile.e2e.test.ts
 # prestazioni su un video lungo
 PERF=1 PERF_MINUTES=10 npx vitest run tests/perf.test.ts
 # interfaccia end-to-end (dopo npm run build e npm test, che crea i media di prova; su Linux con xvfb-run)
@@ -205,7 +271,7 @@ node scripts/e2e-editors.mjs e2e-shots
 - file di lavoro: `<cartella progetto>/work/` (audio estratto, cache dei nodi, anteprime, `log.txt`). Si può cancellare per liberare spazio: verrà ricreato;
 - impostazioni, modelli Whisper e modelli di workflow: `%APPDATA%\FlowCut\`.
 
-## 8. Risoluzione dei problemi
+## 9. Risoluzione dei problemi
 
 | Problema | Soluzione |
 | --- | --- |
@@ -218,7 +284,7 @@ node scripts/e2e-editors.mjs e2e-shots
 
 Ogni progetto ha un log completo in `work/log.txt`. Nell'app, il pulsante *Dettagli* del pannello Log mostra anche i comandi eseguiti.
 
-## 9. Licenze
+## 10. Licenze
 
 - Codice di FlowCut: MIT.
 - FFmpeg (incluso tramite `ffmpeg-static`) è distribuito con licenza **GPL**: se ridistribuisci l'installabile, rispetta i termini della GPL (codice sorgente di FFmpeg disponibile su [ffmpeg.org](https://ffmpeg.org)).
