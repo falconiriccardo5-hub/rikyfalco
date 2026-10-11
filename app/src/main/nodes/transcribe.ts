@@ -10,6 +10,17 @@ import { extractWav } from './source'
 export const transcribeNode: NodeImpl = {
   async run(ctx, input, s) {
     const tl = requireInput(input)
+    // Con la voce narrante il testo è già noto: niente riconoscimento vocale (e Whisper non serve).
+    if (tl.transcript?.engine === 'voce narrante') {
+      return {
+        output: tl,
+        result: {
+          summary: `Testo della voce narrante (${tl.transcript.words.length} parole)`,
+          items: [{ label: 'Fonte', value: 'Testo del nodo "Voce narrante": trascrizione non necessaria' }],
+          files: []
+        }
+      }
+    }
     if (!tl.source.hasAudio) throw new Error('Il video non contiene una traccia audio da trascrivere.')
     let wav = tl.analysis.audioPath
     if (!wav || !fs.existsSync(wav)) {

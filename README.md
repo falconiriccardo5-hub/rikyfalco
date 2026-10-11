@@ -49,6 +49,7 @@ Lo script fa tutto da solo:
 | 2 | Dipendenze dell'app, compreso **FFmpeg** per Windows |
 | 3 | **whisper.cpp** (ultima release ufficiale) in `%LOCALAPPDATA%\FlowCut\whisper` |
 | 4 | Il **modello Whisper** che scegli (base, small o large-v3-turbo) in `%APPDATA%\FlowCut\models` |
+| 4b | **Piper** e la voce italiana "Paola" per la voce narrante (`-SenzaVoce` per saltarli) |
 | 5 | Le **impostazioni** dell'app, già configurate per la trascrizione |
 | 6 | L'**installabile** `FlowCut-Setup-x.y.z.exe`, poi l'installazione di FlowCut con collegamento sul desktop e nel menu Start |
 
@@ -128,6 +129,7 @@ Ogni nodo esegue una funzione reale. Nessun nodo è dimostrativo.
 | **Importa video** | Legge i metadati con ffprobe (durata, risoluzione, fps, codec, audio, rotazione), crea un fotogramma di copertina e, se il formato non è riproducibile nell'app (es. HEVC, ProRes), un **proxy** 720p usato solo per l'anteprima. |
 | **Analisi contenuto** | Estrae l'audio (WAV 16 kHz), calcola forma d'onda, volume medio/picco e loudness EBU R128, genera le miniature e, se richiesto, rileva i cambi scena. |
 | **Trascrizione** | Whisper locale (whisper.cpp con DTW oppure faster-whisper): parole con tempi precisi, lingua scelta o rilevata automaticamente, prompt iniziale per nomi propri. |
+| **Voce narrante** | Genera una voce parlata dal **testo che scrivi** (una frase per riga, con tempo di inizio facoltativo, es. `0:20 Ora vediamo…`), con **Piper**: sintesi vocale locale e gratuita, con voci italiane, inglesi, spagnole, francesi e tedesche. Scegli voce e velocità. L'audio originale può essere mantenuto, abbassato mentre la voce parla o tolto. Dallo stesso testo crea anche i **sottotitoli**: il nodo Trascrizione viene saltato e Whisper non serve. Le parti con la voce non vengono mai tagliate da "Taglio pause". |
 | **Taglio pause** | `silencedetect` con soglia automatica (dal volume medio) o manuale, durata minima, margine attorno al parlato, frammento minimo. Non taglia mai dentro le parole trascritte. Offre l'elenco dei tagli con esclusione singola, intervalli da conservare sempre e intervalli da rimuovere a mano. |
 | **Sottotitoli** | Raggruppa le parole in sottotitoli leggibili, con testo e tempi modificabili e ripristino. Stile: font, dimensione, colori, contorno, ombra, riquadro, posizione, maiuscolo. Animazioni: dissolvenza, pop, parola attiva evidenziata, karaoke, una parola alla volta. Parole chiave evidenziate (con suggerimenti dalle parole più frequenti). Esporta l'SRT e li incide nel video. |
 | **Testi e grafiche** | Titoli, parole chiave, spiegazioni, sottopancia e immagini. 5 preset tipografici, posizione, durata, colore, animazioni di entrata/uscita (dissolvenza, scorrimento, pop, macchina da scrivere) e **keyframe** di posizione, scala e opacità. Può anche inserire automaticamente testi nelle pause del parlato. |
@@ -204,6 +206,7 @@ La versione installata da GitHub Pages lavora solo sul telefono. Per la modalit�
 ### Verificato in questo ambiente (Linux, FFmpeg 7.0.2)
 
 - **Test automatici** (`npm test`: 19 test, più 2 opzionali per Whisper e prestazioni): calcolo di tagli, layout, mappatura dei tempi, sottotitoli, hash e invalidazione, conversione dei token di Whisper. Più un'esecuzione completa con FFmpeg reale di tutti i nodi: taglio pause, sottotitoli, testi con keyframe, immagine, zoom, audio, musica, transizioni, schermata finale, esportazione. Sono verificati la durata del file, l'SRT, la cache, la riesecuzione selettiva, l'annullamento e i file mancanti.
+- **Voce narrante con Piper reale**: voce generata dal testo, mescolata con l'audio originale abbassato (−18 dB mentre parla), sottotitoli creati dal testo. Installazione di Piper e download della voce dalle Impostazioni, provati nell'app reale.
 - **Trascrizione reale con whisper.cpp** (modello `base.en`): testo corretto, tempi DTW, nessun taglio dentro le parole, sottotitoli incisi ed esportati.
 - **Prestazioni:** un video 720p di 10 minuti con 300 segmenti e 11 transizioni viene esportato in circa 90 secondi, con la durata finale esatta (audio e video sincronizzati).
 - **Interfaccia Electron reale** guidata con Playwright (`scripts/e2e-*.mjs`): creazione progetto, importazione, esecuzione di tutti i 12 nodi, errore e blocco dei nodi successivi, eliminazione con ricollegamento della catena, editor di testi/zoom/transizioni, esclusione di un taglio con stato "da rieseguire", annulla/ripeti, anteprime, esportazione, modelli, tema chiaro/scuro, download di un modello Whisper.
@@ -280,6 +283,8 @@ node scripts/e2e-editors.mjs e2e-shots
 | "File mancante" | Il file è stato spostato: nella scheda *Progetto* usa l'icona di collegamento per ricollegarlo. |
 | Encoder GPU in errore | Aggiorna i driver oppure usa H.264 (x264). |
 | Sottotitoli che non partono quando si parla | Usa un modello Whisper più grande, imposta la lingua corretta e verifica di usare un modello `ggml-*.bin` con il nome originale (serve per il DTW). |
+| Il video non ha una voce | La trascrizione serve solo se nel video qualcuno parla. Per far parlare il video aggiungi il nodo **Voce narrante** (scheda *Nodi*), scrivi il testo e scegli la voce: i sottotitoli verranno creati dallo stesso testo. Se ti servono Piper o le voci: Impostazioni → *Voce narrante*. |
+| "whisper.cpp terminato con errore" senza dettagli | Di solito mancano le librerie Microsoft Visual C++: installale da https://aka.ms/vs/17/release/vc_redist.x64.exe oppure rilancia `INSTALLA-FLOWCUT.bat`. Il messaggio dell'app ora indica la causa. |
 | Esportazione lenta | Velocità di codifica `veryfast`/`faster`, un encoder GPU, oppure disattiva *Qualità alta* nello zoom. |
 
 Ogni progetto ha un log completo in `work/log.txt`. Nell'app, il pulsante *Dettagli* del pannello Log mostra anche i comandi eseguiti.

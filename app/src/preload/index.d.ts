@@ -2,6 +2,7 @@ import type {
   AppSettings, AudioPreviewRequest, EngineEvent, MediaItem, OpenProjectResult, PreviewRequest, ProjectDoc,
   RemoteStatus, RunRequest, Timeline, ToolStatus, Workflow, WorkflowTemplate
 } from '../shared/types'
+import type { PiperVoice } from '../shared/voices'
 
 export interface FileFilter {
   name: string
@@ -47,6 +48,9 @@ export interface Api {
   showItem(p: string): Promise<void>
   openPath(p: string): Promise<string>
   openExternal(url: string): Promise<void>
+  listVoices(): Promise<(PiperVoice & { downloaded: boolean })[]>
+  downloadVoice(id: string): Promise<void>
+  installPiper(): Promise<string>
   remoteStatus(): Promise<RemoteStatus>
   remoteSet(patch: { enabled?: boolean; port?: number }): Promise<RemoteStatus>
   remoteNewCode(): Promise<RemoteStatus>

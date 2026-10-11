@@ -1,12 +1,12 @@
 // Operazioni sul grafo del workflow: ordinamento, dipendenze, hash per
 // capire quali nodi devono essere rieseguiti dopo una modifica.
 
-import { NODE_DEFS, NODE_ORDER, defaultSettings } from './nodeDefs'
+import { DEFAULT_CHAIN, NODE_DEFS, defaultSettings } from './nodeDefs'
 import { hashString, stableStringify } from './timeline'
 import type { MediaItem, NodeType, Workflow, WorkflowEdge, WorkflowNode } from './types'
 
 /** Incrementare quando cambia la logica di un nodo per invalidare le cache. */
-export const ENGINE_VERSION = 3
+export const ENGINE_VERSION = 4
 
 export function parentOf(wf: Workflow, nodeId: string): WorkflowNode | undefined {
   const e = wf.edges.find((x) => x.target === nodeId)
@@ -137,7 +137,7 @@ export function createNode(type: NodeType, position: { x: number; y: number }): 
 /** Workflow predefinito: Importazione → … → Esportazione (disposto su due righe). */
 export function defaultWorkflow(): Workflow {
   const perRow = 4
-  const nodes: WorkflowNode[] = NODE_ORDER.map((type, i) => {
+  const nodes: WorkflowNode[] = DEFAULT_CHAIN.map((type, i) => {
     const row = Math.floor(i / perRow)
     const col = i % perRow
     return createNode(type, { x: col * 290, y: row * 200 })
@@ -150,6 +150,11 @@ export function defaultWorkflow(): Workflow {
 }
 
 /** Parti delle impostazioni dell'app che influenzano il risultato di un nodo. */
-export function hashEnvFor(settings: { whisperCliPath: string; whisperModelPath: string; pythonPath: string }): HashEnv {
-  return (n) => (n.type === 'transcribe' ? [settings.whisperCliPath, settings.whisperModelPath, settings.pythonPath].join('|') : '')
+export function hashEnvFor(settings: { whisperCliPath: string; whisperModelPath: string; pythonPath: string; piperPath: string }): HashEnv {
+  return (n) =>
+    n.type === 'transcribe'
+      ? [settings.whisperCliPath, settings.whisperModelPath, settings.pythonPath].join('|')
+      : n.type === 'voiceover'
+        ? settings.piperPath
+        : ''
 }

@@ -45,6 +45,7 @@ export function SettingsDialog(): React.JSX.Element | null {
   const downloads = useStore((s) => s.downloads)
   const [draft, setDraft] = useState<AppSettings | null>(null)
   const [models, setModels] = useState<WhisperModelInfo[]>([])
+  const [voices, setVoices] = useState<{ id: string; label: string; sizeMb: number; downloaded: boolean }[]>([])
   const [checking, setChecking] = useState(false)
   const [downloading, setDownloading] = useState<string | null>(null)
   const exe = navigator.platform.toLowerCase().includes('win') ? ['exe'] : ['*']
@@ -53,6 +54,7 @@ export function SettingsDialog(): React.JSX.Element | null {
     if (open && settings) {
       setDraft(settings)
       void api.listModels().then(setModels)
+      void api.listVoices().then(setVoices)
     }
   }, [open, settings])
   if (!open || !draft) return null
@@ -189,6 +191,70 @@ export function SettingsDialog(): React.JSX.Element | null {
         })}
       </div>
       <div className="help" style={{ marginTop: 6 }}>I modelli vengono scaricati da Hugging Face (ggerganov/whisper.cpp) nella cartella dati dell'app. Il download avviene una sola volta.</div>
+
+      <div className="section-title">Voce narrante · Piper (sintesi vocale)</div>
+      <div className="row" style={{ marginBottom: 8 }}>
+        <Status ok={!!tools?.piper.ok} text={tools?.piper.ok ? 'Piper installato' : tools?.piper.error} />
+        <span className="tiny dim ellipsis grow mono" title={tools?.piper.path}>{tools?.piper.path}</span>
+        {!tools?.piper.ok && (
+          <button
+            className="btn sm primary"
+            disabled={!!downloading}
+            onClick={async () => {
+              setDownloading('piper')
+              try {
+                const p = await api.installPiper()
+                set({ piperPath: p })
+                await refreshTools()
+                toast('Piper installato', 'success')
+              } catch (e) {
+                toast(`Installazione non riuscita: ${errMsg(e)}`, 'error')
+              } finally {
+                setDownloading(null)
+              }
+            }}
+          >
+            {downloading === 'piper' ? <Loader2 size={13} className="spin" /> : <Download size={13} />} Installa Piper (≈ 25 MB)
+          </button>
+        )}
+      </div>
+      <div className="help" style={{ marginBottom: 8 }}>Genera una voce parlata dal testo del nodo "Voce narrante". Funziona sul PC, gratis e senza Internet dopo il download.</div>
+      <div className="list">
+        {voices.map((v) => {
+          const d = downloads[v.id]
+          const pct = d && d.total ? Math.round((d.received / d.total) * 100) : 0
+          return (
+            <div key={v.id} className="list-row">
+              <span className="grow">{v.label}</span>
+              <span className="tiny dim">{v.sizeMb} MB</span>
+              {downloading === v.id ? (
+                <span className="tiny" style={{ width: 70, textAlign: 'right' }}>{pct}%</span>
+              ) : v.downloaded ? (
+                <span className="tiny" style={{ color: 'var(--ok)', width: 70, textAlign: 'right' }}>Scaricata</span>
+              ) : (
+                <button
+                  className="btn xs"
+                  disabled={!!downloading}
+                  onClick={async () => {
+                    setDownloading(v.id)
+                    try {
+                      await api.downloadVoice(v.id)
+                      setVoices(await api.listVoices())
+                      toast(`Voce "${v.label}" pronta`, 'success')
+                    } catch (e) {
+                      toast(`Download non riuscito: ${errMsg(e)}`, 'error')
+                    } finally {
+                      setDownloading(null)
+                    }
+                  }}
+                >
+                  <Download size={11} /> Scarica
+                </button>
+              )}
+            </div>
+          )
+        })}
+      </div>
 
       <div className="section-title">Trascrizione · faster-whisper (alternativa Python)</div>
       <div className="row" style={{ marginBottom: 8 }}>

@@ -6,6 +6,7 @@ import { exportNode } from './export'
 import { endscreenNode, subtitlesNode, textsNode } from './graphics'
 import { analyzeNode, importNode } from './source'
 import { transcribeNode } from './transcribe'
+import { voiceoverNode } from './voiceover'
 
 export const NODE_IMPLS: Record<NodeType, NodeImpl> = {
   import: importNode,
@@ -19,5 +20,6 @@ export const NODE_IMPLS: Record<NodeType, NodeImpl> = {
   music: musicNode,
   transitions: transitionsNode,
   endscreen: endscreenNode,
-  export: exportNode
+  export: exportNode,
+  voiceover: voiceoverNode
 }

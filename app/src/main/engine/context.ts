@@ -12,6 +12,8 @@ export interface EngineEnv {
   settings: AppSettings
   /** Cartella con risorse dell'app (font, script Python). */
   resourcesDir: string
+  /** Cartella dati dell'app (modelli, voci). */
+  dataDir: string
 }
 
 export interface NodeContext extends EngineEnv {

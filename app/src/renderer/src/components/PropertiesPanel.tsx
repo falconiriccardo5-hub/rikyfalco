@@ -26,7 +26,7 @@ export function PropertiesPanel(): React.JSX.Element {
   return <NodeProperties key={node.id} node={node} />
 }
 
-const PREVIEWABLE = new Set(['silence', 'subtitles', 'texts', 'zoom', 'audio', 'music', 'transitions', 'endscreen', 'export'])
+const PREVIEWABLE = new Set(['voiceover', 'silence', 'subtitles', 'texts', 'zoom', 'audio', 'music', 'transitions', 'endscreen', 'export'])
 
 function NodeProperties({ node }: { node: WorkflowNode }): React.JSX.Element {
   const def = NODE_DEFS[node.type]
@@ -87,7 +87,7 @@ function NodeProperties({ node }: { node: WorkflowNode }): React.JSX.Element {
               </button>
             </>
           )}
-          {(node.type === 'audio' || node.type === 'music') && (
+          {(node.type === 'audio' || node.type === 'music' || node.type === 'voiceover') && (
             <button className="btn sm" disabled={running} title="Confronta audio originale ed elaborato (15 s dalla posizione attuale)" onClick={() => audioPreview(node.id, 15)}>
               <Headphones size={13} /> Ascolta A/B
             </button>
@@ -106,6 +106,15 @@ function NodeProperties({ node }: { node: WorkflowNode }): React.JSX.Element {
             <div className="txt">
               Il motore di trascrizione non è configurato o non funziona
               {tools?.whisperCpp.error && node.settings.engine !== 'faster-whisper' ? `: ${tools.whisperCpp.error}` : '.'}{' '}
+              <button className="btn xs" onClick={() => openSettings(true)}>Apri impostazioni</button>
+            </div>
+          </div>
+        )}
+        {node.type === 'voiceover' && !tools?.piper.ok && (
+          <div className="callout warn" style={{ marginBottom: 12 }}>
+            <AlertTriangle size={14} />
+            <div className="txt">
+              Per generare la voce installa Piper e scarica una voce.{' '}
               <button className="btn xs" onClick={() => openSettings(true)}>Apri impostazioni</button>
             </div>
           </div>

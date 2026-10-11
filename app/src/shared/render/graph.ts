@@ -377,6 +377,43 @@ export function buildRender(input: CompileInput): Compiled {
 
   // ------------------------------------------------------------ audio
   let aCur = aMain
+
+  // Voce narrante: ogni frase viene posizionata nel tempo finale e mescolata all'audio,
+  // prima del miglioramento audio (così normalizzazione e ducking della musica ne tengono conto).
+  const vo = mode !== 'audio-original' ? tl.voiceover : undefined
+  if (vo?.clips.length) {
+    const placed = vo.clips
+      .map((c) => ({ c, t: mapStartToOutput(layout, c.start) }))
+      .filter((x): x is { c: typeof x.c; t: number } => x.t !== null && x.t < layout.mainDuration && input.exists(x.c.path))
+    if (placed.length < vo.clips.length) warnings.push(`Voce narrante: ${vo.clips.length - placed.length} frasi fuori dal video o mancanti.`)
+    if (placed.length) {
+      const labels: string[] = []
+      placed.forEach((x, k) => {
+        inputs.push(['-i', x.c.path])
+        const ii = inputs.length - 1
+        const ms = Math.round(x.t * 1000)
+        f.push(`[${ii}:a]${afmt},volume=${vo.volumeDb}dB,adelay=${ms}|${ms}[vo${k}]`)
+        labels.push(`[vo${k}]`)
+      })
+      const main = n3(layout.mainDuration)
+      if (labels.length > 1) f.push(`${labels.join('')}amix=inputs=${labels.length}:duration=longest:dropout_transition=0:normalize=0,apad,atrim=0:${main}[narr]`)
+      else f.push(`${labels[0]}apad,atrim=0:${main}[narr]`)
+      let orig = aCur
+      if (vo.original === 'mute') {
+        f.push(`[${aCur}]volume=0[origm]`)
+        orig = 'origm'
+        f.push(`[${orig}][narr]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[withvo]`)
+      } else if (vo.original === 'duck') {
+        f.push(`[narr]asplit=2[narrmix][narrsc]`)
+        f.push(`[${aCur}][narrsc]sidechaincompress=threshold=0.02:ratio=12:attack=15:release=350[origd]`)
+        f.push(`[origd][narrmix]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[withvo]`)
+      } else {
+        f.push(`[${orig}][narr]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[withvo]`)
+      }
+      aCur = 'withvo'
+    }
+  }
+
   const fx = withFx ? tl.audio : undefined
   if (fx) {
     const chain: string[] = []

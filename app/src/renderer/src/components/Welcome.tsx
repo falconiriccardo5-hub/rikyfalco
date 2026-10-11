@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, Clock, FolderOpen, Plus, Settings } from 'lucide-react'
 import type { WorkflowTemplate } from '@shared/types'
-import { NODE_DEFS, NODE_ORDER } from '@shared/nodeDefs'
+import { DEFAULT_CHAIN as NODE_ORDER, NODE_DEFS } from '@shared/nodeDefs'
 import { api, basename } from '../lib/util'
 import { createProject, openProject, openSettings, useStore } from '../store/store'
 import { Modal } from './Modal'

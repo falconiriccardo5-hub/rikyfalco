@@ -14,13 +14,15 @@
 #   -SenzaInstallabile   non crea/installa l'app: si avvia con avvia-windows.bat
 #   -NonInterattivo      nessuna domanda (usa i valori predefiniti)
 #   -NonAvviare          non avvia FlowCut al termine
+#   -SenzaVoce           non installa Piper (voce narrante) e la voce italiana
 
 param(
   [string]$Modello = '',
   [switch]$SenzaWhisper,
   [switch]$SenzaInstallabile,
   [switch]$NonInterattivo,
-  [switch]$NonAvviare
+  [switch]$NonAvviare,
+  [switch]$SenzaVoce
 )
 
 $ErrorActionPreference = 'Stop'
@@ -205,6 +207,36 @@ try {
   }
 
   # ---------------------------------------------------------------- 5. impostazioni
+  # ---------------------------------------------------------------- voce narrante (Piper)
+  $piperExe = ''
+  if (-not $SenzaVoce) {
+    Titolo 'Voce narrante (Piper, sintesi vocale)'
+    $PiperDir = Join-Path $DataDir 'piper'
+    $trovatoP = Get-ChildItem -Path $PiperDir -Recurse -Filter 'piper.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $trovatoP) {
+      Info 'Download di Piper...'
+      $zipP = Join-Path $env:TEMP 'piper_windows_amd64.zip'
+      Scarica 'https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip' $zipP
+      New-Item -ItemType Directory -Force -Path $PiperDir | Out-Null
+      Expand-Archive -Path $zipP -DestinationPath $PiperDir -Force
+      Remove-Item $zipP -Force
+      $trovatoP = Get-ChildItem -Path $PiperDir -Recurse -Filter 'piper.exe' | Select-Object -First 1
+    }
+    if ($trovatoP) {
+      $piperExe = $trovatoP.FullName
+      Ok "Piper installato: $piperExe"
+      $VoicesDir = Join-Path $DataDir 'voices'
+      $voce = Join-Path $VoicesDir 'it_IT-paola-medium.onnx'
+      if (-not (Test-Path $voce) -or -not (Test-Path "$voce.json")) {
+        Info 'Download della voce italiana "Paola" (circa 63 MB)...'
+        $baseV = 'https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium'
+        Scarica "$baseV.onnx.json" "$voce.json"
+        Scarica "$baseV.onnx" $voce
+      }
+      Ok 'Voce italiana pronta (altre voci: Impostazioni -> Voce narrante)'
+    } else { Avviso 'Piper non trovato nell''archivio: installalo dalle Impostazioni dell''app.' }
+  }
+
   Titolo "5/6  Impostazioni dell'app"
   New-Item -ItemType Directory -Force -Path $DataDir | Out-Null
   $settingsFile = Join-Path $DataDir 'settings.json'
@@ -218,6 +250,7 @@ try {
   }
   if ($cli) { $s['whisperCliPath'] = $cli }
   if ($modelPath) { $s['whisperModelPath'] = $modelPath }
+  if ($piperExe) { $s['piperPath'] = $piperExe }
   if (-not $s.Contains('defaultLanguage')) { $s['defaultLanguage'] = 'it' }
   if (-not $s.Contains('recentProjects')) { $s['recentProjects'] = @() }
   $json = $s | ConvertTo-Json -Depth 6

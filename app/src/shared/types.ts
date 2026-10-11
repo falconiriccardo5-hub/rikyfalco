@@ -229,13 +229,29 @@ export interface Timeline {
   music?: MusicTrack
   transitions?: TransitionSpec
   endscreen?: EndScreen
+  voiceover?: VoiceoverTrack
+}
+
+export interface VoiceClip {
+  path: string
+  /** Inizio nel tempo sorgente. */
+  start: number
+  duration: number
+  text: string
+}
+
+export interface VoiceoverTrack {
+  clips: VoiceClip[]
+  volumeDb: number
+  /** Audio originale: mantenuto, abbassato mentre parla la voce, oppure tolto. */
+  original: 'keep' | 'duck' | 'mute'
 }
 
 // ---------------------------------------------------------------- workflow
 
 export type NodeType =
   | 'import' | 'analyze' | 'transcribe' | 'silence' | 'subtitles' | 'texts'
-  | 'zoom' | 'audio' | 'music' | 'transitions' | 'endscreen' | 'export'
+  | 'zoom' | 'audio' | 'music' | 'transitions' | 'endscreen' | 'export' | 'voiceover'
 
 export type NodeSettings = Record<string, unknown>
 
@@ -352,6 +368,8 @@ export interface AppSettings {
   theme: 'dark' | 'light' | 'system'
   threads: number
   recentProjects: string[]
+  /** Eseguibile di Piper (sintesi vocale per la voce narrante). */
+  piperPath: string
   /** Accesso dal telefono (server sulla rete locale). */
   remoteEnabled: boolean
   remotePort: number
@@ -362,6 +380,7 @@ export interface AppSettings {
 export interface ToolStatus {
   ffmpeg: { ok: boolean; path: string; version?: string; error?: string }
   ffprobe: { ok: boolean; path: string; version?: string; error?: string }
+  piper: { ok: boolean; path: string; error?: string }
   whisperCpp: { ok: boolean; path: string; error?: string }
   whisperModel: { ok: boolean; path: string; error?: string }
   fasterWhisper: { ok: boolean; python: string; error?: string }

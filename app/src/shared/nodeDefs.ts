@@ -2,6 +2,7 @@
 // schema dei campi usato dal pannello proprietà.
 
 import type { NodeSettings, NodeType } from './types'
+import { PIPER_VOICES } from './voices'
 
 export type FieldVisibility = (s: NodeSettings) => boolean
 
@@ -225,6 +226,48 @@ export const NODE_DEFS: Record<NodeType, NodeDef> = {
       { kind: 'section', key: 's2', label: 'Intervalli manuali' },
       { kind: 'custom', key: 'protectedRanges', label: 'Da conservare sempre', editor: 'ranges' },
       { kind: 'custom', key: 'manualCuts', label: 'Da rimuovere manualmente', editor: 'ranges' }
+    ]
+  },
+  voiceover: {
+    type: 'voiceover',
+    name: 'Voce narrante',
+    description: 'Genera una voce parlata dal testo che scrivi (sintesi vocale locale con Piper) e la inserisce nel video. Può creare i sottotitoli dallo stesso testo.',
+    icon: 'Speech',
+    category: 'Audio',
+    hasInput: true,
+    hasOutput: true,
+    implemented: true,
+    requires: 'Piper e una voce: installali da Impostazioni → Voce narrante (gratis, funziona offline).',
+    defaults: {
+      script: '',
+      voice: 'it_IT-paola-medium',
+      speed: 1,
+      startAt: 0.5,
+      gap: 0.5,
+      volumeDb: 0,
+      original: 'duck',
+      subtitlesFromText: true
+    },
+    fields: [
+      {
+        kind: 'textarea', key: 'script', label: 'Testo da leggere', rows: 7,
+        placeholder: 'Ciao e benvenuti!\n0:20 Ora vediamo come si fa.',
+        help: 'Una frase per riga. Facoltativo: all\'inizio della riga il momento del video finale in cui farla partire (es. 1:05). Le righe senza tempo vengono lette una dopo l\'altra.'
+      },
+      { kind: 'select', key: 'voice', label: 'Voce', options: PIPER_VOICES.map((v) => ({ value: v.id, label: v.label })) },
+      { kind: 'slider', key: 'speed', label: 'Velocità', min: 0.7, max: 1.4, step: 0.05, unit: '×' },
+      { kind: 'slider', key: 'startAt', label: 'Inizio della prima frase', min: 0, max: 30, step: 0.5, unit: 's' },
+      { kind: 'slider', key: 'gap', label: 'Pausa tra le frasi', min: 0, max: 3, step: 0.1, unit: 's' },
+      { kind: 'slider', key: 'volumeDb', label: 'Volume voce', min: -12, max: 12, step: 0.5, unit: 'dB' },
+      {
+        kind: 'select', key: 'original', label: 'Audio originale del video',
+        options: [
+          { value: 'duck', label: 'Abbassalo mentre parla la voce' },
+          { value: 'keep', label: 'Mantienilo' },
+          { value: 'mute', label: 'Toglilo' }
+        ]
+      },
+      { kind: 'toggle', key: 'subtitlesFromText', label: 'Crea i sottotitoli da questo testo (al posto della trascrizione)' }
     ]
   },
   subtitles: {
@@ -623,8 +666,15 @@ export const NODE_DEFS: Record<NodeType, NodeDef> = {
   }
 }
 
-export const NODE_ORDER: NodeType[] = [
+/** Nodi del workflow predefinito, in ordine. */
+export const DEFAULT_CHAIN: NodeType[] = [
   'import', 'analyze', 'transcribe', 'silence', 'subtitles', 'texts',
+  'zoom', 'audio', 'music', 'transitions', 'endscreen', 'export'
+]
+
+/** Tutti i nodi disponibili (palette). */
+export const NODE_ORDER: NodeType[] = [
+  'import', 'analyze', 'transcribe', 'voiceover', 'silence', 'subtitles', 'texts',
   'zoom', 'audio', 'music', 'transitions', 'endscreen', 'export'
 ]
 

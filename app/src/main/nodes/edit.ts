@@ -74,7 +74,8 @@ export const silenceNode: NodeImpl = {
       minSilence: num(s.minSilence, 0.6),
       padding: num(s.padding, 0.12),
       minKeep: num(s.minKeep, 0.25),
-      protectedRanges: ranges(s.protectedRanges),
+      // Le parti con la voce narrante non vengono mai tagliate.
+      protectedRanges: [...ranges(s.protectedRanges), ...(tl.voiceover?.clips.map((c) => ({ start: c.start, end: c.start + c.duration })) ?? [])],
       manualCuts: ranges(s.manualCuts),
       disabledKeys: Array.isArray(s.disabledCuts) ? (s.disabledCuts as string[]) : [],
       words

@@ -19,6 +19,8 @@ export interface ProcOptions {
   /** Numero di righe finali di stderr da conservare per i messaggi d'errore. */
   keepStderrLines?: number
   env?: NodeJS.ProcessEnv
+  /** Testo da inviare sullo standard input (UTF-8). */
+  input?: string
 }
 
 export interface ProcResult {
@@ -34,8 +36,12 @@ export function runProcess(cmd: string, args: string[], o: ProcOptions = {}): Pr
       cwd: o.cwd,
       env: o.env ?? process.env,
       windowsHide: true,
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: [o.input !== undefined ? 'pipe' : 'ignore', 'pipe', 'pipe']
     })
+    if (o.input !== undefined && child.stdin) {
+      child.stdin.on('error', () => undefined)
+      child.stdin.end(o.input, 'utf8')
+    }
     let stdout = ''
     const errLines: string[] = []
     let errBuf = ''
@@ -47,7 +53,7 @@ export function runProcess(cmd: string, args: string[], o: ProcOptions = {}): Pr
     }
     o.signal?.addEventListener('abort', onAbort, { once: true })
 
-    child.stdout.on('data', (d: Buffer) => {
+    child.stdout!.on('data', (d: Buffer) => {
       if (o.onStdoutData) o.onStdoutData(d)
       else {
         const s = d.toString('utf8')
@@ -55,7 +61,7 @@ export function runProcess(cmd: string, args: string[], o: ProcOptions = {}): Pr
         o.onStdout?.(s)
       }
     })
-    child.stderr.on('data', (d: Buffer) => {
+    child.stderr!.on('data', (d: Buffer) => {
       const s = d.toString('utf8')
       o.onStderr?.(s)
       errBuf += s

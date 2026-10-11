@@ -23,6 +23,7 @@ export function settings(over: Partial<AppSettings> = {}): AppSettings {
     theme: 'dark',
     threads: 4,
     recentProjects: [],
+    piperPath: process.env.PIPER_PATH ?? '',
     remoteEnabled: false,
     remotePort: 7878,
     remoteTokens: [],
@@ -37,7 +38,8 @@ export async function makeEnv(over: Partial<AppSettings> = {}): Promise<EngineEn
     ffmpegMajor: v.major,
     encoders: await listEncoders(tools),
     settings: settings(over),
-    resourcesDir: path.join(ROOT, 'resources')
+    resourcesDir: path.join(ROOT, 'resources'),
+    dataDir: process.env.FLOWCUT_DATA ?? path.join(TEST_DIR, 'data')
   }
 }
 

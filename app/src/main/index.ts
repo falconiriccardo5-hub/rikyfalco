@@ -15,6 +15,9 @@ import { handleMediaProtocol, registerMediaScheme } from './protocol'
 import { JobManager } from './remote/jobs'
 import { RemoteServer } from './remote/server'
 import { Store } from './store'
+import { downloadVoice, installPiper } from './voice/install'
+import { voiceInstalled } from './voice/piper'
+import { PIPER_VOICES } from '../shared/voices'
 import { checkFasterWhisper, describeWhisperExit } from './transcribe/whisper'
 
 registerMediaScheme()
@@ -41,7 +44,7 @@ async function getEnv(): Promise<EngineEnv> {
   const key = `${tools.ffmpeg}|${tools.ffprobe}`
   if (!envCache || envCache.key !== key) {
     const v = await ffmpegVersion(tools)
-    envCache = { key, env: { tools, ffmpegMajor: v.major, encoders: await listEncoders(tools), settings, resourcesDir: resourcesDir() } }
+    envCache = { key, env: { tools, ffmpegMajor: v.major, encoders: await listEncoders(tools), settings, resourcesDir: resourcesDir(), dataDir: app.getPath('userData') } }
   }
   return { ...envCache.env, settings }
 }
@@ -125,6 +128,7 @@ async function checkTools(): Promise<ToolStatus> {
   const status: ToolStatus = {
     ffmpeg: { ok: false, path: tools.ffmpeg },
     ffprobe: { ok: false, path: tools.ffprobe },
+    piper: { ok: !!s.piperPath && fs.existsSync(s.piperPath), path: s.piperPath, error: s.piperPath ? (fs.existsSync(s.piperPath) ? undefined : 'File non trovato') : 'Non installato' },
     whisperCpp: { ok: false, path: s.whisperCliPath },
     whisperModel: { ok: false, path: s.whisperModelPath },
     fasterWhisper: { ok: false, python: s.pythonPath || (process.platform === 'win32' ? 'python' : 'python3') },
@@ -264,6 +268,36 @@ function registerIpc(): void {
     }
   })
   ipcMain.handle('models:cancel', () => downloadAc?.abort())
+
+  // Voce narrante (Piper)
+  ipcMain.handle('voices:list', () =>
+    PIPER_VOICES.map((v) => ({ ...v, downloaded: voiceInstalled(app.getPath('userData'), v.id) }))
+  )
+  const voiceTask = async (id: string, fn: (signal: AbortSignal) => Promise<void>): Promise<void> => {
+    if (downloadAc) throw new Error('Un download è già in corso.')
+    downloadAc = new AbortController()
+    try {
+      await fn(downloadAc.signal)
+      send({ kind: 'download-progress', id, received: 1, total: 1, done: true })
+    } catch (e) {
+      send({ kind: 'download-progress', id, received: 0, total: 0, error: (e as Error).message })
+      throw e
+    } finally {
+      downloadAc = null
+    }
+  }
+  ipcMain.handle('voices:download', (_e, id: string) =>
+    voiceTask(id, (signal) => downloadVoice(app.getPath('userData'), id, signal, (received, total) => send({ kind: 'download-progress', id, received, total })))
+  )
+  ipcMain.handle('piper:install', async () => {
+    let exe = ''
+    await voiceTask('piper', async (signal) => {
+      exe = await installPiper(app.getPath('userData'), signal, (received, total) => send({ kind: 'download-progress', id: 'piper', received, total }))
+    })
+    envCache = null
+    store.setSettings({ piperPath: exe })
+    return exe
+  })
 
   ipcMain.handle('shell:showItem', (_e, p: string) => shell.showItemInFolder(p))
   ipcMain.handle('shell:openPath', (_e, p: string) => shell.openPath(p))

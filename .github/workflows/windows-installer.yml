@@ -48,6 +48,8 @@ jobs:
           $s = Get-Content "$env:APPDATA\FlowCut\settings.json" -Raw | ConvertFrom-Json
           if (-not (Test-Path $s.whisperCliPath)) { throw 'whisper-cli mancante' }
           if (-not (Test-Path $s.whisperModelPath)) { throw 'modello mancante' }
+          if (-not (Test-Path $s.piperPath)) { throw 'Piper mancante' }
+          "PIPER_PATH=$($s.piperPath)" >> $env:GITHUB_ENV
           $exe = Get-ChildItem "$env:LOCALAPPDATA\Programs" -Recurse -Filter FlowCut.exe | Select-Object -First 1
           if (-not $exe) { throw 'FlowCut.exe non installato' }
           Write-Host "FlowCut: $($exe.FullName)"
@@ -62,6 +64,13 @@ jobs:
           $env:SPEECH_WAV = "$env:RUNNER_TEMP\jfk.wav"
           $env:REQUIRE_WHISPER = '1'
           npx vitest run tests/transcribe.test.ts
+      - name: Voce narrante reale su Windows
+        shell: pwsh
+        working-directory: app
+        run: |
+          $env:PIPER_VOICE_DIR = "$env:APPDATA\FlowCut\voices"
+          $env:REQUIRE_PIPER = '1'
+          npx vitest run tests/voiceover.test.ts
 
   # Il .bat scaricato da solo (senza il resto del progetto) deve scaricare il codice e installare.
   bat-autonomo:

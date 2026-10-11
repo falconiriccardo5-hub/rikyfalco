@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   theme: 'dark',
   threads: 4,
   recentProjects: [],
+  piperPath: '',
   remoteEnabled: false,
   remotePort: 7878,
   remoteTokens: []
