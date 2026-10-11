@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import { app, BrowserWindow, dialog, ipcMain, shell, type OpenDialogOptions } from 'electron'
 import type {
-  AppSettings, AudioPreviewRequest, EngineEvent, PreviewRequest, ProjectDoc, RunRequest, ToolStatus, Workflow
+  AppSettings, AudioPreviewRequest, EngineEvent, RemoteStatus, PreviewRequest, ProjectDoc, RunRequest, ToolStatus, Workflow
 } from '../shared/types'
 import { Engine } from './engine/executor'
 import type { EngineEnv } from './engine/context'
@@ -12,6 +12,8 @@ import { runProcess } from './ffmpeg/run'
 import { encoderWorks, ffmpegVersion, listEncoders, resolveTools } from './ffmpeg/tools'
 import { downloadModel, listDownloadedModels, WHISPER_MODELS } from './models'
 import { handleMediaProtocol, registerMediaScheme } from './protocol'
+import { JobManager } from './remote/jobs'
+import { RemoteServer } from './remote/server'
 import { Store } from './store'
 import { checkFasterWhisper } from './transcribe/whisper'
 
@@ -28,6 +30,7 @@ function resourcesDir(): string {
 }
 
 function send(e: EngineEvent): void {
+  jobs?.onEngineEvent(e)
   if (win && !win.isDestroyed()) win.webContents.send('engine:event', e)
 }
 
@@ -44,6 +47,47 @@ async function getEnv(): Promise<EngineEnv> {
 }
 
 const engine = new Engine(getEnv, send)
+
+// ------------------------------------------------------------ accesso dal telefono
+let jobs: JobManager | null = null
+let remote: RemoteServer | null = null
+
+function mobileDir(): string {
+  return app.isPackaged ? path.join(process.resourcesPath, 'mobile') : path.join(app.getAppPath(), 'out', 'mobile')
+}
+
+function remoteLog(msg: string): void {
+  send({ kind: 'log', entry: { time: Date.now(), level: 'info', message: `Telefono: ${msg}` } })
+}
+
+function ensureRemote(): RemoteServer {
+  if (!jobs) jobs = new JobManager({ engine, store, getEnv, root: path.join(app.getPath('documents'), 'FlowCut', 'Telefono'), log: remoteLog })
+  if (!remote) {
+    remote = new RemoteServer({
+      staticDir: mobileDir(),
+      jobs,
+      getSettings: () => store.getSettings(),
+      setSettings: (p) => store.setSettings(p),
+      listTemplates: () => store.listTemplates(),
+      appVersion: app.getVersion(),
+      log: remoteLog
+    })
+  }
+  return remote
+}
+
+async function applyRemote(): Promise<RemoteStatus> {
+  const s = store.getSettings()
+  const r = ensureRemote()
+  if (s.remoteEnabled) {
+    try {
+      if (!r.status().running || r.port !== s.remotePort) await r.start(s.remotePort)
+    } catch {
+      /* errore riportato nello stato */
+    }
+  } else await r.stop()
+  return r.status()
+}
 
 function createWindow(): void {
   const dark = store.getSettings().theme !== 'light'
@@ -227,6 +271,22 @@ function registerIpc(): void {
     if (/^https:\/\//.test(url)) return shell.openExternal(url)
     return undefined
   })
+  ipcMain.handle('remote:status', () => ensureRemote().status())
+  ipcMain.handle('remote:set', async (_e, patch: { enabled?: boolean; port?: number }) => {
+    const p: Partial<AppSettings> = {}
+    if (typeof patch.enabled === 'boolean') p.remoteEnabled = patch.enabled
+    if (typeof patch.port === 'number' && patch.port >= 1024 && patch.port <= 65535) p.remotePort = patch.port
+    store.setSettings(p)
+    return applyRemote()
+  })
+  ipcMain.handle('remote:newCode', () => {
+    ensureRemote().newCode()
+    return ensureRemote().status()
+  })
+  ipcMain.handle('remote:revoke', () => {
+    store.setSettings({ remoteTokens: [] })
+    return ensureRemote().status()
+  })
   ipcMain.handle('window:theme', (_e, dark: boolean) => {
     if (win && process.platform !== 'darwin') {
       try {
@@ -242,6 +302,7 @@ function registerIpc(): void {
 app.whenReady().then(() => {
   handleMediaProtocol()
   registerIpc()
+  void applyRemote()
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -250,5 +311,6 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   engine.cancel()
+  void remote?.stop()
   if (process.platform !== 'darwin') app.quit()
 })

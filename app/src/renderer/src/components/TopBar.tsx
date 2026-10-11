@@ -1,9 +1,13 @@
+import { useState } from 'react'
+import { Smartphone } from 'lucide-react'
+import { PhoneDialog } from './PhoneDialog'
 import { Check, Cloud, Download, FolderOpen, Moon, Play, Redo2, Settings, Square, Sun, Undo2, Workflow as WfIcon } from 'lucide-react'
 import { useHashes } from '../store/hooks'
 import { cancelRun, closeProject, openSettings, redo, runNodes, undo, updateSettings, useStore } from '../store/store'
 import { clsx, displayStatus } from '../lib/util'
 
 export function TopBar(): React.JSX.Element {
+  const [phone, setPhone] = useState(false)
   const project = useStore((s) => s.project)
   const running = useStore((s) => s.running)
   const canUndo = useStore((s) => s.past.length > 0)
@@ -83,6 +87,10 @@ export function TopBar(): React.JSX.Element {
       >
         {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
       </button>
+      <button className="btn ghost icon sm" onClick={() => setPhone(true)} title="Usa FlowCut dall'iPhone">
+        <Smartphone size={15} />
+      </button>
+      {phone && <PhoneDialog onClose={() => setPhone(false)} />}
       <button className="btn ghost icon sm" onClick={() => openSettings(true)} title="Impostazioni e strumenti">
         <Settings size={15} />
       </button>

@@ -36,6 +36,10 @@ const api = {
   showItem: (p: string) => invoke('shell:showItem', p),
   openPath: (p: string) => invoke('shell:openPath', p),
   openExternal: (url: string) => invoke('shell:openExternal', url),
+  remoteStatus: () => invoke('remote:status'),
+  remoteSet: (patch: unknown) => invoke('remote:set', patch),
+  remoteNewCode: () => invoke('remote:newCode'),
+  remoteRevoke: () => invoke('remote:revoke'),
   setWindowTheme: (dark: boolean) => invoke('window:theme', dark),
   pathForFile: (f: File) => webUtils.getPathForFile(f),
   onEvent: (cb: (e: EngineEvent) => void) => {

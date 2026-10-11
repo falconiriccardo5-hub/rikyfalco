@@ -1,6 +1,6 @@
 import type {
   AppSettings, AudioPreviewRequest, EngineEvent, MediaItem, OpenProjectResult, PreviewRequest, ProjectDoc,
-  RunRequest, Timeline, ToolStatus, Workflow, WorkflowTemplate
+  RemoteStatus, RunRequest, Timeline, ToolStatus, Workflow, WorkflowTemplate
 } from '../shared/types'
 
 export interface FileFilter {
@@ -47,6 +47,10 @@ export interface Api {
   showItem(p: string): Promise<void>
   openPath(p: string): Promise<string>
   openExternal(url: string): Promise<void>
+  remoteStatus(): Promise<RemoteStatus>
+  remoteSet(patch: { enabled?: boolean; port?: number }): Promise<RemoteStatus>
+  remoteNewCode(): Promise<RemoteStatus>
+  remoteRevoke(): Promise<RemoteStatus>
   setWindowTheme(dark: boolean): Promise<void>
   pathForFile(f: File): string
   onEvent(cb: (e: EngineEvent) => void): () => void

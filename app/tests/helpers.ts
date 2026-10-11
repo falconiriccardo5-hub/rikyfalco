@@ -23,6 +23,9 @@ export function settings(over: Partial<AppSettings> = {}): AppSettings {
     theme: 'dark',
     threads: 4,
     recentProjects: [],
+    remoteEnabled: false,
+    remotePort: 7878,
+    remoteTokens: [],
     ...over
   }
 }

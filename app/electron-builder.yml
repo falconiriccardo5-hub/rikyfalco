@@ -21,6 +21,8 @@ extraResources:
     to: fonts
   - from: resources/python
     to: python
+  - from: out/mobile
+    to: mobile
 # I binari di FFmpeg devono stare fuori dall'archivio asar per poter essere eseguiti.
 asarUnpack:
   - node_modules/ffmpeg-static/**

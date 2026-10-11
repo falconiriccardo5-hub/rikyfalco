@@ -19,7 +19,10 @@ const DEFAULT_SETTINGS: AppSettings = {
   defaultLanguage: 'it',
   theme: 'dark',
   threads: 4,
-  recentProjects: []
+  recentProjects: [],
+  remoteEnabled: false,
+  remotePort: 7878,
+  remoteTokens: []
 }
 
 /** Legge un file JSON ignorando l'eventuale BOM (file salvati da PowerShell o Blocco note). */

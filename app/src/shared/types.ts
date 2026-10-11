@@ -352,6 +352,11 @@ export interface AppSettings {
   theme: 'dark' | 'light' | 'system'
   threads: number
   recentProjects: string[]
+  /** Accesso dal telefono (server sulla rete locale). */
+  remoteEnabled: boolean
+  remotePort: number
+  /** Token dei dispositivi abbinati. */
+  remoteTokens: string[]
 }
 
 export interface ToolStatus {
@@ -375,4 +380,53 @@ export interface OpenProjectResult {
   dir: string
   project: ProjectDoc
   runtimes: NodeRuntime[]
+}
+
+// ---------------------------------------------------------------- accesso dal telefono
+
+export interface RemoteStatus {
+  enabled: boolean
+  running: boolean
+  port: number
+  urls: string[]
+  pairingCode: string
+  devices: number
+  error?: string
+}
+
+export type JobStatus = 'uploaded' | 'queued' | 'running' | 'done' | 'error' | 'cancelled'
+
+export interface JobNodeState {
+  id: string
+  type: NodeType
+  label: string
+  status: NodeStatus
+  progress?: number
+  message?: string
+  error?: string
+  summary?: string
+}
+
+export interface JobOptions {
+  /** Id del modello di workflow ('' = workflow predefinito). */
+  templateId: string
+  language: string
+  /** Risoluzione di esportazione ('' = quella del modello). */
+  resolution: string
+  title: string
+}
+
+export interface RemoteJob {
+  id: string
+  name: string
+  status: JobStatus
+  createdAt: number
+  finishedAt?: number
+  options: JobOptions
+  nodes: JobNodeState[]
+  warnings: string[]
+  error?: string
+  resultName?: string
+  resultSize?: number
+  resultDuration?: number
 }

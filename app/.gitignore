@@ -5,3 +5,5 @@ dist
 .test-work
 e2e-shots*
 *.tsbuildinfo
+src/mobile/public/vendor
+src/mobile/public/fonts

@@ -7,11 +7,27 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "composite": true,
     "noEmit": true,
     "baseUrl": ".",
-    "paths": { "@shared/*": ["src/shared/*"], "@/*": ["src/renderer/src/*"] }
+    "paths": {
+      "@shared/*": [
+        "src/shared/*"
+      ],
+      "@/*": [
+        "src/renderer/src/*"
+      ]
+    }
   },
-  "include": ["src/renderer/src/**/*", "src/shared/**/*", "src/preload/index.d.ts"]
+  "include": [
+    "src/renderer/src/**/*",
+    "src/shared/**/*",
+    "src/preload/index.d.ts",
+    "src/mobile/**/*"
+  ]
 }
