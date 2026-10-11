@@ -175,9 +175,12 @@ try {
       else { Ok 'Librerie Visual C++ installate' }
     }
     # Verifica che whisper-cli parta davvero.
-    $prova = & $cli --help 2>&1 | Out-String
-    if ($LASTEXITCODE -ne 0 -and $prova -notmatch 'usage|options') {
-      Avviso "whisper-cli non si avvia (codice $LASTEXITCODE). Riavvia il PC e rilancia lo script; se persiste usa il motore faster-whisper."
+    # whisper scrive i messaggi su stderr: in PowerShell 5 non devono interrompere lo script.
+    $eapOld = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try { $prova = (& $cli --help 2>&1 | Out-String); $codice = $LASTEXITCODE } finally { $ErrorActionPreference = $eapOld }
+    if ($codice -ne 0 -and $prova -notmatch 'usage|options') {
+      Avviso "whisper-cli non si avvia (codice $codice). Riavvia il PC e rilancia lo script; se persiste usa il motore faster-whisper."
     } else { Ok 'whisper-cli funzionante' }
 
     Titolo '4/6  Modello Whisper'
