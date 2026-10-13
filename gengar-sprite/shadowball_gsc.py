@@ -36,17 +36,14 @@ def puff(stage):
   return px
 # ---- timeline (game frames @60fps) ----
 LEAD=40
-x,y,var=104.0,40.0,0   # start: in front of Gengar (mirror of player-side 64,92)
-ball=[]
-for f in range(64):
-  if x<=40: break
-  yo=8*math.sin(var/64*2*math.pi); xo=int(math.cos(var/64*2*math.pi)*16)>>4 if False else round(math.cos(var/64*2*math.pi))
-  ball.append((LEAD+f,round(x-xo),round(y+yo)))
-  x-=2; y+=1; var=(var+4)%64
 TARGET=(40,72)
-POOF_START=LEAD+32
+ball=[]
+for f in range(33):   # 32 game frames of flight; frame 32 lands exactly on the smoke centre
+  xo=round(math.cos(math.pi*f/8)); yo=8*math.sin(math.pi*f/8)
+  ball.append((LEAD+f,*(TARGET if f==32 else (104-2*f-xo, round(40+f+yo)))))
+POOF_START=LEAD+33    # smoke 1 appears the frame after the ball lands
 poof=[(POOF_START+i*3,i) for i in range(4)]
-INV=(LEAD,LEAD+32+24)
+INV=(LEAD,POOF_START+24)
 TOTAL=INV[1]+36
 def scene(f):
   inv=INV[0]<=f<INV[1]
@@ -69,7 +66,7 @@ def scene(f):
       for xx in range(GB_W):
         r,g,b=p[xx,yy]; p[xx,yy]=(255-r,255-g,255-b)
   cur=[b for b in ball if b[0]<=f]
-  if cur and f<ball[-1][0]+2:
+  if cur and f<=ball[-1][0]:
     _,bx,by=cur[-1]
     for (dx,dy),c in BALLPX.items(): 
       if 0<=bx+dx<GB_W and 0<=by+dy<GB_H: p[bx+dx,by+dy]=BALL[c]
