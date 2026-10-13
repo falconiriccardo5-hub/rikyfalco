@@ -33,9 +33,16 @@ In Figma:
 
 `build.py` rigenera GIF, sprite sheet e `gengar.json` (pixel run per layer/colore) da `grid.txt`.
 
-## Palla Ombra (Shadow Ball)
+## Palla Ombra (Shadow Ball) — fedele a Oro/Argento/Cristallo
 ![shadow ball](gengar_shadowball.gif)
 
-Component set `Gengar / Shadow Ball` (10 frame, After delay + Instant) + `▶ Shadow Ball Preview`.
-01 idle · 02–06 carica: la sfera nasce vicino alla mano destra e cresce (r 1→7px) con scintille orbitanti, il corpo si abbassa e le braccia si alzano · 07–09 lancio verso destra con scia · 10 recupero.
-Colori della sfera nelle variabili `shadow-ball/*`. `shadowball.py` rigenera GIF, sprite sheet e dati.
+Ricostruita dal disassembly ufficiale [pret/pokecrystal](https://github.com/pret/pokecrystal) (`BattleAnim_ShadowBall`):
+1. `anim_bgp $1b` → tutto il layer BG (sfondo, box, Gengar) va in **negativo**;
+2. `BATTLE_ANIM_OBJ_SHADOW_BALL`: palla 16×16, palette OB **BLUE**, `BattleAnimFunc_MoveWaveToTarget`
+   (2px in orizzontale e 1px in verticale per frame + onda sinusoidale) dall'attaccante al bersaglio;
+3. `anim_wait 32` → `BALL_POOF`: nuvola di fumo grigio sul bersaglio, 4 frame × 3 tick;
+4. `anim_wait 24` → palette ripristinata. Tutto a 60 fps (2,2 s col margine).
+
+Gengar è il Pokémon avversario (in alto a destra), quindi la traiettoria è specchiata verso il basso-sinistra.
+In Figma: frame `🎬 Palla Ombra — Oro/Argento/Cristallo (timeline)` con keyframe Motion HOLD; il negativo è un
+rettangolo bianco in blend *Difference*. `shadowball_gsc.py` rigenera GIF, sprite sheet e dati.
