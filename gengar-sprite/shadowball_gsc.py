@@ -4,9 +4,11 @@ palette OB BLUE, BattleAnimFunc_MoveWaveToTarget: x+=2, y-=1 a frame + onda sinu
 anim_wait 32, BALL_POOF (fumo grigio, 4 frame x 3 tick) sul bersaglio, anim_wait 24, ripristino palette.
 Qui Gengar e' il Pokemon avversario (in alto a destra), quindi la traiettoria e' specchiata verso il basso-sinistra."""
 import json, math
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
+import os
 D=json.load(open('gengar.json'))
 GB_W,GB_H=160,144
+FONT=ImageFont.truetype(os.path.join(os.path.dirname(os.path.abspath(__file__)),'PressStart2P-Regular.ttf'),8)
 FPS=60
 PAL={k:tuple(round(x*255) for x in v) for k,v in D['pal'].items()}
 BALL={'1':(248,248,248),'2':(136,184,248),'3':(40,72,216),'4':(0,0,0)}
@@ -48,15 +50,18 @@ TOTAL=INV[1]+36
 def scene(f):
   inv=INV[0]<=f<INV[1]
   img=Image.new('RGB',(GB_W,GB_H),(248,248,248)); p=img.load()
-  # HP boxes (BG layer)
-  for xx in range(8,80): p[xx,15]=(0,0,0)
-  for yy in range(9,16): p[8,yy]=(0,0,0)
-  for xx in range(20,70): p[xx,12]=(0,168,0); p[xx,13]=(0,168,0)
-  for xx in range(88,152): p[xx,87]=(0,0,0)
-  for yy in range(80,88): p[151,yy]=(0,0,0)
-  for yy in range(96,144):
-    for xx in range(0,160):
-      if yy in (96,97,142,143) or xx in (0,1,158,159): p[xx,yy]=(0,0,0)
+  # HUD (BG layer): name, HP label + bar, text box with message
+  dr=ImageDraw.Draw(img); dr.fontmode="1"
+  K=(0,0,0)
+  dr.text((8,1),"GENGAR",font=FONT,fill=K)
+  dr.text((8,10),"HP",font=FONT,fill=K)
+  dr.rectangle([28,10,77,16],outline=K)            # bar frame
+  dr.rectangle([29,11,76,15],fill=(0,168,0))       # full HP
+  dr.line([(4,20),(84,20)],fill=K); dr.line([(4,14),(4,20)],fill=K)   # enemy box bracket
+  dr.line([(88,87),(152,87)],fill=K); dr.line([(151,80),(151,87)],fill=K)  # player box bracket
+  dr.rectangle([0,96,159,143],fill=(248,248,248),outline=K,width=2)   # text box
+  dr.text((8,106),"GENGAR nemico",font=FONT,fill=K)
+  dr.text((8,122),"usa PALLA OMBRA!",font=FONT,fill=K)
   for part in D['order']:
     for ch,runs in D['parts'][part].items():
       for c,r,l in runs:
