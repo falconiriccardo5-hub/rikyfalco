@@ -32,3 +32,10 @@ In Figma:
 - **🎬 Idle Motion (timeline)**: keyframe Motion `TRANSLATION_Y`/`OPACITY` con easing `HOLD` (2.22s), esportabile in MP4.
 
 `build.py` rigenera GIF, sprite sheet e `gengar.json` (pixel run per layer/colore) da `grid.txt`.
+
+## Palla Ombra (Shadow Ball)
+![shadow ball](gengar_shadowball.gif)
+
+Component set `Gengar / Shadow Ball` (10 frame, After delay + Instant) + `▶ Shadow Ball Preview`.
+01 idle · 02–06 carica: la sfera nasce vicino alla mano destra e cresce (r 1→7px) con scintille orbitanti, il corpo si abbassa e le braccia si alzano · 07–09 lancio verso destra con scia · 10 recupero.
+Colori della sfera nelle variabili `shadow-ball/*`. `shadowball.py` rigenera GIF, sprite sheet e dati.
