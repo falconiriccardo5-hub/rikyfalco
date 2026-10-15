@@ -55,8 +55,8 @@ export const shake = (t: number, t0: number, amp = 14, dur = 0.35) => {
 };
 
 /** Apertura bocca (0..0.9) di Riky legata all'inviluppo della voce: lip-sync semplice ma credibile. */
-export const useTalk = () => {
+export const useTalk = (env: number[] = voiceEnv as number[]) => {
   const f = useCurrentFrame();
-  const v = (voiceEnv as number[])[f] ?? 0;
+  const v = env[f] ?? 0;
   return Math.min(0.9, v * 0.95);
 };

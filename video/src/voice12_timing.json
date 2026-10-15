@@ -1,0 +1,268 @@
+[
+ {
+  "slot": "b01",
+  "id": "d01",
+  "text": "Spinte con i manubri.",
+  "t0": 0.25,
+  "t1": 1.55,
+  "audio_start": 0.25,
+  "audio_end": 2.538,
+  "words": [
+   0.25,
+   0.79,
+   1.05,
+   1.13
+  ],
+  "speed": 1.1
+ },
+ {
+  "slot": "b02",
+  "id": "b02",
+  "text": "Questi tre errori ti rovinano le spalle.",
+  "t0": 1.83,
+  "t1": 3.85,
+  "audio_start": 1.83,
+  "audio_end": 4.708,
+  "words": [
+   1.83,
+   2.15,
+   2.27,
+   2.73,
+   2.95,
+   3.35,
+   3.47
+  ],
+  "speed": 1.15
+ },
+ {
+  "slot": "b03",
+  "id": "d03",
+  "text": "Sdraiati sulla panca, manubri sopra il petto, spalle indietro e in basso.",
+  "t0": 4.35,
+  "t1": 8.23,
+  "audio_start": 4.35,
+  "audio_end": 8.457,
+  "words": [
+   4.35,
+   4.85,
+   5.01,
+   5.79,
+   6.19,
+   6.39,
+   6.47,
+   6.99,
+   7.23,
+   7.67,
+   7.81,
+   7.87
+  ],
+  "speed": 1.3
+ },
+ {
+  "slot": "b04",
+  "id": "b04",
+  "text": "Errore numero uno: gomiti troppo aperti.",
+  "t0": 8.73,
+  "t1": 11.25,
+  "audio_start": 8.73,
+  "audio_end": 12.18,
+  "words": [
+   8.73,
+   9.27,
+   9.59,
+   10.25,
+   10.59,
+   10.85
+  ],
+  "speed": 1.2
+ },
+ {
+  "slot": "b05",
+  "id": "b05",
+  "text": "A novanta gradi stressi le spalle.",
+  "t0": 11.53,
+  "t1": 13.23,
+  "audio_start": 11.53,
+  "audio_end": 13.319,
+  "words": [
+   11.53,
+   11.61,
+   11.93,
+   12.31,
+   12.75,
+   12.81
+  ],
+  "speed": 1.2
+ },
+ {
+  "slot": "b06",
+  "id": "d06",
+  "text": "Tienili a quarantacinque, sessanta gradi dal busto.",
+  "t0": 13.726,
+  "t1": 16.614,
+  "audio_start": 13.66,
+  "audio_end": 17.114,
+  "words": [
+   13.726,
+   14.185,
+   14.32,
+   15.156,
+   15.669,
+   16.02,
+   16.263
+  ],
+  "speed": 1.3
+ },
+ {
+  "slot": "b07",
+  "id": "b07",
+  "text": "Errore numero due: schiena piatta.",
+  "t0": 17.11,
+  "t1": 19.01,
+  "audio_start": 17.11,
+  "audio_end": 19.138,
+  "words": [
+   17.11,
+   17.57,
+   17.73,
+   18.37,
+   18.69
+  ],
+  "speed": 1.1
+ },
+ {
+  "slot": "b08",
+  "id": "c08",
+  "text": "Porta le scapole indietro e in basso, e crea un leggero arco.",
+  "t0": 19.51,
+  "t1": 22.41,
+  "audio_start": 19.51,
+  "audio_end": 22.441,
+  "words": [
+   19.51,
+   19.81,
+   19.87,
+   20.21,
+   20.65,
+   20.81,
+   20.87,
+   21.41,
+   21.49,
+   21.71,
+   21.77,
+   22.13
+  ],
+  "speed": 1.3
+ },
+ {
+  "slot": "b09",
+  "id": "b09",
+  "text": "Errore numero tre: lasci cadere il peso.",
+  "t0": 22.91,
+  "t1": 25.11,
+  "audio_start": 22.91,
+  "audio_end": 26.384,
+  "words": [
+   22.91,
+   23.33,
+   23.51,
+   24.23,
+   24.41,
+   24.79,
+   24.87
+  ],
+  "speed": 1.2
+ },
+ {
+  "slot": "b10",
+  "id": "b10",
+  "text": "Scendi in tre secondi, poi spingi.",
+  "t0": 25.61,
+  "t1": 29.02,
+  "audio_start": 25.61,
+  "audio_end": 30.1,
+  "words": [
+   25.61,
+   26.01,
+   26.11,
+   26.23,
+   28.3,
+   28.44
+  ],
+  "speed": 1.0
+ },
+ {
+  "slot": "b11",
+  "id": "d11",
+  "text": "Gomiti a sessanta gradi, scapole ferme, discesa controllata.",
+  "t0": 29.474,
+  "t1": 32.77,
+  "audio_start": 29.41,
+  "audio_end": 32.846,
+  "words": [
+   29.474,
+   29.873,
+   30.006,
+   30.511,
+   30.856,
+   31.308,
+   31.654,
+   32.106
+  ],
+  "speed": 1.35
+ },
+ {
+  "slot": "b12",
+  "id": "b12",
+  "text": "Così le spalle ringraziano.",
+  "t0": 33.05,
+  "t1": 34.51,
+  "audio_start": 33.05,
+  "audio_end": 34.673,
+  "words": [
+   33.05,
+   33.31,
+   33.37,
+   33.77
+  ],
+  "speed": 1.1
+ },
+ {
+  "slot": "b13",
+  "id": "c13",
+  "text": "Salva il video e mandalo al tuo compagno di allenamento.",
+  "t0": 35.01,
+  "t1": 37.49,
+  "audio_start": 35.01,
+  "audio_end": 37.631,
+  "words": [
+   35.01,
+   35.33,
+   35.43,
+   35.69,
+   36.09,
+   36.47,
+   36.53,
+   36.61,
+   37.01,
+   37.09
+  ],
+  "speed": 1.25
+ },
+ {
+  "slot": "b14",
+  "id": "b14",
+  "text": "Seguimi per altri consigli.",
+  "t0": 37.77,
+  "t1": 39.05,
+  "audio_start": 37.77,
+  "audio_end": 39.078,
+  "words": [
+   37.77,
+   38.13,
+   38.29,
+   38.41
+  ],
+  "speed": 1.1
+ }
+]

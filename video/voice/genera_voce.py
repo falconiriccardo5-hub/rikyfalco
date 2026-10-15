@@ -11,9 +11,12 @@ PHRASES = json.load(open(sys.argv[2] if len(sys.argv) > 2 else "/home/user/rikyf
 
 m = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
 asr = WhisperModel("small", device="cpu", compute_type="int8")
-norm = lambda s: re.sub(r"[^a-zà-ù0-9 ]", "", s.lower()).strip()
+_NUM = {"90": "novanta", "45": "quarantacinque", "60": "sessanta", "3": "tre", "1": "uno", "2": "due", "4": "quattro", "8": "otto", "12": "dodici"}
+def fixnum(x):
+    return re.sub(r"\d+", lambda m: _NUM.get(m.group(), m.group()), x.replace("-", " "))
+norm = lambda s: re.sub(r"[^a-zà-ù0-9 ]", "", fixnum(s).lower()).strip()
 
-def trim(w, sr, thr_db=-42, pad=0.03):
+def trim(w, sr, thr_db=-54, pad=0.07):
     x = w.squeeze(0).numpy()
     win = int(0.01 * sr)
     n = len(x) // win
@@ -48,7 +51,8 @@ for p in PHRASES:
         print(f'{p["id"]} cand{k} {dur:.2f}s sim={sim:.2f} gen={time.time()-t:.0f}s | {heard!r}', flush=True)
         sp = spk(w)
         print(f'      spk={sp:.3f}', flush=True)
-        score = (1.0 if sim >= 0.95 else sim) + sp
+        score = (2.0 if sim >= 0.995 else sim) + sp
+        ta.save(f'{OUT}/{p["id"]}_k{k}.wav', w, m.sr)
         if best is None or score > best[0]:
             best = (score, w, heard, sim, dur, sp)
     ta.save(f'{OUT}/{p["id"]}.wav', best[1], m.sr)

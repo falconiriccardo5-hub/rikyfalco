@@ -1,0 +1,30 @@
+[
+ {
+  "n": 600,
+  "id": "d01",
+  "text": "Spinte con i manubri.",
+  "cfg": 0.4,
+  "exag": 0.5
+ },
+ {
+  "n": 601,
+  "id": "d03",
+  "text": "Sdraiati sulla panca, manubri sopra il petto, spalle indietro e in basso.",
+  "cfg": 0.4,
+  "exag": 0.5
+ },
+ {
+  "n": 602,
+  "id": "d06",
+  "text": "Tienili a quarantacinque, sessanta gradi dal busto.",
+  "cfg": 0.4,
+  "exag": 0.5
+ },
+ {
+  "n": 603,
+  "id": "d11",
+  "text": "Gomiti a sessanta gradi, scapole ferme, discesa controllata.",
+  "cfg": 0.4,
+  "exag": 0.5
+ }
+]

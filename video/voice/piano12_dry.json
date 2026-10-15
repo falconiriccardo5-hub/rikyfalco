@@ -1,0 +1,104 @@
+[
+ {
+  "slot": "b01",
+  "id": "d01",
+  "text": "Spinte con i manubri.",
+  "at": 0.0,
+  "speed": 1.1
+ },
+ {
+  "slot": "b02",
+  "id": "b02",
+  "text": "Questi tre errori ti rovinano le spalle.",
+  "at": 8.0,
+  "speed": 1.15
+ },
+ {
+  "slot": "b03",
+  "id": "d03",
+  "text": "Sdraiati sulla panca, manubri sopra il petto, spalle indietro e in basso.",
+  "at": 16.0,
+  "speed": 1.3
+ },
+ {
+  "slot": "b04",
+  "id": "b04",
+  "text": "Errore numero uno: gomiti troppo aperti.",
+  "at": 24.0,
+  "speed": 1.2
+ },
+ {
+  "slot": "b05",
+  "id": "b05",
+  "text": "A novanta gradi stressi le spalle.",
+  "at": 32.0,
+  "speed": 1.2
+ },
+ {
+  "slot": "b06",
+  "id": "d06",
+  "text": "Tienili a quarantacinque, sessanta gradi dal busto.",
+  "at": 40.0,
+  "speed": 1.3
+ },
+ {
+  "slot": "b07",
+  "id": "b07",
+  "text": "Errore numero due: schiena piatta.",
+  "at": 48.0,
+  "speed": 1.1
+ },
+ {
+  "slot": "b08",
+  "id": "c08",
+  "text": "Porta le scapole indietro e in basso, e crea un leggero arco.",
+  "at": 56.0,
+  "speed": 1.3
+ },
+ {
+  "slot": "b09",
+  "id": "b09",
+  "text": "Errore numero tre: lasci cadere il peso.",
+  "at": 64.0,
+  "speed": 1.2
+ },
+ {
+  "slot": "b10",
+  "id": "b10",
+  "text": "Scendi in tre secondi, poi spingi.",
+  "at": 72.0,
+  "speed": 1.0,
+  "pause": [
+   3,
+   1.35
+  ]
+ },
+ {
+  "slot": "b11",
+  "id": "d11",
+  "text": "Gomiti a sessanta gradi, scapole ferme, discesa controllata.",
+  "at": 80.0,
+  "speed": 1.35
+ },
+ {
+  "slot": "b12",
+  "id": "b12",
+  "text": "Così le spalle ringraziano.",
+  "at": 88.0,
+  "speed": 1.1
+ },
+ {
+  "slot": "b13",
+  "id": "c13",
+  "text": "Salva il video e mandalo al tuo compagno di allenamento.",
+  "at": 96.0,
+  "speed": 1.25
+ },
+ {
+  "slot": "b14",
+  "id": "b14",
+  "text": "Seguimi per altri consigli.",
+  "at": 104.0,
+  "speed": 1.1
+ }
+]

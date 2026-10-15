@@ -1,0 +1,44 @@
+[
+ {
+  "n": 500,
+  "id": "c01",
+  "text": "Spinte con i manubri.",
+  "cfg": 0.4,
+  "exag": 0.5
+ },
+ {
+  "n": 501,
+  "id": "c03",
+  "text": "Sdraiati sulla panca, manubri sopra il petto, spalle indietro e in basso.",
+  "cfg": 0.4,
+  "exag": 0.5
+ },
+ {
+  "n": 502,
+  "id": "c06",
+  "text": "Tienili a quarantacinque, sessanta gradi dal busto.",
+  "cfg": 0.4,
+  "exag": 0.5
+ },
+ {
+  "n": 503,
+  "id": "c08",
+  "text": "Porta le scapole indietro e in basso, e crea un leggero arco.",
+  "cfg": 0.4,
+  "exag": 0.5
+ },
+ {
+  "n": 504,
+  "id": "c11",
+  "text": "Gomiti a sessanta gradi, scapole ferme, discesa controllata.",
+  "cfg": 0.4,
+  "exag": 0.5
+ },
+ {
+  "n": 505,
+  "id": "c13",
+  "text": "Salva il video e mandalo al tuo compagno di allenamento.",
+  "cfg": 0.4,
+  "exag": 0.5
+ }
+]

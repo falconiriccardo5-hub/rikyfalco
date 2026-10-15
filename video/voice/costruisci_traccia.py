@@ -13,10 +13,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FRASI = os.path.join(HERE, "frasi")
 ROOT = os.path.join(HERE, "..")
 SR = 44100
-TOTAL = int(46 * SR)
+TOTAL = int(130 * SR)  # buffer ampio: le prove a secco distanziano molto le frasi
+KEEP = int(46 * SR)
 
 # id: (modo, valore, parola, fine_max)   modo "start": inizio frase a t · modo "word": parola #idx inizia a t
-PLAN = json.load(open(os.path.join(HERE, "piano.json")))
+# uso: costruisci_traccia.py [piano.json] [voce.wav] [timing.json] [env.json]
+_A = sys.argv[1:]
+PLAN = json.load(open(os.path.join(HERE, _A[0] if len(_A) > 0 else "piano.json")))
+OUT_WAV = _A[1] if len(_A) > 1 else "voce.wav"
+OUT_TIMING = _A[2] if len(_A) > 2 else "voice_timing.json"
+OUT_ENV = _A[3] if len(_A) > 3 else "voice_env.json"
 
 asr = WhisperModel("small", device="cpu", compute_type="int8")
 norm = lambda s: re.sub(r"[^a-zà-ù0-9 ]", "", s.lower()).strip()
@@ -63,6 +69,12 @@ for item in PLAN:
         pass
     x = tempo(x, f)
     ws, we = word_times(x, item["text"])
+    if "pause" in item:  # [indice parola dopo cui inserire il silenzio, secondi]
+        k, pz = item["pause"]
+        cut = int(((we[k] + ws[k + 1]) / 2) * SR)
+        x = np.concatenate([x[:cut], np.zeros(int(pz * SR), dtype=np.float32), x[cut:]])
+        ws = [w + (pz if i > k else 0) for i, w in enumerate(ws)]
+        we = [w + (pz if i > k else 0) for i, w in enumerate(we)]
     if "word" in item:
         t0 = item["at"] - ws[item["word"]]
     else:
@@ -83,12 +95,13 @@ for item in PLAN:
     print(f'{item["slot"]:6s} {item["id"]:5s} voce {t0 + ws[0]:6.2f} → {t0 + we[-1]:6.2f}  (speed {f}) | {item["text"]}')
 
 # livello: picco 0.9, poi lo mix finale normalizza
+track = track[:KEEP]
 track *= 0.92 / max(1e-6, np.abs(track).max())
-out = os.path.join(ROOT, "public", "voce.wav")
+out = os.path.join(ROOT, "public", OUT_WAV)
 with wave.open(out, "wb") as w:
     w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((np.clip(track, -1, 1) * 32767).astype("<i2").tobytes())
-json.dump(timing, open(os.path.join(ROOT, "src", "voice_timing.json"), "w"), ensure_ascii=False, indent=1)
+json.dump(timing, open(os.path.join(ROOT, "src", OUT_TIMING), "w"), ensure_ascii=False, indent=1)
 # inviluppo a 30 fps per il lip-sync di Riky (bocca che si apre con la voce)
 hop = SR // 30
 n = len(track) // hop
@@ -96,5 +109,5 @@ rms = np.array([np.sqrt((track[i * hop:(i + 1) * hop] ** 2).mean()) for i in ran
 rms = rms / max(1e-6, np.percentile(rms[rms > 0.01], 90))
 env = np.clip((rms - 0.12) * 1.6, 0, 1)
 env = np.maximum(env, np.concatenate([[0], env[:-1]]) * 0.55)  # piccola coda, bocca meno nervosa
-json.dump([round(float(v), 3) for v in env], open(os.path.join(ROOT, "src", "voice_env.json"), "w"))
+json.dump([round(float(v), 3) for v in env], open(os.path.join(ROOT, "src", OUT_ENV), "w"))
 print("scritto", out)

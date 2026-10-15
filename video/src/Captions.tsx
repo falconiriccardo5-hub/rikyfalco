@@ -41,6 +41,19 @@ const SmallCaption: React.FC<{l: CapLine}> = ({l}) => {
   const pIn = prog(t, l.t0, l.t0 + 0.22, E.back);
   const pOut = prog(t, l.t1 - 0.14, l.t1, E.in);
   const active = ts.reduce((a, w, i) => (t >= w ? i : a), -1);
+  const two = l.text.length > 38;
+  let split = ws.length;
+  if (two) {
+    // taglio bilanciato sui caratteri
+    const total = ws.join(' ').length;
+    let acc = 0;
+    split = ws.findIndex((w) => {
+      acc += w.length + 1;
+      return acc >= total / 2;
+    }) + 1;
+  }
+  const rows = two ? [ws.slice(0, split), ws.slice(split)] : [ws];
+  const fs = two ? 54 : 58;
   return (
     <div
       style={{
@@ -62,36 +75,42 @@ const SmallCaption: React.FC<{l: CapLine}> = ({l}) => {
           boxShadow: `9px 9px 0 ${C.ink}`,
           padding: '14px 30px 16px',
           display: 'flex',
-          gap: 16,
+          flexDirection: 'column',
+          gap: 6,
           alignItems: 'center',
           fontFamily: FONT,
           fontWeight: 900,
-          fontSize: 58,
+          fontSize: fs,
           textTransform: 'uppercase',
           letterSpacing: -0.5,
           color: C.ink,
           whiteSpace: 'nowrap',
         }}
       >
-        {ws.map((w, i) => {
-          const on = i === active;
-          const pw = prog(t, ts[i], ts[i] + 0.16, E.back);
-          return (
-            <span
-              key={i}
-              style={{
-                display: 'inline-block',
-                padding: '0 12px',
-                borderRadius: 14,
-                background: on || (l.hl?.includes(i) && i <= active) ? C.blue : 'transparent',
-                color: on || (l.hl?.includes(i) && i <= active) ? '#fff' : t < ts[i] ? 'rgba(17,17,17,0.28)' : C.ink,
-                transform: on ? `scale(${mix(0.9, 1.1, pw)}) rotate(-1.5deg)` : 'none',
-              }}
-            >
-              {w}
-            </span>
-          );
-        })}
+        {rows.map((row, ri) => (
+          <div key={ri} style={{display: 'flex', gap: 16, alignItems: 'center'}}>
+            {row.map((w, j) => {
+              const i = ri === 0 ? j : split + j;
+              const on = i === active;
+              const pw = prog(t, ts[i], ts[i] + 0.16, E.back);
+              return (
+                <span
+                  key={i}
+                  style={{
+                    display: 'inline-block',
+                    padding: '0 12px',
+                    borderRadius: 14,
+                    background: on || (l.hl?.includes(i) && i <= active) ? C.blue : 'transparent',
+                    color: on || (l.hl?.includes(i) && i <= active) ? '#fff' : t < ts[i] ? 'rgba(17,17,17,0.28)' : C.ink,
+                    transform: on ? `scale(${mix(0.9, 1.1, pw)}) rotate(-1.5deg)` : 'none',
+                  }}
+                >
+                  {w}
+                </span>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -140,7 +159,7 @@ const BigCaption: React.FC<{l: CapLine}> = ({l}) => {
               transform: `scale(${mix(0.3, 1, p)}) rotate(${mix(i % 2 ? 6 : -6, 0, p)}deg)`,
               opacity: Math.min(1, p * 2.5),
               color: hl ? l.hlColors?.[i] ?? l.color ?? C.blue : undefined,
-              WebkitTextStroke: hl ? `${size * 0.045}px ${C.ink}` : undefined,
+              WebkitTextStroke: hl ? `${size * 0.045}px ${C.ink}` : l.dark ? undefined : `${size * 0.07}px ${C.cream}`,
               paintOrder: 'stroke fill',
               textShadow: hl ? `${size * 0.05}px ${size * 0.05}px 0 ${C.ink}` : undefined,
             }}
