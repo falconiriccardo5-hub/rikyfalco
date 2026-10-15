@@ -8,3 +8,6 @@ voice/*.log
 voice/frasi/
 voice/trascrizione.json
 voice/mix_trascrizione.json
+__pycache__/
+voice/*trascrizione.json
+voice/piano*_dry.json
