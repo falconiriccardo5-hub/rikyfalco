@@ -62,7 +62,7 @@ export const CarouselSlide: React.FC<{deck: string; index: number}> = ({deck, in
   const s = slides[index];
   const total = slides.length;
   const dark = s.kind === 'cover' || s.kind === 'cta';
-  const bg = dark ? C.ink : C.cream;
+  const bg = dark ? C.ink : '#FFFFFF';
   const fg = dark ? C.cream : C.ink;
   const rk = s.riky ?? {};
   const big = s.kind === 'cover' || s.kind === 'cta';

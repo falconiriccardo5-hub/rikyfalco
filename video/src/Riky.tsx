@@ -136,11 +136,11 @@ export const Riky: React.FC<RikyProps> = ({
       </g>
       {/* pantaloncini */}
       <g stroke={C.ink} strokeWidth={OUT} strokeLinejoin="round">
-        <path d="M316 838 L505 838 L522 1016 L421 1022 L410 910 L397 1018 L297 1012 Z" fill={C.blue} />
-        <path d="M288 1012 L398 1018 L397 1052 L287 1046 Z" fill={C.blueD} />
-        <path d="M420 1022 L530 1014 L532 1048 L420 1054 Z" fill={C.blueD} />
-        <path d="M410 842 L410 906" stroke={C.blueL} strokeWidth={4} strokeDasharray="8 8" fill="none" />
-        <path d="M362 846 l0 6 M456 846 l0 6" stroke={C.blueL} strokeWidth={4} fill="none" />
+        <path d="M316 838 L505 838 L522 1016 L421 1022 L410 910 L397 1018 L297 1012 Z" fill={C.denim} />
+        <path d="M288 1012 L398 1018 L397 1052 L287 1046 Z" fill={C.denimD} />
+        <path d="M420 1022 L530 1014 L532 1048 L420 1054 Z" fill={C.denimD} />
+        <path d="M410 842 L410 906" stroke={C.denimL} strokeWidth={4} strokeDasharray="8 8" fill="none" />
+        <path d="M362 846 l0 6 M456 846 l0 6" stroke={C.denimL} strokeWidth={4} fill="none" />
       </g>
       {/* collo + torso */}
       <rect x={391} y={470} width={37} height={54} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
