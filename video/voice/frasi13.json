@@ -1,0 +1,12 @@
+[
+ {"n":501,"id":"r01","who":"R","text":"Ehi, ciao! Che esercizio stai facendo?","cfg":0.4,"exag":0.6},
+ {"n":502,"id":"g02","who":"G","text":"Stacchi rumeni, ma mi fa male la schiena e non sento i glutei.","cfg":0.4,"exag":0.6},
+ {"n":503,"id":"r03","who":"R","text":"Tranquilla, sono arrivato in tuo soccorso. Adesso ti aiuto io!","cfg":0.4,"exag":0.65},
+ {"n":504,"id":"r04","who":"R","text":"Primo: usa un peso adatto al tuo livello.","cfg":0.4},
+ {"n":505,"id":"r05","who":"R","text":"Se esageri, a lavorare è la schiena.","cfg":0.4},
+ {"n":506,"id":"r06","who":"R","text":"Secondo: peso sull'avampiede, non tutto sul tallone.","cfg":0.4},
+ {"n":507,"id":"r07","who":"R","text":"Così non scarichi tutto sulla zona lombare.","cfg":0.4},
+ {"n":508,"id":"r08","who":"R","text":"Terzo: ruota l'anca all'indietro mentre scendi.","cfg":0.4},
+ {"n":509,"id":"r09","who":"R","text":"Allunghi glutei e femorali, e la schiena non soffre.","cfg":0.4},
+ {"n":510,"id":"g10","who":"G","text":"Grazie, Riccardo! Ti seguo subito per imparare gli altri esercizi!","cfg":0.4,"exag":0.65}
+]

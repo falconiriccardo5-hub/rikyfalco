@@ -16,6 +16,13 @@ export type CapLine = {
   slam?: number; // indice parola che "sbatte" (shake)
   dark?: boolean; // testo su sfondo scuro (big)
   hlColors?: Record<number, string>;
+  // opzioni per formato verticale / secondo interlocutore
+  bottom?: number;
+  wrapAt?: number; // caratteri oltre i quali si va a capo
+  fs?: number;
+  bg?: string;
+  fg?: string;
+  hlBg?: string;
 };
 
 const words = (l: CapLine) => l.text.split(' ');
@@ -41,26 +48,37 @@ const SmallCaption: React.FC<{l: CapLine}> = ({l}) => {
   const pIn = prog(t, l.t0, l.t0 + 0.22, E.back);
   const pOut = prog(t, l.t1 - 0.14, l.t1, E.in);
   const active = ts.reduce((a, w, i) => (t >= w ? i : a), -1);
-  const two = l.text.length > 38;
-  let split = ws.length;
-  if (two) {
-    // taglio bilanciato sui caratteri
+  const wrapAt = l.wrapAt ?? 38;
+  const nRows = Math.max(1, Math.ceil(l.text.length / wrapAt));
+  const two = nRows > 1;
+  // righe bilanciate sui caratteri (con 2 righe equivale al taglio a metà di prima)
+  const rowsIdx: number[][] = [];
+  if (nRows === 1) rowsIdx.push(ws.map((_, i) => i));
+  else {
     const total = ws.join(' ').length;
     let acc = 0;
-    split = ws.findIndex((w) => {
+    let cur: number[] = [];
+    ws.forEach((w, i) => {
+      cur.push(i);
       acc += w.length + 1;
-      return acc >= total / 2;
-    }) + 1;
+      if (rowsIdx.length < nRows - 1 && acc >= (total / nRows) * (rowsIdx.length + 1)) {
+        rowsIdx.push(cur);
+        cur = [];
+      }
+    });
+    if (cur.length) rowsIdx.push(cur);
   }
-  const rows = two ? [ws.slice(0, split), ws.slice(split)] : [ws];
-  const fs = two ? 54 : 58;
+  const rows = rowsIdx.map((r) => r.map((i) => ws[i]));
+  const fs = l.fs ?? (two ? 54 : 58);
+  const bgc = l.bg ?? C.cream;
+  const fgc = l.fg ?? C.ink;
   return (
     <div
       style={{
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: 72,
+        bottom: l.bottom ?? 72,
         display: 'flex',
         justifyContent: 'center',
         opacity: 1 - pOut,
@@ -69,7 +87,7 @@ const SmallCaption: React.FC<{l: CapLine}> = ({l}) => {
     >
       <div
         style={{
-          background: C.cream,
+          background: bgc,
           border: `${OUT}px solid ${C.ink}`,
           borderRadius: 28,
           boxShadow: `9px 9px 0 ${C.ink}`,
@@ -83,14 +101,14 @@ const SmallCaption: React.FC<{l: CapLine}> = ({l}) => {
           fontSize: fs,
           textTransform: 'uppercase',
           letterSpacing: -0.5,
-          color: C.ink,
+          color: fgc,
           whiteSpace: 'nowrap',
         }}
       >
         {rows.map((row, ri) => (
           <div key={ri} style={{display: 'flex', gap: 16, alignItems: 'center'}}>
             {row.map((w, j) => {
-              const i = ri === 0 ? j : split + j;
+              const i = rowsIdx[ri][j];
               const on = i === active;
               const pw = prog(t, ts[i], ts[i] + 0.16, E.back);
               return (
@@ -100,8 +118,8 @@ const SmallCaption: React.FC<{l: CapLine}> = ({l}) => {
                     display: 'inline-block',
                     padding: '0 12px',
                     borderRadius: 14,
-                    background: on || (l.hl?.includes(i) && i <= active) ? C.blue : 'transparent',
-                    color: on || (l.hl?.includes(i) && i <= active) ? '#fff' : t < ts[i] ? 'rgba(17,17,17,0.28)' : C.ink,
+                    background: on || (l.hl?.includes(i) && i <= active) ? l.hlBg ?? C.blue : 'transparent',
+                    color: on || (l.hl?.includes(i) && i <= active) ? '#fff' : t < ts[i] ? (l.fg ? 'rgba(245,243,238,0.3)' : 'rgba(17,17,17,0.28)') : fgc,
                     transform: on ? `scale(${mix(0.9, 1.1, pw)}) rotate(-1.5deg)` : 'none',
                   }}
                 >

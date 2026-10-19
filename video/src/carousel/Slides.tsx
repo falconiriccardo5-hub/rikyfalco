@@ -95,7 +95,7 @@ export const CarouselSlide: React.FC<{deck: string; index: number}> = ({deck, in
 
       {big && (
         <>
-          <div style={{position: 'absolute', left: 72, right: 72, top: s.kind === 'cover' ? 200 : 240, width: 650, right: undefined, ...wrap, fontSize: s.kind === 'cover' ? 92 : 90, color: fg}}>{s.title}</div>
+          <div style={{position: 'absolute', left: 72, top: s.kind === 'cover' ? 200 : 240, width: 650, ...wrap, fontSize: s.kind === 'cover' ? 92 : 90, color: fg}}>{s.title}</div>
           <div style={{position: 'absolute', left: 72, width: 560, top: s.kind === 'cover' ? 820 : 780, fontFamily: FONT, fontWeight: 700, fontSize: 42, lineHeight: 1.3, color: C.blueL}}>{s.sub}</div>
           {s.kind === 'cta' && (
             <div style={{position: 'absolute', left: 72, bottom: 140, padding: '20px 40px', background: C.blue, color: C.cream, border: `6px solid ${C.cream}`, borderRadius: 24, fontFamily: FONT, fontWeight: 900, fontSize: 72, letterSpacing: 2}}>ANALISI</div>

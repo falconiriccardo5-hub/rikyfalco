@@ -1,0 +1,185 @@
+[
+ {
+  "slot": "r01",
+  "id": "r01",
+  "who": "R",
+  "text": "Ehi, ciao! Che esercizio stai facendo?",
+  "t0": 0.3,
+  "t1": 2.3,
+  "words": [
+   0.3,
+   0.633,
+   0.967,
+   1.3,
+   1.633,
+   1.967
+  ]
+ },
+ {
+  "slot": "g02",
+  "id": "g02",
+  "who": "G",
+  "text": "Stacchi rumeni, ma mi fa male la schiena e non sento i glutei.",
+  "t0": 2.8,
+  "t1": 6.4,
+  "words": [
+   2.8,
+   3.077,
+   3.354,
+   3.631,
+   3.908,
+   4.185,
+   4.462,
+   4.738,
+   5.015,
+   5.292,
+   5.569,
+   5.846,
+   6.123
+  ]
+ },
+ {
+  "slot": "r03",
+  "id": "r03",
+  "who": "R",
+  "text": "Tranquilla, sono arrivato in tuo soccorso. Adesso ti aiuto io!",
+  "t0": 6.9,
+  "t1": 10.4,
+  "words": [
+   6.9,
+   7.25,
+   7.6,
+   7.95,
+   8.3,
+   8.65,
+   9.0,
+   9.35,
+   9.7,
+   10.05
+  ]
+ },
+ {
+  "slot": "r04",
+  "id": "r04",
+  "who": "R",
+  "text": "Primo: usa un peso adatto al tuo livello.",
+  "t0": 11.0,
+  "t1": 13.4,
+  "words": [
+   11.0,
+   11.3,
+   11.6,
+   11.9,
+   12.2,
+   12.5,
+   12.8,
+   13.1
+  ]
+ },
+ {
+  "slot": "r05",
+  "id": "r05",
+  "who": "R",
+  "text": "Se esageri, a lavorare è la schiena.",
+  "t0": 13.8,
+  "t1": 16.0,
+  "words": [
+   13.8,
+   14.114,
+   14.429,
+   14.743,
+   15.057,
+   15.371,
+   15.686
+  ]
+ },
+ {
+  "slot": "r06",
+  "id": "r06",
+  "who": "R",
+  "text": "Secondo: peso sull'avampiede, non tutto sul tallone.",
+  "t0": 16.5,
+  "t1": 19.6,
+  "words": [
+   16.5,
+   16.943,
+   17.386,
+   17.829,
+   18.271,
+   18.714,
+   19.157
+  ]
+ },
+ {
+  "slot": "r07",
+  "id": "r07",
+  "who": "R",
+  "text": "Così non scarichi tutto sulla zona lombare.",
+  "t0": 20.0,
+  "t1": 22.4,
+  "words": [
+   20.0,
+   20.343,
+   20.686,
+   21.029,
+   21.371,
+   21.714,
+   22.057
+  ]
+ },
+ {
+  "slot": "r08",
+  "id": "r08",
+  "who": "R",
+  "text": "Terzo: ruota l'anca all'indietro mentre scendi.",
+  "t0": 22.8,
+  "t1": 25.2,
+  "words": [
+   22.8,
+   23.2,
+   23.6,
+   24.0,
+   24.4,
+   24.8
+  ]
+ },
+ {
+  "slot": "r09",
+  "id": "r09",
+  "who": "R",
+  "text": "Allunghi glutei e femorali, e la schiena non soffre.",
+  "t0": 25.6,
+  "t1": 29.0,
+  "words": [
+   25.6,
+   25.978,
+   26.356,
+   26.733,
+   27.111,
+   27.489,
+   27.867,
+   28.244,
+   28.622
+  ]
+ },
+ {
+  "slot": "g10",
+  "id": "g10",
+  "who": "G",
+  "text": "Grazie, Riccardo! Ti seguo subito per imparare gli altri esercizi!",
+  "t0": 29.5,
+  "t1": 33.6,
+  "words": [
+   29.5,
+   29.91,
+   30.32,
+   30.73,
+   31.14,
+   31.55,
+   31.96,
+   32.37,
+   32.78,
+   33.19
+  ]
+ }
+]
