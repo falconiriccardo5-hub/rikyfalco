@@ -11,10 +11,10 @@ TAKES = [
     ("r03", "r03", "R", "Tranquilla, sono arrivato in tuo soccorso. Adesso ti aiuto io!", 1.15, None),
     ("r04", "r04", "R", "Primo: usa un peso adatto al tuo livello.", 1.15, None),
     ("r05", "r05", "R", "Se esageri, a lavorare è la schiena.", 1.15, None),
-    ("r06", "r06", "R", "Secondo: peso sull'avampiede, non tutto sul tallone.", 1.2, None),
+    ("r06", "r06", "R", "Secondo: peso sulla punta del piede, non tutto sul tallone.", 1.2, None),
     ("r07", "r07", "R", "Così non scarichi tutto sulla zona lombare.", 1.2, None),
     ("r08", "r08", "R", "Terzo: ruota l'anca all'indietro mentre scendi.", 1.2, None),
-    ("r09", "r09", "R", "Allunghi glutei e femorali, e la schiena non soffre.", 1.2, None),
+    ("r09", "r09", "R", "Allunghi glutei e femorali, così la schiena non soffre.", 1.2, None),
     ("g10", "g10", "G", "Grazie, Riccardo! Ti seguo subito per imparare gli altri esercizi!", 1.2, None),
 ]
 GAP = {"r01": 0.35, "g02": 0.3, "r03": 0.55, "r04": 0.3, "r05": 0.45, "r06": 0.3, "r07": 0.45, "r08": 0.3, "r09": 0.4}

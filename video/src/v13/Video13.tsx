@@ -388,7 +388,7 @@ const S2b: React.FC<{a: number}> = ({a}) => {
 
 const S3a: React.FC<{a: number}> = ({a}) => {
   const w = v('r06').words;
-  const wrongP = (t: number) => prog(t, w[5], w[5] + 0.4);
+  const wrongP = (t: number) => prog(t, w[7], w[7] + 0.4);
   return (
     <Explain
       a={a}
@@ -399,8 +399,8 @@ const S3a: React.FC<{a: number}> = ({a}) => {
       world={(t, cam) => {
         const toe = gW(86, -6);
         const heel = gW(-40, -6);
-        const pF = prog(t, w[2] - 0.15, w[2] + 0.25, E.back);
-        const pH = prog(t, w[6] - 0.1, w[6] + 0.25, E.back);
+        const pF = prog(t, w[3] - 0.15, w[3] + 0.25, E.back);
+        const pH = prog(t, w[9] - 0.1, w[9] + 0.25, E.back);
         const pulse = 1 + 0.12 * Math.sin(t * 10);
         return (
           <>
@@ -425,9 +425,9 @@ const S3a: React.FC<{a: number}> = ({a}) => {
         const heel = w2s(gW(-40, -6), cam);
         return (
           <>
-            <StepCard n={2} title="Peso sull'avampiede" t0={a + 0.05} />
-            <Tag t0={w[2] - 0.05} at={[toe[0] + 230, toe[1] - 230]} to={[toe[0], toe[1] - 20]} text="AVAMPIEDE" icon="ok" size={46} />
-            <Tag t0={w[6] - 0.05} at={[heel[0] - 120, heel[1] - 320]} to={[heel[0], heel[1] - 20]} text="TALLONE" icon="no" size={46} rot={3} />
+            <StepCard n={2} title="Peso sulla punta del piede" t0={a + 0.05} />
+            <Tag t0={w[3] - 0.05} at={[toe[0] + 200, toe[1] - 230]} to={[toe[0], toe[1] - 20]} text="PUNTA DEL PIEDE" icon="ok" size={46} />
+            <Tag t0={w[9] - 0.05} at={[heel[0] - 60, heel[1] - 340]} to={[heel[0], heel[1] - 20]} text="TALLONE" icon="no" size={46} rot={3} />
           </>
         );
       }}
@@ -449,7 +449,7 @@ const S3b: React.FC<{a: number}> = ({a}) => {
         const lp = w2s(gW(g.hip[0] - 40, g.hip[1] - 120), cam);
         return (
           <>
-            <StepCard n={2} title="Peso sull'avampiede" t0={a - 5} />
+            <StepCard n={2} title="Peso sulla punta del piede" t0={a - 5} />
             <Tag t0={w[5] - 0.1} at={[lp[0] + 330, lp[1] - 260]} to={lp} text="LOMBARE SCARICA" icon="ok" size={42} />
           </>
         );
@@ -575,10 +575,10 @@ const buildCaps = (): CapLine[] => {
     r03: {hl: [4, 7], who: 'R'},
     r04: {hl: [0, 3, 6], who: 'R'},
     r05: {hl: [1, 6], who: 'R'},
-    r06: {hl: [0, 2], who: 'R'},
+    r06: {hl: [0, 3, 5], who: 'R'},
     r07: {hl: [4, 7], who: 'R'},
     r08: {hl: [0, 3], who: 'R'},
-    r09: {hl: [1, 3, 8], who: 'R'},
+    r09: {hl: [1, 3, 6], who: 'R'},
     g10: {hl: [1, 3], who: 'G'},
   };
   const small = Object.entries(meta)

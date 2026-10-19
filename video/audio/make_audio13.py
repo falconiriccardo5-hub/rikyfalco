@@ -113,8 +113,8 @@ def build_sfx():
     w = wd('r06')
     S.add(M.stamp(), a + 0.05, 0.75)
     S.add(M.pop(480), a + 0.1, 0.5)
-    S.add(M.pop(700), w[2] - 0.05, 0.65); S.add(M.chime(988, 0.7), w[2], 0.4, 0.4)
-    S.add(buzz(0.35), w[6] - 0.05, 0.5); S.add(M.pop(400), w[6] - 0.05, 0.5)
+    S.add(M.pop(700), w[3] - 0.05, 0.65); S.add(M.chime(988, 0.7), w[3], 0.4, 0.4)
+    S.add(buzz(0.35), w[9] - 0.05, 0.5); S.add(M.pop(400), w[9] - 0.05, 0.5)
     a = W['s3b'][0]
     w = wd('r07')
     S.add(M.pop(700), w[5] - 0.1, 0.6); S.add(M.sparkle(1174.7, 4), w[5], 0.6)
