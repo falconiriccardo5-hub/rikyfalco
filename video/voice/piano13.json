@@ -1,0 +1,84 @@
+[
+ {
+  "slot": "r01",
+  "id": "r01",
+  "who": "R",
+  "text": "Ehi, ciao! Che esercizio stai facendo?",
+  "at": 0.3,
+  "speed": 1.15
+ },
+ {
+  "slot": "g02",
+  "id": "g02",
+  "who": "G",
+  "text": "Stacchi rumeni, ma mi fa male la schiena e non sento i glutei.",
+  "at": 2.96,
+  "speed": 1.2,
+  "pitch": 1.3
+ },
+ {
+  "slot": "r03",
+  "id": "r03",
+  "who": "R",
+  "text": "Tranquilla, sono arrivato in tuo soccorso. Adesso ti aiuto io!",
+  "at": 6.65,
+  "speed": 1.15
+ },
+ {
+  "slot": "r04",
+  "id": "r04",
+  "who": "R",
+  "text": "Primo: usa un peso adatto al tuo livello.",
+  "at": 10.46,
+  "speed": 1.15
+ },
+ {
+  "slot": "r05",
+  "id": "r05",
+  "who": "R",
+  "text": "Se esageri, a lavorare è la schiena.",
+  "at": 12.78,
+  "speed": 1.15
+ },
+ {
+  "slot": "r06",
+  "id": "r06",
+  "who": "R",
+  "text": "Secondo: peso sulla punta del piede, non tutto sul tallone.",
+  "at": 15.47,
+  "speed": 1.2
+ },
+ {
+  "slot": "r07",
+  "id": "r07",
+  "who": "R",
+  "text": "Così non scarichi tutto sulla zona lombare.",
+  "at": 19.19,
+  "speed": 1.2
+ },
+ {
+  "slot": "r08",
+  "id": "r08",
+  "who": "R",
+  "text": "Terzo: ruota l'anca all'indietro mentre scendi.",
+  "at": 21.73,
+  "speed": 1.2
+ },
+ {
+  "slot": "r09",
+  "id": "r09",
+  "who": "R",
+  "text": "Allunghi glutei e femorali, così la schiena non soffre.",
+  "at": 25.55,
+  "speed": 1.2
+ },
+ {
+  "slot": "g10",
+  "id": "g10",
+  "who": "G",
+  "text": "Grazie, Riccardo! Ti seguo subito per imparare gli altri esercizi!",
+  "at": 28.93,
+  "speed": 1.2,
+  "pitch": 1.3
+ }
+]

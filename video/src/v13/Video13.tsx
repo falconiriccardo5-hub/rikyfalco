@@ -167,6 +167,8 @@ const Tag: React.FC<{t0: number; at: [number, number]; to?: [number, number]; te
   const t = useT();
   if (t < t0) return null;
   const p = prog(t, t0, t0 + 0.28, E.back);
+  const halfW = (text.length * size * 0.6 + 90 + (icon ? size : 0)) / 2 + 24;
+  at = [Math.min(Math.max(at[0], halfW), VW - halfW), at[1]];
   return (
     <>
       {to && (
@@ -305,8 +307,8 @@ const S1c: React.FC<{a: number}> = ({a}) => {
         <CapeBehind x={RX} y={FLOOR - 0} scale={0.7 * mix(1, 1.04, heroP)} flip t={t} show={capeP} />
         <RikyP scale={0.7 * mix(1, 1.04, heroP)} mouth={talk} smile={1} brow={8} armL={{hand: [330, 846]}} armR={{hand: [490, 846]}} tilt={-3 * heroP} bob={Math.sin(t * 6) * 3 * heroP} hop={Math.abs(Math.sin(t * 6)) * 5 * heroP} />
       </World>
-      <Burst t0={w[3] + 0.0} x={300} y={600} text="SOS" size={84} color={C.blue} rot={8} />
-      <Tag t0={w[6] - 0.05} at={[360, 480]} text="COACH RIKY AL VOLO" bg={C.blue} fg="#fff" size={40} />
+      <Burst t0={w[3] + 0.0} x={880} y={560} text="SOS" size={84} color={C.blue} rot={8} />
+      <Tag t0={w[6] - 0.05} at={[540, 360]} text="COACH RIKY AL VOLO" bg={C.blue} fg="#fff" size={40} />
       <Sparkles t0={w[3]} x={760} y={760} n={12} />
     </AbsoluteFill>
   );
