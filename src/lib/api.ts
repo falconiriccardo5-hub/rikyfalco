@@ -60,7 +60,7 @@ export interface Session {
 }
 /** Compleanno di un cliente che cade in una data dell'intervallo richiesto */
 export interface Birthday { client_id: string; name: string; phone: string; date: string; birth_date: string; age: number }
-/** Impegno letto da Google Calendar (sola lettura) */
+/** Impegno di Google Calendar (copia locale: si modifica dall'app e la modifica va su Google) */
 export interface GoogleEvent {
   id: string; calendar: 'primary' | 'app'; summary: string; location: string; starts_at: string; ends_at: string; all_day: number; html_link: string;
 }

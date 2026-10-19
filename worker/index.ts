@@ -359,7 +359,7 @@ app.get('/api/sessions', async (c) => {
   const birthdays = birthdaysInRange(await all(c.env.DB, 'SELECT id, first_name, last_name, phone, birth_date, archived_at FROM clients WHERE birth_date IS NOT NULL'), from, to);
   c.executionCtx.waitUntil(pullIfStale(c.env));
   const viaIcal = !!(await getSetting(c.env.DB, 'ical_import_url')) || !!(await getSetting(c.env.DB, 'ical_feed_token'));
-  return c.json({ sessions: rows, events, birthdays, google: { connected: (await google.isConnected(c.env)) || viaIcal, reads: (await google.canReadCalendar(c.env)) || !!(await getSetting(c.env.DB, 'ical_import_url')), ical: viaIcal } });
+  return c.json({ sessions: rows, events, birthdays, google: { connected: (await google.isConnected(c.env)) || viaIcal, reads: (await google.canReadCalendar(c.env)) || !!(await getSetting(c.env.DB, 'ical_import_url')), writes: await google.canWriteCalendar(c.env), ical: viaIcal } });
 });
 
 const sessionSchema = z.object({
@@ -794,6 +794,7 @@ app.get('/api/settings', async (c) => {
       account: s.google_account || null,
       calendar_id: s.google_calendar_id || null,
       reads_calendar: await google.canReadCalendar(c.env),
+      writes_calendar: await google.canWriteCalendar(c.env),
       last_pull: s.google_pull_at || null,
       pull_error: s.google_pull_error || null,
       drive_folder_id: s.google_drive_folder_id || null,
@@ -894,6 +895,60 @@ app.post('/api/google/resync', async (c) => {
   const n = await syncPending(c.env, 200);
   const pulled = await google.pullCalendar(c.env);
   return c.json({ synced: n, ...pulled });
+});
+
+// Impegni di Google Calendar modificabili dall'app (richiede il collegamento Google con permesso di scrittura)
+const googleEventSchema = z.object({
+  summary: text(300),
+  location: text(300).default(''),
+  all_day: z.boolean().default(false),
+  start: localDateTime,
+  end: localDateTime,
+});
+
+/** Errori di Google/validazione → messaggio leggibile per l'app */
+async function googleWrite<T>(c: Context<AppEnv>, fn: () => Promise<T>) {
+  try { return c.json(await fn()); }
+  catch (e) {
+    const msg = (e as Error).message;
+    const m = /^Google API (\d+)/.exec(msg);
+    if (m) {
+      console.error('scrittura Google Calendar fallita', msg);
+      return c.json({ error: m[1] === '403' ? 'Google non permette di modificare questo evento (ad es. è di un altro organizzatore)' : 'Google Calendar ha rifiutato la modifica: riprova tra poco' }, 502);
+    }
+    return c.json({ error: msg }, 400);
+  }
+}
+
+app.post('/api/google/events', async (c) => {
+  const body = await c.req.json();
+  const d = googleEventSchema.parse(body);
+  const calendar = z.enum(['primary', 'app']).default('primary').parse(body.calendar);
+  return googleWrite(c, async () => {
+    const id = await google.createGoogleEvent(c.env, calendar, d);
+    await logActivity(c.env, actor(c), 'creato', 'google', null, `Evento Google · ${d.summary} · ${d.start.replace('T', ' ')}`);
+    return { id };
+  });
+});
+
+app.patch('/api/google/events/:id', async (c) => {
+  const id = c.req.param('id');
+  const d = googleEventSchema.parse(await c.req.json());
+  return googleWrite(c, async () => {
+    await google.updateGoogleEvent(c.env, id, d);
+    await logActivity(c.env, actor(c), 'modificato', 'google', null, `Evento Google · ${d.summary} · ${d.start.replace('T', ' ')}`);
+    return { ok: true };
+  });
+});
+
+app.delete('/api/google/events/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<{ summary: string; starts_at: string }>(c.env.DB, 'SELECT summary, starts_at FROM gcal_events WHERE id = ?', id);
+  return googleWrite(c, async () => {
+    await google.deleteGoogleEvent(c.env, id);
+    await logActivity(c.env, actor(c), 'eliminato', 'google', null, `Evento Google · ${cur?.summary ?? ''} · ${cur?.starts_at.replace('T', ' ') ?? ''}`);
+    return { ok: true };
+  });
 });
 
 app.all('/api/*', (c) => c.json({ error: 'Endpoint non trovato' }, 404));

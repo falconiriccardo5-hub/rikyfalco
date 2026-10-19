@@ -31,7 +31,8 @@ La sezione **Visita** ha tre schede: **Visite** (quelle già compilate), **Perso
 
 ## Calendario e compleanni
 
-- **Vista come Google Calendar (scuro)**: Settimana (con griglia oraria, linea dell'ora attuale, eventi affiancati se si sovrappongono) o Mese, scelta dal menu in alto a destra. Barra laterale con mini-calendario e interruttori per Lezioni, Impegni Google e Compleanni. Un clic su una casella vuota crea un appuntamento a quell'ora.
+- **Vista come Google Calendar (scuro)**: Settimana (con griglia oraria, linea dell'ora attuale, eventi affiancati se si sovrappongono) o Mese, scelta dal menu in alto a destra. Barra laterale con mini-calendario e interruttori per Lezioni, Impegni Google e Compleanni. Un clic su una casella vuota crea un appuntamento (o, con Google collegato, un evento Google) a quell'ora.
+- **Modificare Google Calendar dall'app**: con il collegamento Google (4b) un impegno Google si apre dal calendario e si modifica (titolo, orario, giornata intera, luogo), si sposta o si elimina senza aprire Google Calendar: la modifica va subito su Google e resta sincronizzata (per gli eventi ricorrenti cambia solo quell'occorrenza; nessuna email agli invitati). Con il solo link iCal il calendario resta in sola lettura. Se avevi già collegato Google, premi **Ricollega Google** in Impostazioni per concedere il nuovo permesso di scrittura.
 - **Compleanni**: nella scheda cliente si imposta la *Data di nascita* (facoltativa). Ogni anno compare un evento "🎂 Nome" a giornata intera nel calendario dell'app; il giorno stesso arriva una notifica e dal dettaglio si apre WhatsApp con gli auguri già scritti. I compleanni sono anche nel link iCal che si aggiunge a Google Calendar / iPhone.
 
 ## Sicurezza
@@ -40,7 +41,7 @@ La sezione **Visita** ha tre schede: **Visite** (quelle già compilate), **Perso
 2. Il Worker **verifica comunque** il token firmato da Cloudflare (firma, scadenza, audience, email autorizzata): se qualcuno aggirasse Access riceve 401/403. L'URL pubblico `*.workers.dev` è disattivato.
 3. Header di sicurezza rigidi (CSP senza script esterni, HSTS, anti-iframe, no-referrer); font ospitati in locale.
 4. Protezione CSRF su tutte le modifiche (header dedicato + controllo Origin); validazione di ogni input lato server.
-5. Google con **permessi minimi**: l'app modifica solo il calendario e i file *che crea lei* (`calendar.app.created`, `drive.file`) e legge in sola lettura gli eventi del tuo calendario principale (`calendar.events.readonly`). Il token Google è salvato **cifrato AES-256-GCM** e non finisce mai nei backup.
+5. Google con **permessi minimi**: l'app modifica solo il calendario e i file *che crea lei* (`calendar.app.created`, `drive.file`) e legge e modifica gli eventi del tuo calendario principale (`calendar.events`), così puoi gestirli dall'app senza aprire Google Calendar. Il token Google è salvato **cifrato AES-256-GCM** e non finisce mai nei backup.
 6. Registro **Attività** di ogni modifica; eliminare un cliente richiede di riscriverne il nome; il ripristino richiede di scrivere `RIPRISTINA` e salva prima una copia dei dati attuali su Drive.
 7. Protezione dei CSV dalle "formule malevole" quando li apri in Excel.
 
@@ -97,7 +98,7 @@ path `ical` → policy con Action **Bypass** e Include **Everyone** → salva.
 ### 4b. Google avanzato (facoltativo: backup su Drive e aggiornamento istantaneo)
 1. https://console.cloud.google.com → crea un progetto "RF Coaching".
 2. *APIs & Services → Library*: abilita **Google Calendar API** e **Google Drive API**.
-3. *OAuth consent screen*: tipo **External**, scope `calendar.app.created`, `calendar.events.readonly`, `drive.file`, `openid`, `email`, poi **Publish app**
+3. *OAuth consent screen*: tipo **External**, scope `calendar.app.created`, `calendar.events`, `drive.file`, `openid`, `email`, poi **Publish app**
    (in modalità "Testing" il collegamento scadrebbe ogni 7 giorni). Al primo collegamento Google mostrerà "app non verificata":
    è normale per un'app personale, premi *Avanzate → Vai a RF Coaching*.
 4. *Credentials → Create credentials → OAuth client ID* → **Web application**.

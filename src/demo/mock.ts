@@ -18,7 +18,7 @@ export function demoGet(path: string): unknown {
     const c = q.get('client_id'), l = q.get('lead_id');
     return structuredClone(forms.filter((f) => (!c || f.client_id === c) && (!l || f.lead_id === l)));
   }
-  if (base === '/sessions') return { sessions: [], events: [], birthdays: [], google: { connected: false, reads: false } };
+  if (base === '/sessions') return { sessions: [], events: [], birthdays: [], google: { connected: false, reads: false, writes: false } };
   if (base === '/report') return structuredClone(fx['/report?month=2026-01']);
   throw new Error('Non disponibile nell\'anteprima');
 }

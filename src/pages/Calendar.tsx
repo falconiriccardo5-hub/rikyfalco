@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Cake, CalendarPlus, Check, ChevronLeft, ChevronRight, Cloud, CloudOff, ExternalLink, MessageCircle, Pencil, Trash2, X } from 'lucide-react';
 import { useOpen } from '../components/Layout';
 import { SessionForm } from '../components/Forms';
+import { GoogleEventForm } from '../components/GoogleEventForm';
 import { Confirm, ErrorBox, Modal, useAction, useApi } from '../components/ui';
 import { api, type Birthday, type GoogleEvent, type Session } from '../lib/api';
 import { addDays, KIND_LABEL, longDay, nowRomeLocal, time, todayRome, waNumber } from '../lib/format';
@@ -49,6 +50,9 @@ export default function Calendar() {
   const [detail, setDetail] = useState<Item | null>(null);
   const [edit, setEdit] = useState<Session | null>(null);
   const [del, setDel] = useState<Session | null>(null);
+  const [pick, setPick] = useState<string | null>(null); // orario scelto: appuntamento cliente o evento Google?
+  const [gform, setGform] = useState<{ event?: GoogleEvent; start?: string } | null>(null);
+  const [gdel, setGdel] = useState<GoogleEvent | null>(null);
   const open = useOpen();
   const act = useAction();
 
@@ -57,7 +61,7 @@ export default function Calendar() {
   const shown = view === 'week' ? week : grid.flat();
   const from = shown[0], to = shown[shown.length - 1];
 
-  const { data, error } = useApi<{ sessions: Session[]; events?: GoogleEvent[]; birthdays?: Birthday[]; google: { connected: boolean; reads?: boolean } }>(`/sessions?from=${from}&to=${to}`);
+  const { data, error } = useApi<{ sessions: Session[]; events?: GoogleEvent[]; birthdays?: Birthday[]; google: { connected: boolean; reads?: boolean; writes?: boolean; ical?: boolean } }>(`/sessions?from=${from}&to=${to}`);
 
   // la griglia a settimana parte dalle 7:00 (o da poco prima dell'ora attuale)
   const scroller = useRef<HTMLDivElement>(null);
@@ -105,7 +109,8 @@ export default function Calendar() {
   const cls = (it: Item) => it.t === 'session' ? `lesson ${it.s.status}` : it.t === 'google' ? 'google' : 'birthday';
   const keyOf = (it: Item) => it.t === 'session' ? it.s.id : it.t === 'google' ? it.e.id : `b${it.b.client_id}${it.b.date}`;
 
-  const newAt = (local: string) => open.session(undefined, local);
+  // con Google collegato in scrittura si sceglie cosa creare; altrimenti solo appuntamenti con i clienti
+  const newAt = (local: string) => data?.google.writes ? setPick(local) : open.session(undefined, local);
 
   return (
     <div className="gcal fade-in">
@@ -221,7 +226,19 @@ export default function Calendar() {
         )}
       </section>
 
-      {detail && <Detail item={detail} now={now} onClose={() => setDetail(null)} onEdit={(s) => { setDetail(null); setEdit(s); }} onDelete={(s) => { setDetail(null); setDel(s); }} act={act} />}
+      {detail && <Detail item={detail} now={now} google={data?.google} onClose={() => setDetail(null)} onEdit={(s) => { setDetail(null); setEdit(s); }} onDelete={(s) => { setDetail(null); setDel(s); }}
+        onEditGoogle={(e) => { setDetail(null); setGform({ event: e }); }} onDeleteGoogle={(e) => { setDetail(null); setGdel(e); }} act={act} />}
+      {pick && (
+        <Modal title="Cosa vuoi creare?" onClose={() => setPick(null)}>
+          <div className="stack">
+            <button className="btn" onClick={() => { const at = pick; setPick(null); open.session(undefined, at); }}><CalendarPlus /> Appuntamento con un cliente</button>
+            <button className="btn" onClick={() => { const at = pick; setPick(null); setGform({ start: at }); }}><Cloud /> Evento su Google Calendar</button>
+          </div>
+        </Modal>
+      )}
+      {gform && <GoogleEventForm event={gform.event} start={gform.start} onClose={() => setGform(null)} />}
+      {gdel && <Confirm title="Elimina evento Google" danger confirmLabel="Elimina" text={`“${gdel.summary}” verrà eliminato anche da Google Calendar.`}
+        onConfirm={() => act(() => api.del(`/google/events/${encodeURIComponent(gdel.id)}`), 'Evento eliminato da Google Calendar')} onClose={() => setGdel(null)} />}
       {edit && <SessionForm session={edit} onClose={() => setEdit(null)} />}
       {del && <Confirm title="Elimina appuntamento" danger confirmLabel="Elimina" text="L'appuntamento verrà rimosso anche da Google Calendar."
         onConfirm={() => act(() => api.del(`/sessions/${del.id}`), 'Appuntamento eliminato')} onClose={() => setDel(null)} />}
@@ -255,8 +272,9 @@ function MiniMonth({ month, today, week, selected, onPrev, onNext, onPick }: {
   );
 }
 
-function Detail({ item, now, onClose, onEdit, onDelete, act }: {
-  item: Item; now: string; onClose: () => void; onEdit: (s: Session) => void; onDelete: (s: Session) => void; act: ReturnType<typeof useAction>;
+function Detail({ item, now, google, onClose, onEdit, onDelete, onEditGoogle, onDeleteGoogle, act }: {
+  item: Item; now: string; google?: { connected: boolean; writes?: boolean; ical?: boolean }; onClose: () => void; onEdit: (s: Session) => void; onDelete: (s: Session) => void;
+  onEditGoogle: (e: GoogleEvent) => void; onDeleteGoogle: (e: GoogleEvent) => void; act: ReturnType<typeof useAction>;
 }) {
   if (item.t === 'birthday') {
     const b = item.b;
@@ -282,8 +300,18 @@ function Detail({ item, now, onClose, onEdit, onDelete, act }: {
       <Modal title={e.summary || 'Impegno Google'} onClose={onClose}>
         <div className="stack">
           <div className="muted">{e.all_day ? `Tutto il giorno · ${longDay(e.starts_at)}` : `${longDay(e.starts_at)} · ${time(e.starts_at)}–${time(e.ends_at)}`}{e.location ? ` · ${e.location}` : ''}</div>
-          <div className="muted" style={{ fontSize: 13.5 }}>Dal tuo Google Calendar (sola lettura): per modificarlo aprilo lì.</div>
-          {e.html_link && <div className="row" style={{ justifyContent: 'flex-end' }}><a className="btn" href={e.html_link} target="_blank" rel="noopener noreferrer"><ExternalLink /> Apri in Google Calendar</a></div>}
+          {google?.writes
+            ? <div className="muted" style={{ fontSize: 13.5 }}>Dal tuo Google Calendar: le modifiche fatte qui vengono salvate subito anche su Google.</div>
+            : <div className="muted" style={{ fontSize: 13.5 }}>Dal tuo Google Calendar (sola lettura). {google?.ical
+              ? 'Collegato tramite link iCal: per modificare gli eventi dall\'app collega l\'account Google da Impostazioni.'
+              : 'Per modificarlo dall\'app ricollega Google da Impostazioni (serve un nuovo permesso).'} <Link to="/settings" onClick={onClose}>Apri Impostazioni</Link></div>}
+          <div className="row" style={{ gap: 8, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+            {e.html_link && <a className="btn" href={e.html_link} target="_blank" rel="noopener noreferrer"><ExternalLink /> Apri in Google Calendar</a>}
+            {google?.writes && <>
+              <button className="icon-btn" aria-label="Modifica" onClick={() => onEditGoogle(e)}><Pencil /></button>
+              <button className="icon-btn" aria-label="Elimina" onClick={() => onDeleteGoogle(e)}><Trash2 /></button>
+            </>}
+          </div>
         </div>
       </Modal>
     );

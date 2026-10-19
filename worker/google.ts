@@ -1,7 +1,8 @@
 // Integrazione Google con permessi minimi:
 //  - calendar.app.created → l'app vede/modifica SOLO il calendario che crea lei ("RF Coaching")
-//  - calendar.events.readonly → l'app LEGGE (senza poterli modificare) gli eventi del tuo calendario
-//    principale, per mostrarli nell'agenda accanto alle lezioni
+//  - calendar.events      → l'app legge e MODIFICA gli eventi del tuo calendario principale, per mostrarli
+//    nell'agenda accanto alle lezioni e permetterti di cambiarli senza aprire Google Calendar
+//    (collegamenti vecchi: calendar.events.readonly, sola lettura)
 //  - drive.file           → l'app vede SOLO i file/cartelle che crea lei (i backup)
 // Il refresh token è salvato nel DB cifrato con AES-256-GCM (ENCRYPTION_KEY).
 import type { Env } from './types';
@@ -10,13 +11,14 @@ import { decrypt, encrypt, randomToken } from './crypto';
 import { addDays, addMinutesLocal, isoNow, romeNow, TZ } from './time';
 
 const READ_SCOPE = 'https://www.googleapis.com/auth/calendar.events.readonly';
+const WRITE_SCOPE = 'https://www.googleapis.com/auth/calendar.events';
 
 export const SCOPES = [
   'openid',
   'email',
   'https://www.googleapis.com/auth/calendar.app.created',
   'https://www.googleapis.com/auth/drive.file',
-  READ_SCOPE,
+  WRITE_SCOPE,
 ];
 
 const CAL = 'https://www.googleapis.com/calendar/v3';
@@ -79,9 +81,20 @@ export async function isConnected(env: Env) {
   return googleConfigured(env) && !!(await getSetting(env.DB, 'google_refresh_token'));
 }
 
+async function grantedScopes(env: Env): Promise<string[]> {
+  return ((await getSetting(env.DB, 'google_scopes')) || '').split(' ');
+}
+
 /** true se il collegamento include il permesso di lettura del calendario principale (collegamenti vecchi: no) */
 export async function canReadCalendar(env: Env) {
-  return (await isConnected(env)) && ((await getSetting(env.DB, 'google_scopes')) || '').split(' ').includes(READ_SCOPE);
+  if (!(await isConnected(env))) return false;
+  const sc = await grantedScopes(env);
+  return sc.includes(READ_SCOPE) || sc.includes(WRITE_SCOPE);
+}
+
+/** true se l'app può modificare gli eventi di Google Calendar (collegamenti precedenti: serve ricollegare) */
+export async function canWriteCalendar(env: Env) {
+  return (await isConnected(env)) && (await grantedScopes(env)).includes(WRITE_SCOPE);
 }
 
 async function accessToken(env: Env): Promise<string> {
@@ -305,6 +318,74 @@ export async function pullCalendar(env: Env): Promise<PullResult> {
     throw e;
   }
   return res;
+}
+
+// ───────────── Calendario: modifiche dall'app → Google ─────────────
+// Gli impegni di Google (calendario principale o "RF Coaching") si creano, spostano ed eliminano dall'app:
+// la modifica va subito su Google Calendar e la copia locale (gcal_events) si allinea con la risposta di Google.
+// Gli eventi ricorrenti vengono letti già "aperti" (singleEvents): la modifica riguarda solo quell'occorrenza.
+
+export interface GoogleEventInput { summary: string; location: string; all_day: boolean; start: string; end: string }
+export type GCalendar = 'primary' | 'app';
+
+/** Corpo dell'evento per Google. Giornata intera: `end` è l'ultimo giorno incluso (Google vuole la data esclusiva). */
+export function googleEventBody(d: GoogleEventInput) {
+  const summary = d.summary.trim() || '(senza titolo)';
+  if (d.all_day) {
+    const a = d.start.slice(0, 10), b = d.end.slice(0, 10);
+    if (b < a) throw new Error('La data di fine è prima di quella di inizio');
+    return { summary, location: d.location, start: { date: a, dateTime: null, timeZone: null }, end: { date: addDays(b, 1), dateTime: null, timeZone: null } };
+  }
+  if (d.end <= d.start) throw new Error('L\'ora di fine deve essere dopo quella di inizio');
+  return {
+    summary, location: d.location,
+    start: { dateTime: `${d.start}:00`, timeZone: TZ, date: null },
+    end: { dateTime: `${d.end}:00`, timeZone: TZ, date: null },
+  };
+}
+
+const NEED_WRITE = 'Per modificare Google Calendar dall\'app ricollega Google da Impostazioni (serve un nuovo permesso)';
+
+async function writableCalId(env: Env, calendar: GCalendar): Promise<string> {
+  if (!(await canWriteCalendar(env))) throw new Error(NEED_WRITE);
+  return calendar === 'app' ? ensureCalendar(env) : 'primary';
+}
+
+function upsertRow(env: Env, calendar: GCalendar, e: GEvent) {
+  const start = toRomeLocal(e.start), end = toRomeLocal(e.end);
+  if (!start || !end) throw new Error('Google ha restituito un evento senza orario');
+  return run(env.DB, 'INSERT OR REPLACE INTO gcal_events (id, calendar, summary, location, starts_at, ends_at, all_day, html_link, synced_at) VALUES (?,?,?,?,?,?,?,?,?)',
+    `${calendar}:${e.id}`, calendar, (e.summary || '(senza titolo)').slice(0, 300), (e.location || '').slice(0, 300), start, end, e.start?.date ? 1 : 0, (e.htmlLink || '').slice(0, 500), isoNow());
+}
+
+/** 'primary:abc' → { calendar: 'primary', eventId: 'abc' }; solo le copie scritte da OAuth sono modificabili */
+export function parseRowId(id: string): { calendar: GCalendar; eventId: string } | null {
+  const m = /^(primary|app):(.+)$/.exec(id);
+  return m ? { calendar: m[1] as GCalendar, eventId: m[2] } : null;
+}
+
+export async function createGoogleEvent(env: Env, calendar: GCalendar, d: GoogleEventInput): Promise<string> {
+  const calId = encodeURIComponent(await writableCalId(env, calendar));
+  const ev = await g<GEvent>(env, `${CAL}/calendars/${calId}/events?sendUpdates=none`, { method: 'POST', body: JSON.stringify(googleEventBody(d)) });
+  await upsertRow(env, calendar, ev);
+  return `${calendar}:${ev.id}`;
+}
+
+export async function updateGoogleEvent(env: Env, rowId: string, d: GoogleEventInput): Promise<void> {
+  const ref = parseRowId(rowId);
+  if (!ref || !(await first(env.DB, 'SELECT id FROM gcal_events WHERE id = ?', rowId))) throw new Error('Evento non trovato');
+  const calId = encodeURIComponent(await writableCalId(env, ref.calendar));
+  const ev = await g<GEvent>(env, `${CAL}/calendars/${calId}/events/${encodeURIComponent(ref.eventId)}?sendUpdates=none`, { method: 'PATCH', body: JSON.stringify(googleEventBody(d)) });
+  await upsertRow(env, ref.calendar, ev);
+}
+
+export async function deleteGoogleEvent(env: Env, rowId: string): Promise<void> {
+  const ref = parseRowId(rowId);
+  if (!ref || !(await first(env.DB, 'SELECT id FROM gcal_events WHERE id = ?', rowId))) throw new Error('Evento non trovato');
+  const calId = encodeURIComponent(await writableCalId(env, ref.calendar));
+  try { await g(env, `${CAL}/calendars/${calId}/events/${encodeURIComponent(ref.eventId)}?sendUpdates=none`, { method: 'DELETE' }); }
+  catch (e) { const st = (e as { status?: number }).status; if (st !== 404 && st !== 410) throw e; }
+  await run(env.DB, 'DELETE FROM gcal_events WHERE id = ?', rowId);
 }
 
 // ───────────── Drive (backup) ─────────────

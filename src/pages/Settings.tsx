@@ -9,7 +9,7 @@ type S = {
   coach_name: string; calendar_name: string; default_duration: number; backup_auto: boolean; backup_retention: number; email: string;
   templates: Record<string, string>; default_templates: Record<string, string>;
   google: { configured: boolean; connected: boolean; account: string | null; calendar_id: string | null; drive_folder_id: string | null;
-    reads_calendar?: boolean; last_pull?: string | null; pull_error?: string | null };
+    reads_calendar?: boolean; writes_calendar?: boolean; last_pull?: string | null; pull_error?: string | null };
   ical?: IcalSettings;
 };
 const TPL: Record<string, [string, string]> = {
@@ -65,11 +65,14 @@ export default function Settings() {
                 appare automaticamente su Google Calendar (PC) e sull'app Calendario dell'iPhone se l'account Google è aggiunto in Impostazioni → Calendario → Account.
                 {data.google.reads_calendar && <><br /><RefreshCw size={15} style={{ verticalAlign: -2 }} /> Sincronizzazione nei due sensi ogni 15 minuti: i tuoi impegni Google compaiono nell'agenda dell'app,
                   e se sposti o elimini una lezione da Google Calendar l'app si aggiorna.
+                  {data.google.writes_calendar && <> Gli impegni Google si creano, spostano ed eliminano anche dal Calendario dell'app, senza aprire Google: la modifica arriva subito su Google Calendar.</>}
                   {data.google.last_pull && <> Ultima lettura: {new Date(data.google.last_pull).toLocaleString('it-IT', { timeZone: 'Europe/Rome', dateStyle: 'short', timeStyle: 'short' })}.</>}</>}
                 <br /><Cloud size={15} style={{ verticalAlign: -2 }} /> I backup vanno nella cartella Drive “RF Coaching – Backup”.
               </p>
-              {!data.google.reads_calendar && (
-                <div className="callout warn">Per vedere nell'app anche gli eventi del tuo Google Calendar serve un nuovo permesso (sola lettura).
+              {!data.google.writes_calendar && (
+                <div className="callout warn">{data.google.reads_calendar
+                  ? 'Per modificare dall\'app gli eventi del tuo Google Calendar serve un nuovo permesso.'
+                  : 'Per vedere e modificare nell\'app gli eventi del tuo Google Calendar serve un nuovo permesso.'}
                   <div style={{ marginTop: 10 }}><a className="btn btn-accent" href="/api/google/connect"><Cloud /> Ricollega Google</a></div></div>
               )}
               {data.google.pull_error && <div className="callout warn">Ultima lettura di Google Calendar non riuscita: {data.google.pull_error}</div>}
