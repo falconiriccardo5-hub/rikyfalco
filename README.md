@@ -21,6 +21,19 @@ In più: ricerca globale `⌘K` / `Ctrl+K` e pulsante viola ✨ per le azioni ra
 - **Messaggi**: l'app prepara da sola solleciti rate, promemoria lezioni e proposte di rinnovo; li apri già scritti su WhatsApp con un tocco.
 - **Report**: "Excel" scarica un CSV del mese, "PDF" apre la stampa (Salva come PDF).
 
+## Visita: questionari
+
+La sezione **Visita** ha tre schede: **Visite** (quelle già compilate), **Persone** (i contatti che incontri per una prima visita, con "Compila" e un menu per le altre azioni) e **Questionari**.
+
+- **Questionari personalizzabili**: ogni questionario ha *Impostazioni* (nome, tipologia **Benvenuto** o **Check In**, attivo sì/no) e *Domande* (risposta aperta, scelta singola o multipla, numero, scala 1–5, data; obbligatoria; riordino con le frecce; "Cancella tutto").
+- **Anamnesi e Check originali** sono stati convertiti in due questionari già pronti ("Anamnesi iniziale" come Benvenuto, "Check di controllo" come Check In), modificabili o eliminabili. Con la conversione sono scomparsi i campi calcolati (MG, MM, Kcal, Kcal/kg), che erano solo visualizzati e mai salvati.
+- **Nuova visita**: si sceglie la persona, poi il questionario (il "Consigliato" è Benvenuto alla prima visita, Check In dopo). Ogni visita salvata conserva una copia del titolo e delle domande: modificare un questionario non cambia le visite già fatte. Le visite create prima di questa versione continuano a funzionare.
+
+## Calendario e compleanni
+
+- **Vista come Google Calendar (scuro)**: Settimana (con griglia oraria, linea dell'ora attuale, eventi affiancati se si sovrappongono) o Mese, scelta dal menu in alto a destra. Barra laterale con mini-calendario e interruttori per Lezioni, Impegni Google e Compleanni. Un clic su una casella vuota crea un appuntamento a quell'ora.
+- **Compleanni**: nella scheda cliente si imposta la *Data di nascita* (facoltativa). Ogni anno compare un evento "🎂 Nome" a giornata intera nel calendario dell'app; il giorno stesso arriva una notifica e dal dettaglio si apre WhatsApp con gli auguri già scritti. I compleanni sono anche nel link iCal che si aggiunge a Google Calendar / iPhone.
+
 ## Sicurezza
 
 1. **Cloudflare Access** davanti a tutta l'app: si entra solo con la tua email (codice OTP via email o login Google).

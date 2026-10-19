@@ -8,6 +8,7 @@ import type { Env } from './types';
 import { all, getSetting, run, setSetting } from './db';
 import { randomToken } from './crypto';
 import { addDays, addMinutesLocal, isoNow, romeNow } from './time';
+import { birthdaysInRange } from './birthdays';
 
 const BACK_DAYS = 30;
 const AHEAD_DAYS = 120;
@@ -261,6 +262,22 @@ export async function buildFeed(env: Env): Promise<string> {
       `SUMMARY:${esc(`${prefix}${KIND_LABEL[s.kind] ?? 'Appuntamento'} · ${s.person || 'Appuntamento'}`)}`,
       `LOCATION:${esc(s.location || (s.mode === 'online' ? 'Online' : ''))}`,
       `DESCRIPTION:${esc(`${s.mode === 'online' ? 'Online' : 'In presenza'} — gestito da RF Coaching`)}`,
+      'END:VEVENT',
+    );
+  }
+  // Compleanni dei clienti: giornate intere, "libero" (non occupano l'agenda)
+  const bdClients = await all<{ id: string; first_name: string; last_name: string; birth_date: string | null; archived_at: string | null }>(env.DB,
+    'SELECT id, first_name, last_name, birth_date, archived_at FROM clients WHERE birth_date IS NOT NULL');
+  for (const b of birthdaysInRange(bdClients, addDays(today, -60), addDays(today, 400))) {
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:birthday-${b.client_id}-${b.date.slice(0, 4)}@rf-coaching`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${b.date.replace(/-/g, '')}`,
+      `DTEND;VALUE=DATE:${addDays(b.date, 1).replace(/-/g, '')}`,
+      `SUMMARY:${esc(`🎂 Compleanno ${b.name} (${b.age})`)}`,
+      'TRANSP:TRANSPARENT',
+      `DESCRIPTION:${esc('Compleanno cliente — gestito da RF Coaching')}`,
       'END:VEVENT',
     );
   }

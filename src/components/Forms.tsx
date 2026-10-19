@@ -28,7 +28,7 @@ export function ClientForm({ client, lead, onClose, onSaved }: { client?: Client
   const src = client ?? lead;
   const { v, bind } = useForm({
     first_name: src?.first_name ?? '', last_name: src?.last_name ?? '', email: src?.email ?? '', phone: src?.phone ?? '',
-    mode: client?.mode ?? 'misto', program_months: String(client?.program_months ?? 12), lessons_target: String(client?.lessons_target || ''), start_date: client?.start_date ?? today,
+    birth_date: client?.birth_date ?? '', mode: client?.mode ?? 'misto', program_months: String(client?.program_months ?? 12), lessons_target: String(client?.lessons_target || ''), start_date: client?.start_date ?? today,
     price: client ? fromCents(client.price_total_cents) : '', installments: '12', first_due_date: client?.start_date ?? today, notes: src?.notes ?? '',
   });
   const [busy, setBusy] = useState(false);
@@ -39,7 +39,7 @@ export function ClientForm({ client, lead, onClose, onSaved }: { client?: Client
     e.preventDefault();
     setBusy(true);
     const body = {
-      first_name: v.first_name, last_name: v.last_name, email: v.email, phone: v.phone, mode: v.mode,
+      first_name: v.first_name, last_name: v.last_name, email: v.email, phone: v.phone, birth_date: v.birth_date, mode: v.mode,
       program_months: Number(v.program_months), lessons_target: Number(v.lessons_target) || 0, start_date: v.start_date, price_total_cents: toCents(v.price || '0'), notes: v.notes,
       ...(editing ? {} : { installments: Number(v.installments) || 0, first_due_date: v.first_due_date }),
     };
@@ -60,6 +60,7 @@ export function ClientForm({ client, lead, onClose, onSaved }: { client?: Client
           <label className="field"><span>Cognome</span><input className="input" maxLength={80} {...bind('last_name')} /></label>
           <label className="field"><span>Email</span><input className="input" type="email" maxLength={200} {...bind('email')} /></label>
           <label className="field"><span>Telefono (WhatsApp)</span><input className="input" type="tel" maxLength={40} {...bind('phone')} placeholder="+39 ..." /></label>
+          <label className="field"><span>Data di nascita</span><input className="input" type="date" min="1900-01-01" max={today} {...bind('birth_date')} /></label>
         </div>
         <div className="grid-3">
           <label className="field"><span>Percorso</span>
@@ -116,7 +117,7 @@ export function RenewForm({ client, onClose }: { client: ClientSummary; onClose:
 export function SessionForm({ session, clientId, date, onClose }: { session?: Session; clientId?: string; date?: string; onClose: () => void }) {
   const clients = useApi<ClientSummary[]>('/clients');
   const settings = useApi<{ default_duration: number }>('/settings');
-  const defStart = date ? `${date}T18:00` : nowRomeLocal().slice(0, 11) + '18:00';
+  const defStart = date ? (date.length > 10 ? date : `${date}T18:00`) : nowRomeLocal().slice(0, 11) + '18:00';
   const { v, setV, bind } = useForm({
     client_id: session?.client_id ?? clientId ?? '', kind: session?.kind ?? 'lezione', starts_at: session?.starts_at ?? defStart,
     duration_min: String(session?.duration_min ?? ''), mode: session?.mode ?? 'live', location: session?.location ?? '', notes: session?.notes ?? '', repeat_weeks: '1',
