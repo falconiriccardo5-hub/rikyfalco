@@ -2,11 +2,12 @@
 import type { Env } from './types';
 import { all, first, getSetting, uid } from './db';
 import { addDays, daysBetween, isoNow, romeNow } from './time';
+import { birthdaysInRange } from './birthdays';
 
 export interface ClientRow {
   id: string; first_name: string; last_name: string; email: string; phone: string;
   mode: 'live' | 'online' | 'misto'; program_months: number; lessons_target: number; start_date: string; end_date: string;
-  price_total_cents: number; notes: string; archived_at: string | null; created_at: string; updated_at: string;
+  price_total_cents: number; notes: string; archived_at: string | null; birth_date: string | null; created_at: string; updated_at: string;
 }
 export interface PaymentRow {
   id: string; client_id: string; label: string; amount_cents: number; due_date: string; paid_at: string | null;
@@ -154,6 +155,11 @@ export async function refreshAutomations(env: Env) {
     if (!c) continue;
     msg(`sess-remind:${s.id}:${s.starts_at}`, c.id, 'promemoria_lezione',
       fill(tpl.promemoria_lezione, { nome: c.first_name, tipo: s.kind, data: itDate(s.starts_at.slice(0, 10)), ora: s.starts_at.slice(11, 16) }));
+  }
+
+  // Compleanni di oggi
+  for (const b of birthdaysInRange(clients, today, today)) {
+    notif(`birthday:${b.client_id}:${today.slice(0, 4)}`, 'compleanno', `🎂 Oggi è il compleanno di ${b.name}`, `Compie ${b.age} anni`, `/clients/${b.client_id}`);
   }
 
   // Percorsi in scadenza (≤ 30 giorni)

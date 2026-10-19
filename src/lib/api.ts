@@ -39,7 +39,7 @@ export const api = {
 export type Mode = 'live' | 'online' | 'misto';
 export interface ClientSummary {
   id: string; first_name: string; last_name: string; name: string; email: string; phone: string; mode: Mode;
-  program_months: number; lessons_target: number; start_date: string; end_date: string; price_total_cents: number; notes: string; archived_at: string | null;
+  program_months: number; lessons_target: number; start_date: string; end_date: string; price_total_cents: number; notes: string; archived_at: string | null; birth_date: string | null;
   created_at: string; status: 'attivo' | 'in_scadenza' | 'scaduto' | 'archiviato' | 'non_iniziato'; month: number;
   lessons_done: number; lessons_missed: number;
   last_session: { starts_at: string; kind: string } | null;
@@ -58,6 +58,8 @@ export interface Session {
   duration_min: number; mode: 'live' | 'online'; location: string; status: 'programmata' | 'svolta' | 'saltata' | 'annullata';
   notes: string; gcal_status: string; gcal_error: string | null; person?: string;
 }
+/** Compleanno di un cliente che cade in una data dell'intervallo richiesto */
+export interface Birthday { client_id: string; name: string; phone: string; date: string; birth_date: string; age: number }
 /** Impegno letto da Google Calendar (sola lettura) */
 export interface GoogleEvent {
   id: string; calendar: 'primary' | 'app'; summary: string; location: string; starts_at: string; ends_at: string; all_day: number; html_link: string;
@@ -68,5 +70,7 @@ export interface Lead {
 }
 export interface VisitFormRecord {
   id: string; client_id: string | null; lead_id: string | null; template: 'anamnesi' | 'check'; visit_date: string;
+  /** nome del questionario compilato e domande com'erano in quel momento */
+  title: string; questionnaire_id: string | null; questions: import('./questionnaire').Q[];
   answers: Record<string, string | string[]>; person: string; created_at: string; updated_at: string;
 }

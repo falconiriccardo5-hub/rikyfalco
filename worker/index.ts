@@ -11,6 +11,8 @@ import {
 } from './domain';
 import * as google from './google';
 import * as ical from './ical';
+import { DEFAULT_QUESTIONNAIRES, legacyQuestions, legacyTitle, templateOfKind, type Q, type QKind } from '../src/lib/questionnaire';
+import { birthdaysInRange } from './birthdays';
 import { exportCsvs, listDriveBackups, readDriveBackup, restoreFromCsvs, runDriveBackup } from './backup';
 import { makeZip } from './zip';
 import { toCsv } from './csv';
@@ -98,6 +100,9 @@ const clientBase = z.object({
   start_date: dateStr,
   price_total_cents: cents.default(0),
   notes: text(5000).default(''),
+  // '' = nessuna data (cancella); altrimenti una data di nascita plausibile
+  birth_date: z.union([z.literal(''), dateStr.refine((v) => v >= '1900-01-01' && v <= new Date().toISOString().slice(0, 10), 'data di nascita non valida')])
+    .transform((v) => v || null).nullable().optional(),
 });
 const planSchema = z.object({
   installments: z.number().int().min(0).max(60).default(0),
@@ -178,8 +183,8 @@ app.post('/api/clients', async (c) => {
   const now = isoNow();
   const end = addDays(addMonths(d.start_date, d.program_months), -1);
   const stmts = [
-    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, created_at, updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, now, now),
+    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, birth_date, created_at, updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(id, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, d.birth_date ?? null, now, now),
     ...insertPayments(c.env, buildPlan(id, d.price_total_cents, plan.installments, plan.first_due_date || d.start_date)),
   ];
   await c.env.DB.batch(stmts);
@@ -205,8 +210,8 @@ app.patch('/api/clients/:id', async (c) => {
   const d = clientBase.partial().parse(await c.req.json());
   const merged = { ...cur, ...Object.fromEntries(Object.entries(d).filter(([, v]) => v !== undefined)) } as ClientRow;
   merged.end_date = addDays(addMonths(merged.start_date, merged.program_months), -1);
-  await run(c.env.DB, `UPDATE clients SET first_name=?, last_name=?, email=?, phone=?, mode=?, program_months=?, lessons_target=?, start_date=?, end_date=?, price_total_cents=?, notes=?, updated_at=? WHERE id=?`,
-    merged.first_name, merged.last_name, merged.email, merged.phone, merged.mode, merged.program_months, merged.lessons_target, merged.start_date, merged.end_date, merged.price_total_cents, merged.notes, isoNow(), id);
+  await run(c.env.DB, `UPDATE clients SET first_name=?, last_name=?, email=?, phone=?, mode=?, program_months=?, lessons_target=?, start_date=?, end_date=?, price_total_cents=?, notes=?, birth_date=?, updated_at=? WHERE id=?`,
+    merged.first_name, merged.last_name, merged.email, merged.phone, merged.mode, merged.program_months, merged.lessons_target, merged.start_date, merged.end_date, merged.price_total_cents, merged.notes, merged.birth_date ?? null, isoNow(), id);
   await logActivity(c.env, actor(c), 'modificato', 'cliente', id, `Modificato ${fullName(merged)}`);
   // Il nome compare negli eventi del calendario: riallinea le sessioni future
   if (d.first_name !== undefined || d.last_name !== undefined) {
@@ -351,9 +356,10 @@ app.get('/api/sessions', async (c) => {
      WHERE s.starts_at >= ? AND s.starts_at < ? ORDER BY s.starts_at`, from, addDays(to, 1));
   const events = await all(c.env.DB, 'SELECT id, calendar, summary, location, starts_at, ends_at, all_day, html_link FROM gcal_events WHERE starts_at < ? AND ends_at > ? ORDER BY all_day DESC, starts_at',
     addDays(to, 1), from);
+  const birthdays = birthdaysInRange(await all(c.env.DB, 'SELECT id, first_name, last_name, phone, birth_date, archived_at FROM clients WHERE birth_date IS NOT NULL'), from, to);
   c.executionCtx.waitUntil(pullIfStale(c.env));
   const viaIcal = !!(await getSetting(c.env.DB, 'ical_import_url')) || !!(await getSetting(c.env.DB, 'ical_feed_token'));
-  return c.json({ sessions: rows, events, google: { connected: (await google.isConnected(c.env)) || viaIcal, reads: (await google.canReadCalendar(c.env)) || !!(await getSetting(c.env.DB, 'ical_import_url')), ical: viaIcal } });
+  return c.json({ sessions: rows, events, birthdays, google: { connected: (await google.isConnected(c.env)) || viaIcal, reads: (await google.canReadCalendar(c.env)) || !!(await getSetting(c.env.DB, 'ical_import_url')), ical: viaIcal } });
 });
 
 const sessionSchema = z.object({
@@ -471,8 +477,8 @@ app.post('/api/leads/:id/convert', async (c) => {
   const clientId = uid(); const now = isoNow();
   const end = addDays(addMonths(d.start_date, d.program_months), -1);
   await c.env.DB.batch([
-    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, created_at, updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(clientId, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, now, now),
+    c.env.DB.prepare(`INSERT INTO clients (id, first_name, last_name, email, phone, mode, program_months, lessons_target, start_date, end_date, price_total_cents, notes, birth_date, created_at, updated_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(clientId, d.first_name, d.last_name, d.email, d.phone, d.mode, d.program_months, d.lessons_target, d.start_date, end, d.price_total_cents, d.notes, d.birth_date ?? null, now, now),
     c.env.DB.prepare("UPDATE leads SET status='convertito', client_id=?, updated_at=? WHERE id=?").bind(clientId, now, id),
     c.env.DB.prepare('UPDATE visit_forms SET client_id=? WHERE lead_id=? AND client_id IS NULL').bind(clientId, id),
     ...insertPayments(c.env, buildPlan(clientId, d.price_total_cents, plan.installments, plan.first_due_date || d.start_date)),
@@ -494,19 +500,98 @@ app.delete('/api/leads/:id', async (c) => {
   return c.json({ ok: true });
 });
 
-// ───────────── API: moduli visita (anamnesi / check) ─────────────
+// ───────────── API: questionari delle visite ─────────────
+
+const questionSchema = z.object({
+  id: z.string().regex(/^[a-z0-9_]{1,55}$/, 'id domanda non valido'),
+  label: text(300).min(1, 'scrivi la domanda'),
+  type: z.enum(['text', 'single', 'multi', 'number', 'scale', 'date']),
+  options: z.array(text(120).min(1)).max(40).optional(),
+  required: z.boolean().optional(),
+  unit: text(20).optional(),
+}).superRefine((q, ctx) => {
+  if ((q.type === 'single' || q.type === 'multi') && (q.options?.length ?? 0) < 2) ctx.addIssue({ code: 'custom', message: `“${q.label}”: servono almeno 2 risposte` });
+});
+const questionnaireSchema = z.object({
+  name: text(120).min(1, 'nome obbligatorio'),
+  kind: z.enum(['benvenuto', 'check_in']),
+  active: z.boolean().default(true),
+  questions: z.array(questionSchema).max(200).refine((qs) => new Set(qs.map((q) => q.id)).size === qs.length, 'domande duplicate').default([]),
+});
+type QuestionnaireRow = { id: string; name: string; kind: QKind; active: number; questions: string; created_at: string; updated_at: string };
+const parseQuestionnaire = ({ questions, active, ...r }: QuestionnaireRow) => ({ ...r, active: !!active, questions: JSON.parse(questions || '[]') as Q[] });
+
+/** Alla prima apertura crea i due questionari originali (Anamnesi e Check), che poi si possono modificare o eliminare. */
+async function ensureDefaultQuestionnaires(env: Env) {
+  if ((await getSetting(env.DB, 'questionnaires_seeded')) === '1') return;
+  const now = isoNow();
+  await env.DB.batch([
+    ...DEFAULT_QUESTIONNAIRES.map((d) => env.DB.prepare('INSERT OR IGNORE INTO questionnaires (id, name, kind, active, questions, created_at, updated_at) VALUES (?,?,?,?,?,?,?)')
+      .bind(d.id, d.name, d.kind, 1, JSON.stringify(d.questions), now, now)),
+    env.DB.prepare("INSERT INTO settings (key, value) VALUES ('questionnaires_seeded', '1') ON CONFLICT(key) DO UPDATE SET value = '1'"),
+  ]);
+}
+
+app.get('/api/questionnaires', async (c) => {
+  await ensureDefaultQuestionnaires(c.env);
+  const rows = await all<QuestionnaireRow>(c.env.DB, 'SELECT * FROM questionnaires ORDER BY kind, created_at');
+  return c.json(rows.map(parseQuestionnaire));
+});
+
+app.get('/api/questionnaires/:id', async (c) => {
+  const row = await first<QuestionnaireRow>(c.env.DB, 'SELECT * FROM questionnaires WHERE id = ?', c.req.param('id'));
+  if (!row) return c.json({ error: 'Questionario non trovato' }, 404);
+  return c.json(parseQuestionnaire(row));
+});
+
+app.post('/api/questionnaires', async (c) => {
+  const d = questionnaireSchema.parse(await c.req.json());
+  const id = uid(); const now = isoNow();
+  await run(c.env.DB, 'INSERT INTO questionnaires (id, name, kind, active, questions, created_at, updated_at) VALUES (?,?,?,?,?,?,?)', id, d.name, d.kind, d.active ? 1 : 0, JSON.stringify(d.questions), now, now);
+  await logActivity(c.env, actor(c), 'creato', 'questionario', id, d.name);
+  return c.json({ id }, 201);
+});
+
+app.patch('/api/questionnaires/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<QuestionnaireRow>(c.env.DB, 'SELECT * FROM questionnaires WHERE id = ?', id);
+  if (!cur) return c.json({ error: 'Questionario non trovato' }, 404);
+  const d = questionnaireSchema.partial().parse(await c.req.json());
+  await run(c.env.DB, 'UPDATE questionnaires SET name=?, kind=?, active=?, questions=?, updated_at=? WHERE id=?',
+    d.name ?? cur.name, d.kind ?? cur.kind, d.active === undefined ? cur.active : d.active ? 1 : 0, d.questions ? JSON.stringify(d.questions) : cur.questions, isoNow(), id);
+  await logActivity(c.env, actor(c), 'modificato', 'questionario', id, d.name ?? cur.name);
+  return c.json({ ok: true });
+});
+
+app.delete('/api/questionnaires/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<QuestionnaireRow>(c.env.DB, 'SELECT * FROM questionnaires WHERE id = ?', id);
+  if (!cur) return c.json({ error: 'Questionario non trovato' }, 404);
+  // le visite già compilate conservano titolo e domande (copia salvata con la visita)
+  await run(c.env.DB, 'DELETE FROM questionnaires WHERE id = ?', id);
+  await logActivity(c.env, actor(c), 'eliminato', 'questionario', id, cur.name);
+  return c.json({ ok: true });
+});
+
+// ───────────── API: visite compilate ─────────────
 
 const answerValue = z.union([text(5000), z.array(text(200)).max(40)]);
+const answersSchema = z.record(z.string().regex(/^[a-z0-9_]{1,60}$/), answerValue).refine((a) => Object.keys(a).length <= 400, 'troppe risposte').default({});
 const visitFormSchema = z.object({
-  template: z.enum(['anamnesi', 'check']),
+  questionnaire_id: z.string().max(64),
   visit_date: dateStr,
-  answers: z.record(z.string().regex(/^[a-z0-9_]{1,60}$/), answerValue).refine((a) => Object.keys(a).length <= 400, 'troppe risposte').default({}),
+  answers: answersSchema,
 });
-type VisitFormRow = { id: string; client_id: string | null; lead_id: string | null; template: string; visit_date: string; answers: string; created_at: string; updated_at: string; person: string };
+type VisitFormRow = { id: string; client_id: string | null; lead_id: string | null; template: 'anamnesi' | 'check'; visit_date: string; answers: string; questionnaire_id: string | null; title: string | null; questions: string | null; created_at: string; updated_at: string; person: string };
 const VISIT_FORM_SELECT = `SELECT f.*, TRIM(COALESCE(c.first_name || ' ' || c.last_name, l.first_name || ' ' || l.last_name, '')) AS person
   FROM visit_forms f LEFT JOIN clients c ON c.id = f.client_id LEFT JOIN leads l ON l.id = f.lead_id`;
-const TEMPLATE_LABEL: Record<string, string> = { anamnesi: 'Anamnesi iniziale', check: 'Check' };
-const parseForm = ({ answers, ...f }: VisitFormRow) => ({ ...f, answers: JSON.parse(answers || '{}') as Record<string, unknown> });
+// Visite salvate prima dei questionari personalizzabili: usano i moduli originali
+const parseForm = ({ answers, questions, title, ...f }: VisitFormRow) => ({
+  ...f,
+  title: title ?? legacyTitle(f.template),
+  answers: JSON.parse(answers || '{}') as Record<string, unknown>,
+  questions: questions ? (JSON.parse(questions) as Q[]) : legacyQuestions(f.template),
+});
 
 app.get('/api/visit-forms', async (c) => {
   const clientId = c.req.query('client_id'); const leadId = c.req.query('lead_id');
@@ -519,7 +604,7 @@ app.get('/api/visit-forms', async (c) => {
 
 app.get('/api/visit-forms/:id', async (c) => {
   const row = await first<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} WHERE f.id = ?`, c.req.param('id'));
-  if (!row) return c.json({ error: 'Modulo non trovato' }, 404);
+  if (!row) return c.json({ error: 'Visita non trovata' }, 404);
   return c.json(parseForm(row));
 });
 
@@ -528,37 +613,39 @@ app.post('/api/visit-forms', async (c) => {
   const d = visitFormSchema.parse(body);
   const who = z.object({ client_id: z.string().max(64).optional(), lead_id: z.string().max(64).optional() }).parse(body);
   if (!who.client_id === !who.lead_id) return c.json({ error: 'Scegli un cliente oppure un contatto' }, 400);
+  const qn = await first<QuestionnaireRow>(c.env.DB, 'SELECT * FROM questionnaires WHERE id = ?', d.questionnaire_id);
+  if (!qn) return c.json({ error: 'Questionario non trovato' }, 404);
   const person = who.client_id
     ? await first<{ first_name: string; last_name: string }>(c.env.DB, 'SELECT first_name, last_name FROM clients WHERE id = ?', who.client_id)
     : await first<{ first_name: string; last_name: string; client_id: string | null; status: string }>(c.env.DB, 'SELECT first_name, last_name, client_id, status FROM leads WHERE id = ?', who.lead_id);
   if (!person) return c.json({ error: who.client_id ? 'Cliente non trovato' : 'Contatto non trovato' }, 404);
   const id = uid(); const now = isoNow();
-  const stmts = [c.env.DB.prepare('INSERT INTO visit_forms (id, client_id, lead_id, template, visit_date, answers, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)')
-    .bind(id, who.client_id ?? ('client_id' in person ? person.client_id : null), who.lead_id ?? null, d.template, d.visit_date, JSON.stringify(d.answers), now, now)];
+  const stmts = [c.env.DB.prepare('INSERT INTO visit_forms (id, client_id, lead_id, template, visit_date, answers, questionnaire_id, title, questions, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
+    .bind(id, who.client_id ?? ('client_id' in person ? person.client_id : null), who.lead_id ?? null, templateOfKind(qn.kind), d.visit_date, JSON.stringify(d.answers), qn.id, qn.name, qn.questions, now, now)];
   // Visita compilata per un contatto ancora "da fare" → la consulenza risulta svolta
   if (who.lead_id) stmts.push(c.env.DB.prepare("UPDATE leads SET status='svolta', updated_at=? WHERE id=? AND status='da_fare'").bind(now, who.lead_id));
   await c.env.DB.batch(stmts);
-  await logActivity(c.env, actor(c), 'creato', 'visita', id, `${TEMPLATE_LABEL[d.template]} di ${fullName(person)}`);
+  await logActivity(c.env, actor(c), 'creato', 'visita', id, `${qn.name} di ${fullName(person)}`);
   return c.json({ id }, 201);
 });
 
 app.patch('/api/visit-forms/:id', async (c) => {
   const id = c.req.param('id');
   const cur = await first<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} WHERE f.id = ?`, id);
-  if (!cur) return c.json({ error: 'Modulo non trovato' }, 404);
-  const d = visitFormSchema.partial().parse(await c.req.json());
-  await run(c.env.DB, 'UPDATE visit_forms SET template=?, visit_date=?, answers=?, updated_at=? WHERE id=?',
-    d.template ?? cur.template, d.visit_date ?? cur.visit_date, d.answers ? JSON.stringify(d.answers) : cur.answers, isoNow(), id);
-  await logActivity(c.env, actor(c), 'modificato', 'visita', id, `${TEMPLATE_LABEL[d.template ?? cur.template]} di ${cur.person}`);
+  if (!cur) return c.json({ error: 'Visita non trovata' }, 404);
+  const d = z.object({ visit_date: dateStr, answers: answersSchema }).partial().parse(await c.req.json());
+  await run(c.env.DB, 'UPDATE visit_forms SET visit_date=?, answers=?, updated_at=? WHERE id=?',
+    d.visit_date ?? cur.visit_date, d.answers ? JSON.stringify(d.answers) : cur.answers, isoNow(), id);
+  await logActivity(c.env, actor(c), 'modificato', 'visita', id, `${cur.title ?? legacyTitle(cur.template)} di ${cur.person}`);
   return c.json({ ok: true });
 });
 
 app.delete('/api/visit-forms/:id', async (c) => {
   const id = c.req.param('id');
   const cur = await first<VisitFormRow>(c.env.DB, `${VISIT_FORM_SELECT} WHERE f.id = ?`, id);
-  if (!cur) return c.json({ error: 'Modulo non trovato' }, 404);
+  if (!cur) return c.json({ error: 'Visita non trovata' }, 404);
   await run(c.env.DB, 'DELETE FROM visit_forms WHERE id = ?', id);
-  await logActivity(c.env, actor(c), 'eliminato', 'visita', id, `${TEMPLATE_LABEL[cur.template]} di ${cur.person} del ${cur.visit_date}`);
+  await logActivity(c.env, actor(c), 'eliminato', 'visita', id, `${cur.title ?? legacyTitle(cur.template)} di ${cur.person} del ${cur.visit_date}`);
   return c.json({ ok: true });
 });
 

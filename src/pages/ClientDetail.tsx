@@ -6,7 +6,7 @@ import { useOpen } from '../components/Layout';
 import { PayBanner, Segments } from '../components/ClientCard';
 import { Confirm, Empty, ErrorBox, Loading, useAction, useApi } from '../components/ui';
 import { api, type ClientSummary, type Payment, type Session, type VisitFormRecord } from '../lib/api';
-import { progress, TEMPLATES } from '../lib/visitForm';
+import { isBlank } from '../lib/questionnaire';
 import { euro, initials, itDate, KIND_LABEL, METHOD_LABEL, MODE_LABEL, nowRomeLocal, shortDay, STATUS_LABEL, time, waNumber } from '../lib/format';
 
 type Detail = { client: ClientSummary; payments: Payment[]; sessions: Session[]; activity: { id: number; ts: string; action: string; summary: string }[] };
@@ -118,14 +118,14 @@ export default function ClientDetail() {
         <>
           <div className="row" style={{ justifyContent: 'flex-end', marginBottom: 14 }}><button className="btn btn-primary" onClick={() => nav(`/visits/form/new?client=${c.id}`)}><ClipboardList /> Nuova visita</button></div>
           <div className="card list">
-            {!forms.data ? <Loading /> : forms.data.length === 0 ? <Empty>Nessuna visita compilata. “Nuova visita” apre l’anamnesi iniziale; dalle successive si apre il check di controllo.</Empty> : forms.data.map((f) => {
-              const p = progress(TEMPLATES[f.template], f.answers);
+            {!forms.data ? <Loading /> : forms.data.length === 0 ? <Empty>Nessuna visita compilata. “Nuova visita” ti fa scegliere il questionario.</Empty> : forms.data.map((f) => {
+              const done = f.questions.filter((q) => !isBlank(f.answers[q.id])).length;
               return (
                 <Link className="list-row" key={f.id} to={`/visits/form/${f.id}`}>
                   <div className={`row-icon ${f.template === 'anamnesi' ? 'violet' : 'green'}`}><FileText /></div>
                   <div className="grow">
-                    <div className="title">{TEMPLATES[f.template].label} · {itDate(f.visit_date)}</div>
-                    <div className="sub">{p.done}/{p.total} risposte{typeof f.answers.peso === 'string' && ` · ${f.answers.peso} kg`}</div>
+                    <div className="title">{f.title} · {itDate(f.visit_date)}</div>
+                    <div className="sub">{done}/{f.questions.length} risposte{typeof f.answers.peso === 'string' && ` · ${f.answers.peso} kg`}</div>
                   </div>
                   <span className="btn btn-sm">Apri</span>
                 </Link>

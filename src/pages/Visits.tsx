@@ -1,81 +1,117 @@
-import { useState } from 'react';
-import { ClipboardList, FileText, Pencil, Trash2, UserPlus } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { ChevronRight, MoreHorizontal, Plus } from 'lucide-react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ClientForm, LeadForm } from '../components/Forms';
 import { useOpen } from '../components/Layout';
-import { Confirm, Empty, ErrorBox, Loading, PageHead, useAction, useApi } from '../components/ui';
+import { Confirm, Empty, ErrorBox, Loading, useAction, useApi } from '../components/ui';
 import { api, type Lead, type VisitFormRecord } from '../lib/api';
-import { TEMPLATES } from '../lib/visitForm';
 import { initials, itDate, shortDay, time } from '../lib/format';
+import { KIND_LABEL, type Questionnaire } from '../lib/questionnaire';
 
-const STATUS: Record<Lead['status'], [string, string]> = { da_fare: ['violet', 'Da fare'], svolta: ['amber', 'Svolta'], convertito: ['green', 'Cliente'], perso: ['gray', 'Non interessato'] };
+type Tab = 'visite' | 'persone' | 'questionari';
+const TABS: [Tab, string][] = [['visite', 'Visite'], ['persone', 'Persone'], ['questionari', 'Questionari']];
+const isTab = (v: string | null): v is Tab => v === 'visite' || v === 'persone' || v === 'questionari';
 
 export default function Visits() {
-  const { data, error } = useApi<Lead[]>('/leads');
-  const forms = useApi<VisitFormRecord[]>('/visit-forms');
-  const nav = useNavigate();
-  const [f, setF] = useState<'aperte' | 'tutte' | Lead['status']>('aperte');
-  const [modal, setModal] = useState<null | { edit: Lead } | { convert: Lead } | { del: Lead }>(null);
+  const [params, setParams] = useSearchParams();
+  const tab: Tab = isTab(params.get('tab')) ? (params.get('tab') as Tab) : 'visite';
   const open = useOpen();
-  const act = useAction();
-
-  if (error) return <ErrorBox error={error} />;
-  if (!data) return <Loading />;
-  const list = data.filter((l) => f === 'tutte' || (f === 'aperte' ? l.status === 'da_fare' || l.status === 'svolta' : l.status === f));
+  const nav = useNavigate();
 
   return (
-    <>
-      <PageHead label="CONSULENZE CONOSCITIVE" title="Visita">
-        <button className="btn btn-lg" onClick={open.lead}><UserPlus /> Nuovo contatto</button>
-        <button className="btn btn-primary btn-lg" onClick={open.visit}><ClipboardList /> Nuova visita</button>
-      </PageHead>
-      <div className="chips fade-in" style={{ marginBottom: 26 }}>
-        {([['aperte', 'Aperte'], ['da_fare', 'Da fare'], ['svolta', 'Svolte'], ['convertito', 'Diventati clienti'], ['perso', 'Non interessati'], ['tutte', 'Tutte']] as const).map(([k, l]) =>
-          <button key={k} className={`chip ${f === k ? 'active' : ''}`} onClick={() => setF(k)}>{l}</button>)}
+    <div className="minimal-page">
+      <div className="mp-head fade-in">
+        <h1>Visita</h1>
+        <button className="btn btn-primary" onClick={() => (tab === 'questionari' ? nav('/visits/questionnaire/new') : open.visit())}>
+          <Plus /> {tab === 'questionari' ? 'Nuovo questionario' : 'Nuova visita'}
+        </button>
       </div>
-      <div className="card list fade-in">
-        {list.length === 0 ? <Empty>Nessuna visita. Le persone interessate che incontri per una prima consulenza compaiono qui.</Empty> : list.map((l) => (
-          <div className="list-row" key={l.id}>
-            <div className="avatar sm">{initials(l.first_name, l.last_name)}</div>
-            <div className="grow">
-              <div className="title">{l.first_name} {l.last_name}</div>
-              <div className="sub">
-                {l.visit_at ? `Visita ${shortDay(l.visit_at)} ${time(l.visit_at)}` : `Inserito il ${itDate(l.created_at)}`}
-                {l.source && ` · ${l.source}`}{l.phone && ` · ${l.phone}`}
-              </div>
-            </div>
-            <span className={`pill ${STATUS[l.status][0]}`}>{STATUS[l.status][1]}</span>
-            <div className="actions">
-              {l.status !== 'convertito' && <>
-                <select className="select" style={{ height: 34, width: 'auto', fontSize: 13.5, borderRadius: 999 }} value={l.status} aria-label="Esito"
-                  onChange={(e) => act(() => api.patch(`/leads/${l.id}`, { status: e.target.value }), 'Esito aggiornato')}>
-                  <option value="da_fare">Da fare</option><option value="svolta">Svolta</option><option value="perso">Non interessato</option>
-                </select>
-                <button className="btn btn-sm btn-green" onClick={() => setModal({ convert: l })}><UserPlus /> Rendi cliente</button>
-              </>}
-              <button className="btn btn-sm" onClick={() => nav(`/visits/form/new?${l.client_id ? `client=${l.client_id}` : `lead=${l.id}`}`)}><ClipboardList /> Modulo</button>
-              {l.client_id && <Link className="btn btn-sm" to={`/clients/${l.client_id}`}>Apri scheda</Link>}
-              <button className="icon-btn sm" aria-label="Modifica" onClick={() => setModal({ edit: l })}><Pencil /></button>
-              <button className="icon-btn sm" aria-label="Elimina" onClick={() => setModal({ del: l })}><Trash2 /></button>
-            </div>
-          </div>
+
+      <div className="seg fade-in" role="tablist">
+        {TABS.map(([k, l]) => (
+          <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setParams(k === 'visite' ? {} : { tab: k }, { replace: true })}>{l}</button>
         ))}
       </div>
 
-      <div className="section-title spread" style={{ marginTop: 48 }}>
-        <h2>Moduli compilati</h2>
-        {forms.data && forms.data.length > 0 && <span className="muted mono" style={{ fontSize: 13 }}>{forms.data.length}</span>}
+      {tab === 'visite' && <DoneVisits />}
+      {tab === 'persone' && <People />}
+      {tab === 'questionari' && <Questionnaires />}
+    </div>
+  );
+}
+
+function DoneVisits() {
+  const { data, error } = useApi<VisitFormRecord[]>('/visit-forms');
+  if (error) return <ErrorBox error={error} />;
+  if (!data) return <Loading />;
+  if (data.length === 0) return <div className="mp-list fade-in"><Empty>Nessuna visita ancora. Con “Nuova visita” scegli la persona e il questionario da compilare.</Empty></div>;
+  return (
+    <div className="mp-list fade-in">
+      {data.map((f) => (
+        <Link className="mp-row" key={f.id} to={`/visits/form/${f.id}`}>
+          <div className="grow">
+            <div className="t">{f.person || 'Persona eliminata'}</div>
+            <div className="s">{f.title} · {itDate(f.visit_date)}</div>
+          </div>
+          <ChevronRight className="chev" />
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+const STATUS: Record<Lead['status'], string> = { da_fare: 'Da fare', svolta: 'Svolta', convertito: 'Cliente', perso: 'Non interessato' };
+
+function People() {
+  const { data, error } = useApi<Lead[]>('/leads');
+  const nav = useNavigate();
+  const open = useOpen();
+  const act = useAction();
+  const [all, setAll] = useState(false);
+  const [menu, setMenu] = useState<string | null>(null);
+  const [modal, setModal] = useState<null | { edit: Lead } | { convert: Lead } | { del: Lead }>(null);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menu) return;
+    const h = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setMenu(null); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [menu]);
+
+  if (error) return <ErrorBox error={error} />;
+  if (!data) return <Loading />;
+  const list = data.filter((l) => all || l.status === 'da_fare' || l.status === 'svolta');
+
+  return (
+    <>
+      <div className="mp-bar fade-in">
+        <button className="link-btn" onClick={() => setAll(!all)}>{all ? 'Solo aperte' : 'Mostra tutte'}</button>
+        <button className="link-btn" onClick={open.lead}><Plus size={14} /> Nuovo contatto</button>
       </div>
-      <div className="card list fade-in">
-        {!forms.data ? <Loading /> : forms.data.length === 0 ? <Empty>Nessun modulo ancora. Con “Nuova visita” scegli la persona e si apre il questionario da compilare.</Empty> : forms.data.map((f) => (
-          <Link className="list-row" key={f.id} to={`/visits/form/${f.id}`}>
-            <div className={`row-icon ${f.template === 'anamnesi' ? 'violet' : 'green'}`}><FileText /></div>
+      <div className="mp-list fade-in" ref={ref}>
+        {list.length === 0 ? <Empty>Nessun contatto aperto. Le persone che incontri per una prima visita compaiono qui.</Empty> : list.map((l) => (
+          <div className="mp-row" key={l.id}>
+            <div className="avatar sm">{initials(l.first_name, l.last_name)}</div>
             <div className="grow">
-              <div className="title">{f.person || 'Persona eliminata'}</div>
-              <div className="sub">{TEMPLATES[f.template].label} · {itDate(f.visit_date)}{f.client_id ? ' · cliente' : ' · contatto'}</div>
+              <div className="t">{l.first_name} {l.last_name}</div>
+              <div className="s">{l.visit_at ? `${shortDay(l.visit_at)} · ${time(l.visit_at)}` : `Aggiunto il ${itDate(l.created_at)}`}{l.status !== 'da_fare' && ` · ${STATUS[l.status]}`}</div>
             </div>
-            <span className="btn btn-sm">Apri</span>
-          </Link>
+            <button className="btn btn-sm" onClick={() => nav(`/visits/form/new?${l.client_id ? `client=${l.client_id}` : `lead=${l.id}`}`)}>Compila</button>
+            <div className="menu-wrap">
+              <button className="icon-btn sm" aria-label="Altre azioni" aria-expanded={menu === l.id} onClick={() => setMenu(menu === l.id ? null : l.id)}><MoreHorizontal /></button>
+              {menu === l.id && (
+                <div className="menu" role="menu">
+                  {l.client_id && <Link role="menuitem" to={`/clients/${l.client_id}`}>Apri scheda cliente</Link>}
+                  {l.status !== 'convertito' && <button role="menuitem" onClick={() => { setMenu(null); setModal({ convert: l }); }}>Rendi cliente</button>}
+                  {l.status === 'da_fare' && <button role="menuitem" onClick={() => { setMenu(null); act(() => api.patch(`/leads/${l.id}`, { status: 'svolta' }), 'Segnata come svolta'); }}>Segna come svolta</button>}
+                  {l.status !== 'convertito' && l.status !== 'perso' && <button role="menuitem" onClick={() => { setMenu(null); act(() => api.patch(`/leads/${l.id}`, { status: 'perso' }), 'Segnata come non interessata'); }}>Non interessato</button>}
+                  <button role="menuitem" onClick={() => { setMenu(null); setModal({ edit: l }); }}>Modifica</button>
+                  <button role="menuitem" className="danger" onClick={() => { setMenu(null); setModal({ del: l }); }}>Elimina</button>
+                </div>
+              )}
+            </div>
+          </div>
         ))}
       </div>
       {modal && 'edit' in modal && <LeadForm lead={modal.edit} onClose={() => setModal(null)} />}
@@ -83,5 +119,32 @@ export default function Visits() {
       {modal && 'del' in modal && <Confirm title="Elimina contatto" danger confirmLabel="Elimina" text={`Eliminare ${modal.del.first_name} e le sue visite in calendario?`}
         onConfirm={() => act(() => api.del(`/leads/${modal.del.id}`), 'Contatto eliminato')} onClose={() => setModal(null)} />}
     </>
+  );
+}
+
+function Questionnaires() {
+  const { data, error, setData } = useApi<Questionnaire[]>('/questionnaires');
+  const act = useAction();
+  if (error) return <ErrorBox error={error} />;
+  if (!data) return <Loading />;
+  const toggle = async (q: Questionnaire) => {
+    const next = !q.active;
+    setData(data.map((x) => (x.id === q.id ? { ...x, active: next } : x)));
+    const r = await act(() => api.patch(`/questionnaires/${q.id}`, { active: next }));
+    if (r === undefined) setData(data);
+  };
+  if (data.length === 0) return <div className="mp-list fade-in"><Empty>Nessun questionario. Creane uno con “Nuovo questionario”.</Empty></div>;
+  return (
+    <div className="mp-list fade-in">
+      {data.map((q) => (
+        <div className="mp-row" key={q.id}>
+          <Link className="grow mp-link" to={`/visits/questionnaire/${q.id}`}>
+            <div className="t">{q.name}</div>
+            <div className="s">{KIND_LABEL[q.kind]} · {q.questions.length} {q.questions.length === 1 ? 'domanda' : 'domande'}</div>
+          </Link>
+          <button className={`switch ${q.active ? 'on' : ''}`} role="switch" aria-checked={q.active} aria-label={`${q.name}: ${q.active ? 'attivo' : 'non attivo'}`} onClick={() => toggle(q)}><i /></button>
+        </div>
+      ))}
+    </div>
   );
 }
