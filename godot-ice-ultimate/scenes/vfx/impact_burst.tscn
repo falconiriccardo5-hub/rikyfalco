@@ -1,0 +1,326 @@
+[gd_scene load_steps=39 format=3]
+
+[ext_resource type="Script" path="res://scripts/impact_burst.gd" id="1_118tb"]
+[ext_resource type="Shader" path="res://shaders/vfx_particle_add.gdshader" id="2_vqiaf"]
+[ext_resource type="Texture2D" path="res://textures/star_flare.png" id="3_bycl2"]
+[ext_resource type="Texture2D" path="res://textures/noise_fbm.png" id="4_1oxnp"]
+[ext_resource type="Texture2D" path="res://textures/soft_glow.png" id="5_7v3lw"]
+[ext_resource type="Shader" path="res://shaders/arc_ring.gdshader" id="6_snvgy"]
+[ext_resource type="Texture2D" path="res://textures/spark_streak.png" id="7_1rfd6"]
+[ext_resource type="Texture2D" path="res://textures/smoke_puff.png" id="8_xm5h1"]
+[ext_resource type="Texture2D" path="res://textures/snowflake.png" id="9_vm67n"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p60l2"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_vqiaf")
+shader_parameter/color = Color(0.95, 0.97, 1, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/billboard_mode = 1
+shader_parameter/use_particle_angle = false
+shader_parameter/spin_speed = 0.0
+shader_parameter/erosion = null
+shader_parameter/soft_distance = null
+shader_parameter/compatibility_depth = null
+shader_parameter/albedo_tex = ExtResource("3_bycl2")
+shader_parameter/erosion_noise = ExtResource("4_1oxnp")
+
+[sub_resource type="QuadMesh" id="QuadMesh_hsv7s"]
+size = Vector2(4.5, 4.5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dtuwm"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_vqiaf")
+shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/billboard_mode = 1
+shader_parameter/use_particle_angle = false
+shader_parameter/spin_speed = 0.0
+shader_parameter/erosion = null
+shader_parameter/soft_distance = null
+shader_parameter/compatibility_depth = null
+shader_parameter/albedo_tex = ExtResource("5_7v3lw")
+shader_parameter/erosion_noise = ExtResource("4_1oxnp")
+
+[sub_resource type="QuadMesh" id="QuadMesh_mlexr"]
+size = Vector2(5, 5)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vxmpj"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("6_snvgy")
+shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/radius = 0.45
+shader_parameter/thickness = 0.03
+shader_parameter/arc_length = 0.7
+shader_parameter/arc_offset = 0.0
+shader_parameter/spin_speed = 0.6
+shader_parameter/tail_fade = null
+shader_parameter/glow = null
+shader_parameter/billboard = null
+shader_parameter/chroma_fringe = 0.008
+
+[sub_resource type="QuadMesh" id="QuadMesh_50il5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rkfm4"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("6_snvgy")
+shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/radius = 0.45
+shader_parameter/thickness = 0.03
+shader_parameter/arc_length = 0.7
+shader_parameter/arc_offset = 0.25
+shader_parameter/spin_speed = 0.6
+shader_parameter/tail_fade = null
+shader_parameter/glow = null
+shader_parameter/billboard = null
+shader_parameter/chroma_fringe = 0.008
+
+[sub_resource type="QuadMesh" id="QuadMesh_cyjme"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yh7bf"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("6_snvgy")
+shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/radius = 0.45
+shader_parameter/thickness = 0.03
+shader_parameter/arc_length = 0.7
+shader_parameter/arc_offset = 0.5
+shader_parameter/spin_speed = 0.6
+shader_parameter/tail_fade = null
+shader_parameter/glow = null
+shader_parameter/billboard = null
+shader_parameter/chroma_fringe = 0.008
+
+[sub_resource type="QuadMesh" id="QuadMesh_lvabp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1num6"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("6_snvgy")
+shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/radius = 0.45
+shader_parameter/thickness = 0.03
+shader_parameter/arc_length = 0.7
+shader_parameter/arc_offset = 0.75
+shader_parameter/spin_speed = 0.6
+shader_parameter/tail_fade = null
+shader_parameter/glow = null
+shader_parameter/billboard = null
+shader_parameter/chroma_fringe = 0.008
+
+[sub_resource type="QuadMesh" id="QuadMesh_vjalc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mpunl"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_vqiaf")
+shader_parameter/color = Color(0.95, 0.97, 1, 1)
+shader_parameter/intensity = 5.0
+shader_parameter/billboard_mode = 2
+shader_parameter/use_particle_angle = false
+shader_parameter/spin_speed = 0.0
+shader_parameter/erosion = null
+shader_parameter/soft_distance = null
+shader_parameter/compatibility_depth = null
+shader_parameter/albedo_tex = ExtResource("7_1rfd6")
+shader_parameter/erosion_noise = ExtResource("4_1oxnp")
+
+[sub_resource type="Gradient" id="Gradient_1yx62"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.8, 0.88, 0.97, 0.9, 0.5, 0.63, 0.86, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_4kciy"]
+gradient = SubResource("Gradient_1yx62")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_bmajm"]
+particle_flag_align_y = true
+emission_shape = 1
+emission_sphere_radius = 0.3
+spread = 180.0
+initial_velocity_min = 4.0
+initial_velocity_max = 11.0
+gravity = Vector3(0, 0, 0)
+damping_min = 6.0
+damping_max = 10.0
+scale_min = 0.6
+scale_max = 1.3
+color_ramp = SubResource("GradientTexture1D_4kciy")
+
+[sub_resource type="QuadMesh" id="QuadMesh_8df3m"]
+size = Vector2(0.06, 0.8)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lmjc5"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_vqiaf")
+shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
+shader_parameter/intensity = 1.2
+shader_parameter/billboard_mode = 1
+shader_parameter/use_particle_angle = true
+shader_parameter/spin_speed = 0.0
+shader_parameter/erosion = null
+shader_parameter/soft_distance = 1.2
+shader_parameter/compatibility_depth = null
+shader_parameter/albedo_tex = ExtResource("8_xm5h1")
+shader_parameter/erosion_noise = ExtResource("4_1oxnp")
+
+[sub_resource type="Gradient" id="Gradient_74cee"]
+offsets = PackedFloat32Array(0, 0.1, 0.6, 1)
+colors = PackedColorArray(0.8, 0.88, 1, 0, 0.8, 0.88, 1, 0.35, 0.8, 0.88, 1, 0.21, 0.8, 0.88, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_b8qas"]
+gradient = SubResource("Gradient_74cee")
+
+[sub_resource type="Curve" id="Curve_wl50w"]
+_data = [Vector2(0, 0.4), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_rkhyy"]
+curve = SubResource("Curve_wl50w")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_bboiq"]
+emission_shape = 1
+emission_sphere_radius = 0.5
+angle_min = -180.0
+angle_max = 180.0
+spread = 180.0
+initial_velocity_min = 1.0
+initial_velocity_max = 3.0
+gravity = Vector3(0, 0, 0)
+damping_min = 2.0
+damping_max = 3.0
+scale_min = 2.0
+scale_max = 3.5
+scale_curve = SubResource("CurveTexture_rkhyy")
+color_ramp = SubResource("GradientTexture1D_b8qas")
+
+[sub_resource type="QuadMesh" id="QuadMesh_34vuv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cstj1"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_vqiaf")
+shader_parameter/color = Color(0.95, 0.97, 1, 1)
+shader_parameter/intensity = 3.0
+shader_parameter/billboard_mode = 1
+shader_parameter/use_particle_angle = true
+shader_parameter/spin_speed = 0.0
+shader_parameter/erosion = null
+shader_parameter/soft_distance = null
+shader_parameter/compatibility_depth = null
+shader_parameter/albedo_tex = ExtResource("9_vm67n")
+shader_parameter/erosion_noise = ExtResource("4_1oxnp")
+
+[sub_resource type="Gradient" id="Gradient_3w1wm"]
+offsets = PackedFloat32Array(0, 0.35, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.8, 0.88, 0.97, 0.9, 0.5, 0.63, 0.86, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_vusb1"]
+gradient = SubResource("Gradient_3w1wm")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_2tjjh"]
+angle_min = -180.0
+angle_max = 180.0
+spread = 180.0
+initial_velocity_min = 2.0
+initial_velocity_max = 5.0
+angular_velocity_min = -200.0
+angular_velocity_max = 200.0
+gravity = Vector3(0, -2, 0)
+damping_min = 2.0
+damping_max = 3.0
+scale_min = 0.5
+color_ramp = SubResource("GradientTexture1D_vusb1")
+
+[sub_resource type="QuadMesh" id="QuadMesh_umfo3"]
+size = Vector2(0.3, 0.3)
+
+[node name="ImpactBurst" type="Node3D"]
+script = ExtResource("1_118tb")
+flash = 0.0
+rings = 0.0
+
+[node name="Flash" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_p60l2")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_hsv7s")
+
+[node name="Glow" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_dtuwm")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_mlexr")
+
+[node name="Rings" type="Node3D" parent="."]
+
+[node name="Ring1" type="MeshInstance3D" parent="Rings"]
+material_override = SubResource("ShaderMaterial_vxmpj")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_50il5")
+
+[node name="Ring2" type="MeshInstance3D" parent="Rings"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_rkfm4")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_cyjme")
+
+[node name="Ring3" type="MeshInstance3D" parent="Rings"]
+transform = Transform3D(0.5, 0.55667, 0.663414, 0, 0.766044, -0.642788, -0.866025, 0.321394, 0.383022, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_yh7bf")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_lvabp")
+
+[node name="Ring4" type="MeshInstance3D" parent="Rings"]
+transform = Transform3D(0.735024, 0.140077, -0.663414, 0.296198, 0.813798, 0.5, 0.609923, -0.564014, 0.55667, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_1num6")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_vjalc")
+
+[node name="Sparks" type="GPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_mpunl")
+cast_shadow = 0
+emitting = false
+amount = 90
+lifetime = 0.7
+one_shot = true
+explosiveness = 0.95
+randomness = 0.3
+fixed_fps = 0
+visibility_aabb = AABB(-12, -2, -12, 24, 16, 24)
+process_material = SubResource("ParticleProcessMaterial_bmajm")
+draw_pass_1 = SubResource("QuadMesh_8df3m")
+
+[node name="Smoke" type="GPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_lmjc5")
+cast_shadow = 0
+emitting = false
+amount = 20
+lifetime = 1.8
+one_shot = true
+explosiveness = 0.9
+randomness = 0.3
+fixed_fps = 0
+visibility_aabb = AABB(-12, -2, -12, 24, 16, 24)
+process_material = SubResource("ParticleProcessMaterial_bboiq")
+draw_pass_1 = SubResource("QuadMesh_34vuv")
+
+[node name="Flakes" type="GPUParticles3D" parent="."]
+material_override = SubResource("ShaderMaterial_cstj1")
+cast_shadow = 0
+emitting = false
+amount = 24
+lifetime = 1.2
+one_shot = true
+explosiveness = 0.9
+randomness = 0.3
+fixed_fps = 0
+visibility_aabb = AABB(-12, -2, -12, 24, 16, 24)
+process_material = SubResource("ParticleProcessMaterial_2tjjh")
+draw_pass_1 = SubResource("QuadMesh_umfo3")

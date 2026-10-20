@@ -1,0 +1,153 @@
+[gd_scene load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://scripts/charge_core.gd" id="1_jvssu"]
+[ext_resource type="Shader" path="res://shaders/fresnel_orb.gdshader" id="2_c78ny"]
+[ext_resource type="Texture2D" path="res://textures/noise_fbm.png" id="3_jdhh5"]
+[ext_resource type="Shader" path="res://shaders/vfx_particle_add.gdshader" id="4_ljbsg"]
+[ext_resource type="Texture2D" path="res://textures/soft_glow.png" id="5_vue33"]
+[ext_resource type="Shader" path="res://shaders/arc_ring.gdshader" id="6_5ixje"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7i6xl"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_c78ny")
+shader_parameter/rim_color = null
+shader_parameter/core_color = null
+shader_parameter/intensity = 0.0
+shader_parameter/rim_power = 3.0
+shader_parameter/core_amount = 0.12
+shader_parameter/flow_speed = null
+shader_parameter/iridescence = 0.35
+shader_parameter/fade = null
+shader_parameter/noise_tex = ExtResource("3_jdhh5")
+
+[sub_resource type="SphereMesh" id="SphereMesh_5726w"]
+radius = 1.1
+height = 2.2
+radial_segments = 48
+rings = 24
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fiho3"]
+shading_mode = 0
+albedo_color = Color(0.02, 0.025, 0.035, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_arvsj"]
+radius = 0.32
+height = 0.64
+radial_segments = 48
+rings = 24
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vohjn"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_ljbsg")
+shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/billboard_mode = 1
+shader_parameter/use_particle_angle = false
+shader_parameter/spin_speed = 0.0
+shader_parameter/erosion = null
+shader_parameter/soft_distance = null
+shader_parameter/compatibility_depth = null
+shader_parameter/albedo_tex = ExtResource("5_vue33")
+shader_parameter/erosion_noise = ExtResource("3_jdhh5")
+
+[sub_resource type="QuadMesh" id="QuadMesh_qb13v"]
+size = Vector2(3.2, 3.2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rr0rl"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("6_5ixje")
+shader_parameter/color = Color(0.95, 0.97, 1, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/radius = 0.43
+shader_parameter/thickness = 0.022
+shader_parameter/arc_length = 0.3
+shader_parameter/arc_offset = 0.0
+shader_parameter/spin_speed = 0.9
+shader_parameter/tail_fade = null
+shader_parameter/glow = null
+shader_parameter/billboard = null
+shader_parameter/chroma_fringe = 0.006
+
+[sub_resource type="QuadMesh" id="QuadMesh_euadj"]
+size = Vector2(2.6, 2.6)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s08yn"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("6_5ixje")
+shader_parameter/color = Color(0.95, 0.97, 1, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/radius = 0.43
+shader_parameter/thickness = 0.022
+shader_parameter/arc_length = 0.3
+shader_parameter/arc_offset = 0.33
+shader_parameter/spin_speed = 1.2
+shader_parameter/tail_fade = null
+shader_parameter/glow = null
+shader_parameter/billboard = null
+shader_parameter/chroma_fringe = 0.006
+
+[sub_resource type="QuadMesh" id="QuadMesh_hckjn"]
+size = Vector2(2.6, 2.6)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rbg16"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("6_5ixje")
+shader_parameter/color = Color(0.95, 0.97, 1, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/radius = 0.43
+shader_parameter/thickness = 0.022
+shader_parameter/arc_length = 0.3
+shader_parameter/arc_offset = 0.66
+shader_parameter/spin_speed = 1.5
+shader_parameter/tail_fade = null
+shader_parameter/glow = null
+shader_parameter/billboard = null
+shader_parameter/chroma_fringe = 0.006
+
+[sub_resource type="QuadMesh" id="QuadMesh_4pu1a"]
+size = Vector2(2.6, 2.6)
+
+[node name="ChargeCore" type="Node3D"]
+script = ExtResource("1_jvssu")
+charge = 0.0
+intensity = 0.0
+crescent_speed = 1.4
+
+[node name="Bubble" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_7i6xl")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_5726w")
+
+[node name="Dark" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_fiho3")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_arvsj")
+
+[node name="Glow" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_vohjn")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_qb13v")
+
+[node name="Crescents" type="Node3D" parent="."]
+
+[node name="Crescent1" type="MeshInstance3D" parent="Crescents"]
+material_override = SubResource("ShaderMaterial_rr0rl")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_euadj")
+
+[node name="Crescent2" type="MeshInstance3D" parent="Crescents"]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_s08yn")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_hckjn")
+
+[node name="Crescent3" type="MeshInstance3D" parent="Crescents"]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_rbg16")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_4pu1a")

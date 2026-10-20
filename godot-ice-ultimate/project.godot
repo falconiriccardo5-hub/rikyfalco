@@ -1,0 +1,23 @@
+; Engine configuration file.
+; Progetto VFX "Ice Ultimate" - Godot 4.3+
+
+config_version=5
+
+[application]
+
+config/name="Ice Ultimate VFX"
+config/description="Ricostruzione dell'abilita' ultimate di ghiaccio (sigillo, sfera, detonazione, cristalli)."
+run/main_scene="res://scenes/demo.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
+config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+anti_aliasing/quality/msaa_3d=2
+environment/defaults/default_clear_color=Color(0.03, 0.035, 0.045, 1)
