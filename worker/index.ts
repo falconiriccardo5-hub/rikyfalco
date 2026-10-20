@@ -11,6 +11,7 @@ import {
 } from './domain';
 import * as google from './google';
 import * as ical from './ical';
+import { GIRTH_KEYS, SKINFOLD_KEYS } from '../src/lib/measures';
 import { DEFAULT_QUESTIONNAIRES, legacyQuestions, legacyTitle, templateOfKind, type Q, type QKind } from '../src/lib/questionnaire';
 import { birthdaysInRange } from './birthdays';
 import { exportCsvs, listDriveBackups, readDriveBackup, restoreFromCsvs, runDriveBackup } from './backup';
@@ -359,7 +360,7 @@ app.get('/api/sessions', async (c) => {
   const birthdays = birthdaysInRange(await all(c.env.DB, 'SELECT id, first_name, last_name, phone, birth_date, archived_at FROM clients WHERE birth_date IS NOT NULL'), from, to);
   c.executionCtx.waitUntil(pullIfStale(c.env));
   const viaIcal = !!(await getSetting(c.env.DB, 'ical_import_url')) || !!(await getSetting(c.env.DB, 'ical_feed_token'));
-  return c.json({ sessions: rows, events, birthdays, google: { connected: (await google.isConnected(c.env)) || viaIcal, reads: (await google.canReadCalendar(c.env)) || !!(await getSetting(c.env.DB, 'ical_import_url')), ical: viaIcal } });
+  return c.json({ sessions: rows, events, birthdays, google: { connected: (await google.isConnected(c.env)) || viaIcal, reads: (await google.canReadCalendar(c.env)) || !!(await getSetting(c.env.DB, 'ical_import_url')), writes: await google.canWriteCalendar(c.env), ical: viaIcal } });
 });
 
 const sessionSchema = z.object({
@@ -775,6 +776,62 @@ app.post('/api/backup/restore-drive', async (c) => {
   return c.json(r);
 });
 
+// ───────────── API: misure (pliche e circonferenze) ─────────────
+
+const measureNum = z.number().min(0).max(999).nullable();
+const measurementSchema = z.object({
+  measured_at: dateStr,
+  age: z.number().int().min(5).max(110).nullable().default(null),
+  weight_kg: z.number().min(10).max(400).nullable().default(null),
+  skinfolds: z.record(z.string(), z.array(measureNum).max(3)).refine((o) => Object.keys(o).every((k) => SKINFOLD_KEYS.includes(k)), 'plica non valida').default({}),
+  girths: z.record(z.string(), measureNum).refine((o) => Object.keys(o).every((k) => GIRTH_KEYS.includes(k)), 'circonferenza non valida').default({}),
+  notes: text(2000).default(''),
+});
+
+type MeasurementRow = { id: string; client_id: string; client_name?: string; measured_at: string; age: number | null; weight_kg: number | null; skinfolds: string; girths: string; notes: string; created_at: string; updated_at: string };
+const parseMeasurement = (r: MeasurementRow) => ({ ...r, skinfolds: JSON.parse(r.skinfolds || '{}'), girths: JSON.parse(r.girths || '{}') });
+
+app.get('/api/measurements', async (c) => {
+  const clientId = c.req.query('client_id');
+  const rows = await all<MeasurementRow>(c.env.DB,
+    `SELECT m.*, TRIM(c.first_name || ' ' || c.last_name) AS client_name FROM measurements m JOIN clients c ON c.id = m.client_id
+     ${clientId ? 'WHERE m.client_id = ?' : ''} ORDER BY m.measured_at DESC, m.created_at DESC`, ...(clientId ? [clientId] : []));
+  return c.json(rows.map(parseMeasurement));
+});
+
+app.post('/api/measurements', async (c) => {
+  const body = await c.req.json();
+  const clientId = z.string().uuid().parse(body.client_id);
+  const d = measurementSchema.parse(body);
+  const client = await first<{ first_name: string; last_name: string }>(c.env.DB, 'SELECT first_name, last_name FROM clients WHERE id = ?', clientId);
+  if (!client) return c.json({ error: 'Cliente non trovato' }, 404);
+  const id = uid(), now = isoNow();
+  await run(c.env.DB, 'INSERT INTO measurements (id, client_id, measured_at, age, weight_kg, skinfolds, girths, notes, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
+    id, clientId, d.measured_at, d.age, d.weight_kg, JSON.stringify(d.skinfolds), JSON.stringify(d.girths), d.notes, now, now);
+  await logActivity(c.env, actor(c), 'creato', 'misurazione', clientId, `Misure del ${d.measured_at}`);
+  return c.json({ id }, 201);
+});
+
+app.patch('/api/measurements/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<MeasurementRow>(c.env.DB, 'SELECT * FROM measurements WHERE id = ?', id);
+  if (!cur) return c.json({ error: 'Misurazione non trovata' }, 404);
+  const d = measurementSchema.parse(await c.req.json());
+  await run(c.env.DB, 'UPDATE measurements SET measured_at=?, age=?, weight_kg=?, skinfolds=?, girths=?, notes=?, updated_at=? WHERE id=?',
+    d.measured_at, d.age, d.weight_kg, JSON.stringify(d.skinfolds), JSON.stringify(d.girths), d.notes, isoNow(), id);
+  await logActivity(c.env, actor(c), 'modificato', 'misurazione', cur.client_id, `Misure del ${d.measured_at}`);
+  return c.json({ ok: true });
+});
+
+app.delete('/api/measurements/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<MeasurementRow>(c.env.DB, 'SELECT * FROM measurements WHERE id = ?', id);
+  if (!cur) return c.json({ error: 'Misurazione non trovata' }, 404);
+  await run(c.env.DB, 'DELETE FROM measurements WHERE id = ?', id);
+  await logActivity(c.env, actor(c), 'eliminato', 'misurazione', cur.client_id, `Misure del ${cur.measured_at}`);
+  return c.json({ ok: true });
+});
+
 // ───────────── API: impostazioni e Google ─────────────
 
 app.get('/api/settings', async (c) => {
@@ -794,6 +851,7 @@ app.get('/api/settings', async (c) => {
       account: s.google_account || null,
       calendar_id: s.google_calendar_id || null,
       reads_calendar: await google.canReadCalendar(c.env),
+      writes_calendar: await google.canWriteCalendar(c.env),
       last_pull: s.google_pull_at || null,
       pull_error: s.google_pull_error || null,
       drive_folder_id: s.google_drive_folder_id || null,
@@ -894,6 +952,60 @@ app.post('/api/google/resync', async (c) => {
   const n = await syncPending(c.env, 200);
   const pulled = await google.pullCalendar(c.env);
   return c.json({ synced: n, ...pulled });
+});
+
+// Impegni di Google Calendar modificabili dall'app (richiede il collegamento Google con permesso di scrittura)
+const googleEventSchema = z.object({
+  summary: text(300),
+  location: text(300).default(''),
+  all_day: z.boolean().default(false),
+  start: localDateTime,
+  end: localDateTime,
+});
+
+/** Errori di Google/validazione → messaggio leggibile per l'app */
+async function googleWrite<T>(c: Context<AppEnv>, fn: () => Promise<T>) {
+  try { return c.json(await fn()); }
+  catch (e) {
+    const msg = (e as Error).message;
+    const m = /^Google API (\d+)/.exec(msg);
+    if (m) {
+      console.error('scrittura Google Calendar fallita', msg);
+      return c.json({ error: m[1] === '403' ? 'Google non permette di modificare questo evento (ad es. è di un altro organizzatore)' : 'Google Calendar ha rifiutato la modifica: riprova tra poco' }, 502);
+    }
+    return c.json({ error: msg }, 400);
+  }
+}
+
+app.post('/api/google/events', async (c) => {
+  const body = await c.req.json();
+  const d = googleEventSchema.parse(body);
+  const calendar = z.enum(['primary', 'app']).default('primary').parse(body.calendar);
+  return googleWrite(c, async () => {
+    const id = await google.createGoogleEvent(c.env, calendar, d);
+    await logActivity(c.env, actor(c), 'creato', 'google', null, `Evento Google · ${d.summary} · ${d.start.replace('T', ' ')}`);
+    return { id };
+  });
+});
+
+app.patch('/api/google/events/:id', async (c) => {
+  const id = c.req.param('id');
+  const d = googleEventSchema.parse(await c.req.json());
+  return googleWrite(c, async () => {
+    await google.updateGoogleEvent(c.env, id, d);
+    await logActivity(c.env, actor(c), 'modificato', 'google', null, `Evento Google · ${d.summary} · ${d.start.replace('T', ' ')}`);
+    return { ok: true };
+  });
+});
+
+app.delete('/api/google/events/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<{ summary: string; starts_at: string }>(c.env.DB, 'SELECT summary, starts_at FROM gcal_events WHERE id = ?', id);
+  return googleWrite(c, async () => {
+    await google.deleteGoogleEvent(c.env, id);
+    await logActivity(c.env, actor(c), 'eliminato', 'google', null, `Evento Google · ${cur?.summary ?? ''} · ${cur?.starts_at.replace('T', ' ') ?? ''}`);
+    return { ok: true };
+  });
 });
 
 app.all('/api/*', (c) => c.json({ error: 'Endpoint non trovato' }, 404));

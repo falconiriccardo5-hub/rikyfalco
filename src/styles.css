@@ -807,3 +807,15 @@ a.mp-row:hover, .mp-row:hover { background: rgba(255,255,255,.035); }
   .qb-q-main .icon-btn { grid-column: 3; grid-row: 1; }
   .mp-row { padding: 14px 14px; gap: 10px; }
 }
+
+/* ───── Misure: modulo, tabella e grafici ───── */
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+@media (max-width: 640px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+.meas-grid { display: grid; grid-template-columns: minmax(110px, 1.4fr) repeat(3, minmax(0, 1fr)) 64px; gap: 8px; align-items: center; }
+.meas-grid b { font-weight: 500; color: var(--muted, #9a96b8); font-size: 13px; }
+.meas-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+.meas-chart svg { width: 100%; height: auto; margin: 10px 0 6px; color: #c9c5e8; }
+.meas-chart .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; }
+.meas-table { width: 100%; border-collapse: collapse; }
+.meas-table th, .meas-table td { text-align: right; padding: 8px 10px; border-bottom: 1px solid rgba(255, 255, 255, .07); }
+.meas-table th:first-child, .meas-table td:first-child { text-align: left; }

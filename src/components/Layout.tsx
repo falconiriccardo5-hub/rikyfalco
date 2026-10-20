@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Activity, BarChart3, Bell, CalendarDays, CalendarPlus, ClipboardList, CreditCard, HardDriveDownload, LayoutGrid, LogOut, Menu,
-  MessageCircle, Plus, Search, Settings, Sparkles, UserPlus, Users, X,
+  MessageCircle, Plus, Ruler, Search, Settings, Sparkles, UserPlus, Users, X,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import { ClientForm, LeadForm, NewVisitForm, SessionForm } from './Forms';
@@ -47,6 +47,7 @@ export default function Layout() {
     { to: '/', icon: LayoutGrid, label: 'Dashboard', end: true },
     { to: '/clients', icon: Users, label: 'Clienti' },
     { to: '/visits', icon: ClipboardList, label: 'Visita' },
+    { to: '/measures', icon: Ruler, label: 'Misure' },
     { to: '/payments', icon: CreditCard, label: 'Pagamenti' },
     { to: '/calendar', icon: CalendarDays, label: 'Calendario' },
     { to: '/notifications', icon: Bell, label: 'Notifiche', badge: b?.notifications },

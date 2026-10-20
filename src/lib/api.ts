@@ -60,7 +60,7 @@ export interface Session {
 }
 /** Compleanno di un cliente che cade in una data dell'intervallo richiesto */
 export interface Birthday { client_id: string; name: string; phone: string; date: string; birth_date: string; age: number }
-/** Impegno letto da Google Calendar (sola lettura) */
+/** Impegno di Google Calendar (copia locale: si modifica dall'app e la modifica va su Google) */
 export interface GoogleEvent {
   id: string; calendar: 'primary' | 'app'; summary: string; location: string; starts_at: string; ends_at: string; all_day: number; html_link: string;
 }
@@ -73,4 +73,10 @@ export interface VisitFormRecord {
   /** nome del questionario compilato e domande com'erano in quel momento */
   title: string; questionnaire_id: string | null; questions: import('./questionnaire').Q[];
   answers: Record<string, string | string[]>; person: string; created_at: string; updated_at: string;
+}
+
+/** Misurazione di un cliente (pliche in mm, 3 rilevazioni per sito; circonferenze in cm) */
+export interface Measurement {
+  id: string; client_id: string; client_name?: string; measured_at: string; age: number | null; weight_kg: number | null;
+  skinfolds: Record<string, (number | null)[]>; girths: Record<string, number | null>; notes: string;
 }

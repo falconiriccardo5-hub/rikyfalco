@@ -4,6 +4,7 @@ import { Archive, ArchiveRestore, CalendarPlus, Check, ChevronLeft, ClipboardLis
 import { ClientForm, PaymentForm, PayForm, RenewForm, SessionForm } from '../components/Forms';
 import { useOpen } from '../components/Layout';
 import { PayBanner, Segments } from '../components/ClientCard';
+import { MeasuresPanel } from '../components/Measures';
 import { Confirm, Empty, ErrorBox, Loading, useAction, useApi } from '../components/ui';
 import { api, type ClientSummary, type Payment, type Session, type VisitFormRecord } from '../lib/api';
 import { isBlank } from '../lib/questionnaire';
@@ -17,7 +18,7 @@ const SES_PILL: Record<string, [string, string]> = { programmata: ['violet', 'Pr
 export default function ClientDetail() {
   const { id } = useParams();
   const { data, error } = useApi<Detail>(`/clients/${id}`);
-  const [tab, setTab] = useState<'pagamenti' | 'lezioni' | 'visite' | 'note' | 'storico'>('pagamenti');
+  const [tab, setTab] = useState<'pagamenti' | 'lezioni' | 'visite' | 'misure' | 'note' | 'storico'>('pagamenti');
   const forms = useApi<VisitFormRecord[]>(`/visit-forms?client_id=${id}`);
   const [modal, setModal] = useState<null | 'edit' | 'renew' | 'delete' | 'payment' | { pay: Payment } | { editPay: Payment } | { delPay: Payment } | { session: Session }>(null);
   const act = useAction();
@@ -64,7 +65,7 @@ export default function ClientDetail() {
       <div className="fade-in"><PayBanner c={c} /></div>
 
       <div className="tabs" style={{ marginTop: 34 }}>
-        {(['pagamenti', 'lezioni', 'visite', 'note', 'storico'] as const).map((t) => <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>{t[0].toUpperCase() + t.slice(1)}</button>)}
+        {(['pagamenti', 'lezioni', 'visite', 'misure', 'note', 'storico'] as const).map((t) => <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>{t === 'misure' ? 'Anamnesi / Misure' : t[0].toUpperCase() + t.slice(1)}</button>)}
       </div>
 
       {tab === 'pagamenti' && (
@@ -133,6 +134,23 @@ export default function ClientDetail() {
             })}
           </div>
         </>
+      )}
+
+      {tab === 'misure' && (
+        <div className="stack">
+          {forms.data && forms.data.some((f) => f.template === 'anamnesi') && (
+            <div className="card list">
+              {forms.data.filter((f) => f.template === 'anamnesi').map((f) => (
+                <Link className="list-row" key={f.id} to={`/visits/form/${f.id}`}>
+                  <div className="row-icon violet"><FileText /></div>
+                  <div className="grow"><div className="title">{f.title} · {itDate(f.visit_date)}</div><div className="sub">Anamnesi</div></div>
+                  <span className="btn btn-sm">Apri</span>
+                </Link>
+              ))}
+            </div>
+          )}
+          <MeasuresPanel clientId={c.id} />
+        </div>
       )}
 
       {tab === 'note' && <div className="card pad" style={{ whiteSpace: 'pre-wrap' }}>{c.notes || <span className="muted">Nessuna nota. Usa “Modifica” per aggiungerne.</span>}</div>}
