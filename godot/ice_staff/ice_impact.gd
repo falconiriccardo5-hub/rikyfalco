@@ -1,59 +1,60 @@
 class_name IceImpact
 extends Node2D
-## Frantumazione all'impatto: flash, onda d'urto ad anello, spuntoni di
-## ghiaccio radiali, schegge che cadono con gravità e nuvoletta di brina.
+## Impatto del ghiaccio: lampo di luce fredda, onda d'urto che distorce lo
+## schermo, schegge fisiche che rimbalzano, sbuffo di vapore, polvere di
+## diamante e una chiazza di brina che resta sul terreno e poi si scioglie.
 
 @export var strength := 1.0
-@export var duration := 0.4
+@export var with_decal := true
+## La brina va sotto i personaggi: z_index relativo al genitore.
+@export var decal_z_index := -1
+
 var normal := Vector2.LEFT
 
+const WAVE_TIME := 0.4
+const DECAL_TIME := 2.2
+
 var _t := 0.0
-var _spikes: Array[Vector2] = []  # x = angolo, y = lunghezza
+var _wave: Sprite2D
+var _flash: Sprite2D
+var _decal: Sprite2D
 
 
 func _ready() -> void:
 	var s := strength
-	for i in 7:
-		var a := TAU * i / 7.0 + randf_range(-0.25, 0.25)
-		_spikes.append(Vector2(a, randf_range(10.0, 20.0) * s))
-
 	var world := get_parent()
-	# Schegge: veloci, ruotano e cadono
-	IceFX.burst(world, global_position, int(18 * s), 90.0 * s, 260.0 * s,
-		2.0 * s, 4.5 * s, 0.6, 420.0, normal, 110.0)
-	# Brina: lenta e grande, poco opaca
-	IceFX.burst(world, global_position, int(8 * s), 10.0, 45.0,
-		6.0 * s, 11.0 * s, 0.55, -20.0, Vector2.UP, 180.0,
-		Color(IceFX.CORE, 0.35), Color(IceFX.GLOW, 0.2))
+
+	if with_decal:
+		_decal = IceFX.quad(IceFX.shader_material(IceFX.FROST_DECAL_SHADER), Vector2(84, 84) * s)
+		_decal.z_index = decal_z_index
+		_decal.scale.y *= 0.75  # leggera prospettiva sul terreno
+		add_child(_decal)
+
+	var wave_mat := IceFX.shader_material(IceFX.SHOCKWAVE_SHADER)
+	_wave = IceFX.quad(wave_mat, Vector2(150, 150) * s)
+	add_child(_wave)
+
+	_flash = IceFX.glow(150.0 * s, Color(0.8, 0.94, 1.0, 0.9))
+	add_child(_flash)
+
+	IceFX.flash_light(world, global_position, 3.5 * s, 3.0 * s, 0.45)
+	IceFragment.spawn_burst(world, global_position, int(10 * s), 60.0 * s, 240.0 * s,
+		80.0, 320.0, 5.0 * s, 13.0 * s, normal, 1.2)
+	IceFX.vapor_burst(world, global_position, int(12 * s), 15.0, 80.0, 0.95, 22.0 * s, 52.0 * s)
+	IceFX.sparkle_burst(world, global_position, int(24 * s), 60.0 * s, 260.0 * s, 0.6,
+		260.0, normal, 110.0)
 
 
 func _process(delta: float) -> void:
 	_t += delta
-	if _t >= duration:
+	var k := clampf(_t / WAVE_TIME, 0.0, 1.0)
+	var e := 1.0 - pow(1.0 - k, 3.0)
+	_wave.visible = k < 1.0
+	_wave.material.set_shader_parameter("progress", e)
+	_flash.modulate.a = 0.9 * pow(1.0 - clampf(_t / 0.2, 0.0, 1.0), 2.0)
+	_flash.scale = Vector2.ONE * 150.0 * strength / 128.0 * (0.6 + 0.6 * e)
+	if _decal:
+		_decal.material.set_shader_parameter("grow", minf(_t / 0.12, 1.0) * 0.95)
+		_decal.material.set_shader_parameter("fade", 1.0 - smoothstep(DECAL_TIME * 0.5, DECAL_TIME, _t))
+	if _t >= (DECAL_TIME if _decal else WAVE_TIME):
 		queue_free()
-		return
-	queue_redraw()
-
-
-func _draw() -> void:
-	var k := _t / duration            # 0 -> 1
-	var e := 1.0 - pow(1.0 - k, 3.0)  # ease-out
-	var fade := 1.0 - k
-	var s := strength
-
-	# Flash iniziale
-	if k < 0.3:
-		draw_circle(Vector2.ZERO, 16.0 * s * (1.0 + k), Color(IceFX.CORE, (0.3 - k) * 2.5))
-
-	# Onda d'urto
-	draw_arc(Vector2.ZERO, 6.0 + 34.0 * s * e, 0.0, TAU, 40,
-		Color(IceFX.GLOW, 0.8 * fade), maxf(4.0 * s * fade, 0.5))
-
-	# Spuntoni che escono e poi si ritirano
-	var grow := sin(clampf(k * 1.4, 0.0, 1.0) * PI)
-	for sp in _spikes:
-		var dir := Vector2.from_angle(sp.x)
-		var side := dir.orthogonal() * 3.0 * s
-		var tip := dir * sp.y * grow
-		draw_colored_polygon(PackedVector2Array([side, tip, -side]),
-			Color(IceFX.CORE.lerp(IceFX.GLOW, 0.4), fade))

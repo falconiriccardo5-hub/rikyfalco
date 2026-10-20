@@ -1,19 +1,17 @@
 extends Node2D
 ## Scena demo: mago con bastone di ghiaccio + nemici che arrivano da destra.
 ## Tasto SINISTRO del mouse = colpo principale. WASD per muovere il mago.
-## Avvio con `-- --autofire` per far sparare il mago da solo (test headless).
 
 const WIZARD_SPEED := 180.0
 
 var wizard: CharacterBody2D
 var staff: IceStaff
 var _spawn_left := 0.0
-var _autofire := false
 
 
 func _ready() -> void:
-	_autofire = "--autofire" in OS.get_cmdline_user_args()
-	RenderingServer.set_default_clear_color(Color(0.06, 0.07, 0.11))
+	RenderingServer.set_default_clear_color(Color(0.02, 0.02, 0.03))
+	add_child(DemoArena.new())
 
 	wizard = CharacterBody2D.new()
 	wizard.name = "Wizard"
@@ -31,7 +29,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var input := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var input := Vector2.ZERO
 	if Input.is_physical_key_pressed(KEY_A): input.x -= 1
 	if Input.is_physical_key_pressed(KEY_D): input.x += 1
 	if Input.is_physical_key_pressed(KEY_W): input.y -= 1
@@ -43,9 +41,6 @@ func _physics_process(delta: float) -> void:
 	if _spawn_left <= 0.0 and get_tree().get_nodes_in_group("enemies").size() < 4:
 		_spawn_left = 1.2
 		_spawn_enemy()
-
-	if _autofire and Engine.get_physics_frames() % 20 == 0:
-		staff.shoot()
 
 
 func _spawn_enemy() -> void:

@@ -1,8 +1,8 @@
 class_name IceStaff
 extends Node2D
 ## Bastone di ghiaccio del mago. Colpo principale col tasto SINISTRO del mouse:
-## carica breve sulla gemma, flash di lancio, rinculo del bastone e
-## proiettile di ghiaccio che congela il nemico per `freeze_duration` secondi.
+## la gemma di cristallo si accende, lampo di luce fredda, rinculo del bastone
+## e proiettile di ghiaccio che congela il nemico per `freeze_duration` secondi.
 ##
 ## Uso: aggiungi questo nodo come figlio del mago (es. "Player/IceStaff").
 ## Se esiste un figlio Marker2D chiamato "Tip" viene usato come punta del
@@ -21,11 +21,16 @@ const ACTION := "attack_primary"
 
 @export_group("Bastone")
 @export var aim_at_mouse := true
+## Se false il bastone non legge l'input (utile per IA, cutscene, render).
+@export var listen_input := true
 @export var tip_offset := Vector2(30, 0)
-## Disegna un bastone segnaposto: disattivalo quando usi il tuo sprite.
+## Disegna asta e gemma segnaposto: disattivalo quando usi il tuo sprite.
 @export var draw_placeholder := true
 @export var recoil_angle := 0.35
 @export var recoil_distance := 7.0
+
+## Se impostato (Vector2 globale) il bastone mira lì invece che al mouse.
+var aim_override: Variant = null
 
 var _cooldown_left := 0.0
 var _gem_flash := 0.0
@@ -33,26 +38,51 @@ var _kick := 0.0
 var _recoil := 0.0
 var _time := 0.0
 var _tween: Tween
+var _gem: Sprite2D
+var _gem_mat: ShaderMaterial
+var _gem_glow: Sprite2D
+var _gem_light: PointLight2D
 
 
 func _ready() -> void:
 	_ensure_input_action()
+	_gem_glow = IceFX.glow(40.0, Color(0.5, 0.8, 1.0, 0.5))
+	add_child(_gem_glow)
+	_gem_mat = IceFX.crystal_material(false)
+	_gem = IceFX.quad(_gem_mat, Vector2(15, 10))
+	_gem.visible = draw_placeholder
+	add_child(_gem)
+	_gem_light = IceFX.light(0.45, 0.7)
+	add_child(_gem_light)
 
 
 func _process(delta: float) -> void:
 	_time += delta
 	_cooldown_left = maxf(_cooldown_left - delta, 0.0)
 
-	if aim_at_mouse:
-		look_at(get_global_mouse_position())
+	if aim_at_mouse or aim_override != null:
+		look_at(_aim_point())
 		# Mirroring quando si mira a sinistra, così il bastone non va sottosopra.
 		scale.y = -1.0 if absf(wrapf(global_rotation, -PI, PI)) > PI * 0.5 else 1.0
 		rotation += _kick * -scale.y
 
-	if Input.is_action_pressed(ACTION) and _cooldown_left <= 0.0:
+	if listen_input and Input.is_action_pressed(ACTION) and _cooldown_left <= 0.0:
 		shoot()
 
+	var pulse := 0.5 + 0.5 * sin(_time * 4.0)
+	var tip := tip_offset - Vector2(_recoil, 0)
+	_gem.position = tip
+	_gem_glow.position = tip
+	_gem_light.position = tip
+	_gem_glow.modulate.a = 0.35 + 0.15 * pulse + 0.6 * _gem_flash
+	_gem_glow.scale = Vector2.ONE * (40.0 + 50.0 * _gem_flash) / 128.0
+	_gem_light.energy = 0.35 + 0.15 * pulse + 1.4 * _gem_flash
+	_gem_mat.set_shader_parameter("node_rotation", global_rotation)
 	queue_redraw()
+
+
+func _aim_point() -> Vector2:
+	return aim_override if aim_override != null else get_global_mouse_position()
 
 
 func get_tip_global() -> Vector2:
@@ -63,8 +93,7 @@ func get_tip_global() -> Vector2:
 func shoot() -> void:
 	_cooldown_left = fire_cooldown
 	var tip := get_tip_global()
-	var dir := (get_global_mouse_position() - tip).normalized() if aim_at_mouse \
-		else Vector2.RIGHT.rotated(global_rotation)
+	var dir := (_aim_point() - tip).normalized()
 	if dir == Vector2.ZERO:
 		dir = Vector2.RIGHT.rotated(global_rotation)
 
@@ -79,17 +108,13 @@ func shoot() -> void:
 	world.add_child(projectile)
 	projectile.global_position = tip
 
-	_spawn_muzzle(world, tip, dir)
+	var flash := IceMuzzleFlash.new()
+	flash.rotation = dir.angle()
+	world.add_child(flash)
+	flash.global_position = tip
+
 	_play_recoil()
 	fired.emit(projectile)
-
-
-func _spawn_muzzle(world: Node, at: Vector2, dir: Vector2) -> void:
-	var flash := IceMuzzleFlash.new()
-	world.add_child(flash)
-	flash.global_position = at
-	flash.rotation = dir.angle()
-	IceFX.burst(world, at, 12, 60.0, 200.0, 1.5, 3.5, 0.35, 0.0, dir, 35.0)
 
 
 func _play_recoil() -> void:
@@ -101,7 +126,7 @@ func _play_recoil() -> void:
 	_tween = create_tween().set_parallel()
 	_tween.tween_property(self, "_kick", 0.0, 0.22).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	_tween.tween_property(self, "_recoil", 0.0, 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	_tween.tween_property(self, "_gem_flash", 0.0, 0.3)
+	_tween.tween_property(self, "_gem_flash", 0.0, 0.35)
 
 
 func _draw() -> void:
@@ -109,22 +134,13 @@ func _draw() -> void:
 		return
 	# Il rinculo sposta solo il disegno, non la posizione del nodo.
 	draw_set_transform(Vector2(-_recoil, 0))
-	# Asta di legno
-	draw_line(Vector2(-18, 0), Vector2(tip_offset.x - 6, 0), Color(0.36, 0.24, 0.16), 4.0)
-	draw_line(Vector2(-18, -1), Vector2(tip_offset.x - 6, -1), Color(0.52, 0.36, 0.24), 1.5)
-	# Artiglio che regge la gemma
-	draw_line(Vector2(tip_offset.x - 8, 0), Vector2(tip_offset.x - 2, -6), IceFX.DEEP, 2.0)
-	draw_line(Vector2(tip_offset.x - 8, 0), Vector2(tip_offset.x - 2, 6), IceFX.DEEP, 2.0)
-
-	# Gemma: pulsa a riposo, esplode di luce allo sparo
-	var t := tip_offset
-	var pulse := 0.5 + 0.5 * sin(_time * 4.0)
-	var glow := 0.25 + 0.15 * pulse + _gem_flash * 0.75
-	draw_circle(t, 9.0 + 10.0 * _gem_flash, Color(IceFX.GLOW, glow * 0.35))
-	draw_circle(t, 6.0 + 4.0 * _gem_flash, Color(IceFX.GLOW, glow * 0.6))
-	var gem := PackedVector2Array([t + Vector2(6, 0), t + Vector2(0, -5), t + Vector2(-5, 0), t + Vector2(0, 5)])
-	draw_colored_polygon(gem, IceFX.GLOW.lerp(IceFX.CORE, 0.4 + 0.6 * _gem_flash))
-	draw_line(t + Vector2(-2, -1), t + Vector2(2, -3), Color.WHITE, 1.0)
+	var end := tip_offset.x - 6.0
+	draw_line(Vector2(-18, 0), Vector2(end, 0), Color(0.3, 0.2, 0.13), 4.0)
+	draw_line(Vector2(-18, -1), Vector2(end, -1), Color(0.48, 0.33, 0.22), 1.5)
+	# Artiglio di metallo che regge la gemma
+	var claw := Color(0.55, 0.62, 0.72)
+	draw_line(Vector2(end - 2, 0), Vector2(tip_offset.x - 1, -6), claw, 2.0)
+	draw_line(Vector2(end - 2, 0), Vector2(tip_offset.x - 1, 6), claw, 2.0)
 
 
 func _ensure_input_action() -> void:

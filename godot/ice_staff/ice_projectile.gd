@@ -1,7 +1,8 @@
 class_name IceProjectile
 extends Area2D
-## Proiettile di ghiaccio: scheggia di cristallo con alone, scia luminosa e
-## brillantini di brina. All'impatto si frantuma e congela il bersaglio.
+## Proiettile di ghiaccio: cristallo sfaccettato che rifrange lo sfondo,
+## luce fredda dinamica che illumina la scena, scia di vapore gelido,
+## polvere di diamante scintillante e un sottile filo d'energia.
 ##
 ## Un bersaglio viene congelato se è nel gruppo "enemies", oppure se è
 ## un'Area2D nel gruppo "hurtbox" (in quel caso si congela il suo genitore).
@@ -21,10 +22,14 @@ var shooter: Node = null
 var _traveled := 0.0
 var _age := 0.0
 var _dead := false
-var _trail: Line2D
-var _sparkles: CPUParticles2D
+var _body: Sprite2D
+var _glow: Sprite2D
+var _light: PointLight2D
+var _streak: Line2D
+var _vapor: CPUParticles2D
+var _dust: CPUParticles2D
 
-const TRAIL_POINTS := 14
+const STREAK_POINTS := 10
 
 
 func _ready() -> void:
@@ -37,53 +42,49 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
 
-	_build_trail()
-	_build_sparkles()
+	_vapor = IceFX.vapor_emitter(80, 0.8, 14.0 * size, 36.0 * size, 5.0, 30.0, 0.3)
+	_vapor.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	_vapor.emission_sphere_radius = 4.0 * size
+	add_child(_vapor)
 
-	# Comparsa "pop" dalla punta del bastone
-	scale = Vector2(0.2, 0.2)
-	create_tween().tween_property(self, "scale", Vector2.ONE, 0.1) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_dust = IceFX.sparkle_emitter(26, 0.55, 5.0 * size, 11.0 * size)
+	_dust.direction = Vector2.LEFT
+	_dust.spread = 50.0
+	_dust.initial_velocity_min = 20.0
+	_dust.initial_velocity_max = 70.0
+	_dust.gravity = Vector2(0, 40)
+	_dust.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	_dust.emission_sphere_radius = 6.0 * size
+	add_child(_dust)
 
-
-func _build_trail() -> void:
-	_trail = Line2D.new()
-	_trail.top_level = true  # punti in coordinate globali
-	_trail.width = 9.0 * size
-	_trail.joint_mode = Line2D.LINE_JOINT_ROUND
-	_trail.begin_cap_mode = Line2D.LINE_CAP_ROUND
-	_trail.end_cap_mode = Line2D.LINE_CAP_ROUND
-	var curve := Curve.new()
-	curve.add_point(Vector2(0.0, 0.0))
-	curve.add_point(Vector2(1.0, 1.0))
-	_trail.width_curve = curve
+	_streak = Line2D.new()
+	_streak.top_level = true  # punti in coordinate globali
+	_streak.width = 4.0 * size
+	_streak.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	_streak.end_cap_mode = Line2D.LINE_CAP_ROUND
+	_streak.width_curve = IceFX._curve(0.0, 1.0)
 	var g := Gradient.new()
-	g.set_color(0, Color(IceFX.DEEP, 0.0))
-	g.set_color(1, Color(IceFX.CORE, 0.85))
-	g.add_point(0.6, Color(IceFX.GLOW, 0.45))
-	_trail.gradient = g
-	_trail.material = IceFX.additive_material()
-	add_child(_trail)
+	g.set_color(0, Color(0.5, 0.8, 1.0, 0.0))
+	g.set_color(1, Color(0.85, 0.96, 1.0, 0.6))
+	_streak.gradient = g
+	_streak.material = IceFX.additive()
+	add_child(_streak)
 
+	_glow = IceFX.glow(120.0 * size, Color(0.45, 0.75, 1.0, 0.55))
+	add_child(_glow)
 
-func _build_sparkles() -> void:
-	_sparkles = CPUParticles2D.new()
-	_sparkles.amount = 28
-	_sparkles.lifetime = 0.45
-	_sparkles.local_coords = false
-	_sparkles.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
-	_sparkles.emission_sphere_radius = 5.0 * size
-	_sparkles.direction = Vector2.LEFT
-	_sparkles.spread = 70.0
-	_sparkles.initial_velocity_min = 10.0
-	_sparkles.initial_velocity_max = 45.0
-	_sparkles.gravity = Vector2(0, 25)
-	_sparkles.scale_amount_min = 1.0 * size
-	_sparkles.scale_amount_max = 3.0 * size
-	_sparkles.scale_amount_curve = IceFX.shrink_curve()
-	_sparkles.color_ramp = IceFX.fade_gradient(IceFX.CORE, IceFX.GLOW)
-	_sparkles.material = IceFX.additive_material()
-	add_child(_sparkles)
+	var mat := IceFX.crystal_material(true)
+	mat.set_shader_parameter("node_rotation", rotation)
+	_body = IceFX.quad(mat, Vector2(54.0, 20.0) * size)
+	add_child(_body)
+
+	_light = IceFX.light(1.6, 2.4 * size)
+	add_child(_light)
+
+	# Il cristallo si "condensa" dalla punta del bastone
+	_body.scale *= 0.2
+	create_tween().tween_property(_body, "scale", _body.scale * 5.0, 0.09) \
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _physics_process(delta: float) -> void:
@@ -92,42 +93,14 @@ func _physics_process(delta: float) -> void:
 		var step := direction * speed * delta
 		global_position += step
 		_traveled += step.length()
-		_trail.add_point(global_position)
+		_streak.add_point(global_position)
+		_light.energy = 1.5 + 0.2 * sin(_age * 30.0)
+		_glow.modulate.a = 0.45 + 0.08 * sin(_age * 41.0)
 		if _traveled >= max_distance:
 			_shatter(false)
-	# Da morto la scia si ritira di 2 punti a frame verso il punto d'impatto
-	var keep := maxi(_trail.get_point_count() - 2, 0) if _dead else TRAIL_POINTS
-	while _trail.get_point_count() > keep:
-		_trail.remove_point(0)
-	queue_redraw()
-
-
-func _draw() -> void:
-	if _dead:
-		return
-	var flicker := 0.85 + 0.15 * sin(_age * 45.0)
-	var s := size
-	# Alone esterno
-	draw_circle(Vector2.ZERO, 15.0 * s, Color(IceFX.GLOW, 0.12 * flicker))
-	draw_circle(Vector2.ZERO, 10.0 * s, Color(IceFX.GLOW, 0.25 * flicker))
-	# Scheggia principale (punta in avanti, +X)
-	var outer := PackedVector2Array([
-		Vector2(17, 0) * s, Vector2(3, -6.5) * s, Vector2(-12, 0) * s, Vector2(3, 6.5) * s])
-	draw_colored_polygon(outer, Color(IceFX.GLOW.lerp(IceFX.CORE, 0.3), 0.95))
-	var inner := PackedVector2Array([
-		Vector2(13, 0) * s, Vector2(3, -3) * s, Vector2(-6, 0) * s, Vector2(3, 3) * s])
-	draw_colored_polygon(inner, IceFX.CORE)
-	# Faccette
-	draw_line(Vector2(17, 0) * s, Vector2(-12, 0) * s, Color(1, 1, 1, 0.55), 1.0)
-	draw_line(Vector2(3, -6.5) * s, Vector2(8, 0) * s, Color(1, 1, 1, 0.4), 1.0)
-	# Due cristallini che orbitano attorno alla scheggia
-	for i in 2:
-		var a := _age * 14.0 + PI * i
-		var c := Vector2(cos(a) * 4.0, sin(a) * 9.0) * s
-		var d := 2.5 * s
-		draw_colored_polygon(PackedVector2Array([
-			c + Vector2(d, 0), c + Vector2(0, -d), c + Vector2(-d, 0), c + Vector2(0, d)]),
-			Color(IceFX.CORE, 0.9))
+	var keep := maxi(_streak.get_point_count() - 2, 0) if _dead else STREAK_POINTS
+	while _streak.get_point_count() > keep:
+		_streak.remove_point(0)
 
 
 func _on_body_entered(body: Node) -> void:
@@ -150,7 +123,8 @@ func _on_area_entered(area: Area2D) -> void:
 func _hit_target(target: Node) -> void:
 	if target.has_method("take_damage"):
 		target.take_damage(damage)
-	IceFreeze.apply_to(target, freeze_duration)
+	if not target.is_queued_for_deletion():
+		IceFreeze.apply_to(target, freeze_duration, global_position)
 	hit.emit(target)
 	_shatter(true)
 
@@ -160,11 +134,15 @@ func _shatter(big: bool) -> void:
 		return
 	_dead = true
 	set_deferred("monitoring", false)
-	_sparkles.emitting = false
+	_body.hide()
+	_glow.hide()
+	_vapor.emitting = false
+	_dust.emitting = false
+	_light.hide()
 	var impact := IceImpact.new()
-	impact.strength = size * (1.0 if big else 0.55)
+	impact.strength = size * (1.0 if big else 0.6)
 	impact.normal = -direction
 	get_parent().add_child(impact)
 	impact.global_position = global_position
-	# Lascio il tempo alla scia e ai brillantini di sparire
-	get_tree().create_timer(_sparkles.lifetime).timeout.connect(queue_free)
+	# Lascio sparire scia e vapore prima di liberare il nodo
+	get_tree().create_timer(_vapor.lifetime).timeout.connect(queue_free)

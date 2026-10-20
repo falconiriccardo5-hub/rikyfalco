@@ -1,30 +1,29 @@
 class_name IceMuzzleFlash
 extends Node2D
-## Flash di lancio sulla punta del bastone: stella a 4 punte e anello rapido.
+## Lancio dalla punta del bastone: lampo di luce, alone che si espande,
+## sbuffo di condensa in avanti e cono di polvere di ghiaccio.
 
-@export var duration := 0.16
+const DURATION := 0.18
+
 var _t := 0.0
+var _glow: Sprite2D
 
 
 func _ready() -> void:
-	material = IceFX.additive_material()
+	var world := get_parent()
+	var dir := Vector2.from_angle(rotation)
+	_glow = IceFX.glow(90.0, Color(0.75, 0.92, 1.0, 1.0))
+	add_child(_glow)
+	IceFX.flash_light(world, global_position, 1.8, 1.8, 0.25)
+	IceFX.vapor_burst(world, global_position, 7, 30.0, 110.0, 0.6, 12.0, 30.0, dir, 30.0, 0.4)
+	IceFX.sparkle_burst(world, global_position, 14, 80.0, 260.0, 0.4, 0.0, dir, 28.0, 5.0, 11.0)
 
 
 func _process(delta: float) -> void:
 	_t += delta
-	if _t >= duration:
+	var k := _t / DURATION
+	if k >= 1.0:
 		queue_free()
 		return
-	queue_redraw()
-
-
-func _draw() -> void:
-	var k := _t / duration
-	var fade := 1.0 - k
-	draw_circle(Vector2.ZERO, 10.0 * (1.0 + k), Color(IceFX.GLOW, 0.5 * fade))
-	draw_arc(Vector2.ZERO, 6.0 + 16.0 * k, 0.0, TAU, 24, Color(IceFX.CORE, fade), 2.0 * fade + 0.5)
-	# Stella: raggio lungo in avanti, corti ai lati
-	var rays := [Vector2(26, 0), Vector2(-8, 0), Vector2(0, -12), Vector2(0, 12)]
-	for r in rays:
-		var w: Vector2 = (r as Vector2).normalized().orthogonal() * 2.5 * fade
-		draw_colored_polygon(PackedVector2Array([w, r * (0.6 + 0.4 * fade), -w]), Color(IceFX.CORE, fade))
+	_glow.modulate.a = pow(1.0 - k, 2.0)
+	_glow.scale = Vector2(1.6, 1.0) * (0.5 + 0.7 * k) * 90.0 / 128.0
