@@ -1,29 +1,32 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronRight, MoreHorizontal, Plus } from 'lucide-react';
+import { MeasureForm } from '../components/Measures';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ClientForm, LeadForm } from '../components/Forms';
 import { useOpen } from '../components/Layout';
 import { Confirm, Empty, ErrorBox, Loading, useAction, useApi } from '../components/ui';
-import { api, type Lead, type VisitFormRecord } from '../lib/api';
+import { api, type Lead, type Measurement, type VisitFormRecord } from '../lib/api';
 import { initials, itDate, shortDay, time } from '../lib/format';
+import { compute } from '../lib/measures';
 import { KIND_LABEL, type Questionnaire } from '../lib/questionnaire';
 
-type Tab = 'visite' | 'persone' | 'questionari';
-const TABS: [Tab, string][] = [['visite', 'Visite'], ['persone', 'Persone'], ['questionari', 'Questionari']];
-const isTab = (v: string | null): v is Tab => v === 'visite' || v === 'persone' || v === 'questionari';
+type Tab = 'visite' | 'misure' | 'persone' | 'questionari';
+const TABS: [Tab, string][] = [['visite', 'Visite'], ['misure', 'Misure'], ['persone', 'Persone'], ['questionari', 'Questionari']];
+const isTab = (v: string | null): v is Tab => v === 'visite' || v === 'misure' || v === 'persone' || v === 'questionari';
 
 export default function Visits() {
   const [params, setParams] = useSearchParams();
   const tab: Tab = isTab(params.get('tab')) ? (params.get('tab') as Tab) : 'visite';
   const open = useOpen();
   const nav = useNavigate();
+  const [newMeasure, setNewMeasure] = useState(false);
 
   return (
     <div className="minimal-page">
       <div className="mp-head fade-in">
         <h1>Visita</h1>
-        <button className="btn btn-primary" onClick={() => (tab === 'questionari' ? nav('/visits/questionnaire/new') : open.visit())}>
-          <Plus /> {tab === 'questionari' ? 'Nuovo questionario' : 'Nuova visita'}
+        <button className="btn btn-primary" onClick={() => (tab === 'questionari' ? nav('/visits/questionnaire/new') : tab === 'misure' ? setNewMeasure(true) : open.visit())}>
+          <Plus /> {tab === 'questionari' ? 'Nuovo questionario' : tab === 'misure' ? 'Nuova misurazione' : 'Nuova visita'}
         </button>
       </div>
 
@@ -34,8 +37,33 @@ export default function Visits() {
       </div>
 
       {tab === 'visite' && <DoneVisits />}
+      {tab === 'misure' && <DoneMeasures />}
       {tab === 'persone' && <People />}
       {tab === 'questionari' && <Questionnaires />}
+      {newMeasure && <MeasureForm onClose={() => setNewMeasure(false)} />}
+    </div>
+  );
+}
+
+function DoneMeasures() {
+  const { data, error } = useApi<Measurement[]>('/measurements');
+  if (error) return <ErrorBox error={error} />;
+  if (!data) return <Loading />;
+  if (data.length === 0) return <div className="mp-list fade-in"><Empty>Nessuna misurazione ancora. Con “Nuova misurazione” inserisci pliche e circonferenze nella data della visita.</Empty></div>;
+  return (
+    <div className="mp-list fade-in">
+      {data.map((m) => {
+        const c = compute(m);
+        return (
+          <Link className="mp-row" key={m.id} to={`/measures?client=${m.client_id}`}>
+            <div className="grow">
+              <div className="t">{m.client_name}</div>
+              <div className="s">{itDate(m.measured_at)}{m.weight_kg !== null && ` · ${m.weight_kg} kg`}{c.pct !== null && ` · ${c.pct.toLocaleString('it-IT')}% MG`}</div>
+            </div>
+            <ChevronRight className="chev" />
+          </Link>
+        );
+      })}
     </div>
   );
 }

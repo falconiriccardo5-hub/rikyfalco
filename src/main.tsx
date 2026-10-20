@@ -11,6 +11,7 @@ import ClientDetail from './pages/ClientDetail';
 import Visits from './pages/Visits';
 import VisitForm from './pages/VisitForm';
 import QuestionnaireEditor from './pages/QuestionnaireEditor';
+import Measures from './pages/Measures';
 import Payments from './pages/Payments';
 import Calendar from './pages/Calendar';
 import Notifications from './pages/Notifications';
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="visits" element={<Visits />} />
               <Route path="visits/form/:id" element={<VisitForm />} />
               <Route path="visits/questionnaire/:id" element={<QuestionnaireEditor />} />
+              <Route path="measures" element={<Measures />} />
               <Route path="payments" element={<Payments />} />
               <Route path="calendar" element={<Calendar />} />
               <Route path="notifications" element={<Notifications />} />

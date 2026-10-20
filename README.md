@@ -10,6 +10,7 @@ Gira interamente su **Cloudflare** (niente Vercel):
 | Database | Cloudflare D1 (SQLite) — con Time Travel: cronologia ripristinabile di 30 giorni |
 | Login | Cloudflare Access (Zero Trust) + verifica del token lato server |
 | Calendario | Google Calendar con due link iCal, senza Google Cloud: i tuoi eventi Google compaiono nell'agenda (ogni 15 minuti) e le lezioni compaiono in Google Calendar come calendario "RF Coaching" (PC e iPhone) |
+| Misure | Pliche, circonferenze e composizione corporea per data, con grafici e confronto tra visite (anche nella scheda cliente → Anamnesi / Misure) |
 | Backup | CSV su Google Drive ogni notte + download ZIP + ripristino |
 
 ## Sezioni
@@ -28,6 +29,16 @@ La sezione **Visita** ha tre schede: **Visite** (quelle già compilate), **Perso
 - **Questionari personalizzabili**: ogni questionario ha *Impostazioni* (nome, tipologia **Benvenuto** o **Check In**, attivo sì/no) e *Domande* (risposta aperta, scelta singola o multipla, numero, scala 1–5, data; obbligatoria; riordino con le frecce; "Cancella tutto").
 - **Anamnesi e Check originali** sono stati convertiti in due questionari già pronti ("Anamnesi iniziale" come Benvenuto, "Check di controllo" come Check In), modificabili o eliminabili. Con la conversione sono scomparsi i campi calcolati (MG, MM, Kcal, Kcal/kg), che erano solo visualizzati e mai salvati.
 - **Nuova visita**: si sceglie la persona, poi il questionario (il "Consigliato" è Benvenuto alla prima visita, Check In dopo). Ogni visita salvata conserva una copia del titolo e delle domande: modificare un questionario non cambia le visite già fatte. Le visite create prima di questa versione continuano a funzionare.
+
+## Misure (pliche e circonferenze)
+
+Dal foglio di lavoro delle visite: 5 pliche con 3 rilevazioni ciascuna (media automatica), 11 circonferenze, peso, età e note, **nella data che scegli tu** (migrazione `0006`).
+
+- **Dove si inseriscono**: Visita → scheda *Misure* → *Nuova misurazione* (si sceglie il cliente), oppure dalla scheda cliente → **Anamnesi / Misure**, o dalla voce laterale **Misure**.
+- **Calcolati da soli**: somma pliche, % massa grassa, massa grassa kg e massa magra kg (non si salvano: se correggi una plica si aggiornano). La formula (somma delle 5 pliche + età) è stata ricavata dalle visite del foglio originale e le riproduce entro 0,03 punti; l'età si precompila dalla data di nascita del cliente.
+- **Grafici mese per mese**: peso, % massa grassa, massa grassa e magra, somma pliche, pliche, circonferenze tronco, braccia e gambe (sx/dx sovrapposti). I valori non misurati restano vuoti, non diventano 0.
+- **Confronto tra due visite**: scegli due date e vedi valori e differenze.
+- Le misure sono incluse nei backup CSV.
 
 ## Calendario e compleanni
 

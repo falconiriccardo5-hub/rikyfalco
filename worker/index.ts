@@ -11,6 +11,7 @@ import {
 } from './domain';
 import * as google from './google';
 import * as ical from './ical';
+import { GIRTH_KEYS, SKINFOLD_KEYS } from '../src/lib/measures';
 import { DEFAULT_QUESTIONNAIRES, legacyQuestions, legacyTitle, templateOfKind, type Q, type QKind } from '../src/lib/questionnaire';
 import { birthdaysInRange } from './birthdays';
 import { exportCsvs, listDriveBackups, readDriveBackup, restoreFromCsvs, runDriveBackup } from './backup';
@@ -773,6 +774,62 @@ app.post('/api/backup/restore-drive', async (c) => {
   const r = await restoreFromCsvs(c.env, files, actor(c));
   c.executionCtx.waitUntil(syncPending(c.env, 200));
   return c.json(r);
+});
+
+// ───────────── API: misure (pliche e circonferenze) ─────────────
+
+const measureNum = z.number().min(0).max(999).nullable();
+const measurementSchema = z.object({
+  measured_at: dateStr,
+  age: z.number().int().min(5).max(110).nullable().default(null),
+  weight_kg: z.number().min(10).max(400).nullable().default(null),
+  skinfolds: z.record(z.string(), z.array(measureNum).max(3)).refine((o) => Object.keys(o).every((k) => SKINFOLD_KEYS.includes(k)), 'plica non valida').default({}),
+  girths: z.record(z.string(), measureNum).refine((o) => Object.keys(o).every((k) => GIRTH_KEYS.includes(k)), 'circonferenza non valida').default({}),
+  notes: text(2000).default(''),
+});
+
+type MeasurementRow = { id: string; client_id: string; client_name?: string; measured_at: string; age: number | null; weight_kg: number | null; skinfolds: string; girths: string; notes: string; created_at: string; updated_at: string };
+const parseMeasurement = (r: MeasurementRow) => ({ ...r, skinfolds: JSON.parse(r.skinfolds || '{}'), girths: JSON.parse(r.girths || '{}') });
+
+app.get('/api/measurements', async (c) => {
+  const clientId = c.req.query('client_id');
+  const rows = await all<MeasurementRow>(c.env.DB,
+    `SELECT m.*, TRIM(c.first_name || ' ' || c.last_name) AS client_name FROM measurements m JOIN clients c ON c.id = m.client_id
+     ${clientId ? 'WHERE m.client_id = ?' : ''} ORDER BY m.measured_at DESC, m.created_at DESC`, ...(clientId ? [clientId] : []));
+  return c.json(rows.map(parseMeasurement));
+});
+
+app.post('/api/measurements', async (c) => {
+  const body = await c.req.json();
+  const clientId = z.string().uuid().parse(body.client_id);
+  const d = measurementSchema.parse(body);
+  const client = await first<{ first_name: string; last_name: string }>(c.env.DB, 'SELECT first_name, last_name FROM clients WHERE id = ?', clientId);
+  if (!client) return c.json({ error: 'Cliente non trovato' }, 404);
+  const id = uid(), now = isoNow();
+  await run(c.env.DB, 'INSERT INTO measurements (id, client_id, measured_at, age, weight_kg, skinfolds, girths, notes, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
+    id, clientId, d.measured_at, d.age, d.weight_kg, JSON.stringify(d.skinfolds), JSON.stringify(d.girths), d.notes, now, now);
+  await logActivity(c.env, actor(c), 'creato', 'misurazione', clientId, `Misure del ${d.measured_at}`);
+  return c.json({ id }, 201);
+});
+
+app.patch('/api/measurements/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<MeasurementRow>(c.env.DB, 'SELECT * FROM measurements WHERE id = ?', id);
+  if (!cur) return c.json({ error: 'Misurazione non trovata' }, 404);
+  const d = measurementSchema.parse(await c.req.json());
+  await run(c.env.DB, 'UPDATE measurements SET measured_at=?, age=?, weight_kg=?, skinfolds=?, girths=?, notes=?, updated_at=? WHERE id=?',
+    d.measured_at, d.age, d.weight_kg, JSON.stringify(d.skinfolds), JSON.stringify(d.girths), d.notes, isoNow(), id);
+  await logActivity(c.env, actor(c), 'modificato', 'misurazione', cur.client_id, `Misure del ${d.measured_at}`);
+  return c.json({ ok: true });
+});
+
+app.delete('/api/measurements/:id', async (c) => {
+  const id = c.req.param('id');
+  const cur = await first<MeasurementRow>(c.env.DB, 'SELECT * FROM measurements WHERE id = ?', id);
+  if (!cur) return c.json({ error: 'Misurazione non trovata' }, 404);
+  await run(c.env.DB, 'DELETE FROM measurements WHERE id = ?', id);
+  await logActivity(c.env, actor(c), 'eliminato', 'misurazione', cur.client_id, `Misure del ${cur.measured_at}`);
+  return c.json({ ok: true });
 });
 
 // ───────────── API: impostazioni e Google ─────────────

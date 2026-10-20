@@ -74,3 +74,9 @@ export interface VisitFormRecord {
   title: string; questionnaire_id: string | null; questions: import('./questionnaire').Q[];
   answers: Record<string, string | string[]>; person: string; created_at: string; updated_at: string;
 }
+
+/** Misurazione di un cliente (pliche in mm, 3 rilevazioni per sito; circonferenze in cm) */
+export interface Measurement {
+  id: string; client_id: string; client_name?: string; measured_at: string; age: number | null; weight_kg: number | null;
+  skinfolds: Record<string, (number | null)[]>; girths: Record<string, number | null>; notes: string;
+}
