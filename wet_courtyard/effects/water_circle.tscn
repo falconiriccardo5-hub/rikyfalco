@@ -1,0 +1,167 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://scripts/magic_circle.gd" id="1_rtgom"]
+[ext_resource type="Shader" path="res://shaders/magic_water.gdshader" id="2_qetoj"]
+[ext_resource type="Shader" path="res://shaders/magic_rim.gdshader" id="3_cfjek"]
+[ext_resource type="Shader" path="res://shaders/soft_particle.gdshader" id="4_fjsho"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fe5hf"]
+render_priority = 0
+shader = ExtResource("2_qetoj")
+shader_parameter/deep = null
+shader_parameter/tint = null
+shader_parameter/energy = null
+shader_parameter/reveal = null
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_new8q"]
+size = Vector2(4.2, 4.2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3terp"]
+render_priority = 0
+shader = ExtResource("3_cfjek")
+shader_parameter/tint = null
+shader_parameter/tip_tint = null
+shader_parameter/energy = 1.5
+shader_parameter/flow_speed = 0.45
+shader_parameter/turbulence = 1.0
+shader_parameter/height_scale = 1.42857
+shader_parameter/reveal = null
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_kf5pp"]
+top_radius = 2.05
+bottom_radius = 1.84
+height = 0.7
+radial_segments = 96
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="Gradient" id="Gradient_dc6gv"]
+offsets = PackedFloat32Array(0, 0.2, 1)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.9, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_t206m"]
+gradient = SubResource("Gradient_dc6gv")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_cgf18"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.02
+emission_ring_radius = 1.75
+emission_ring_inner_radius = 0.0
+direction = Vector3(0, 1, 0)
+spread = 8.0
+initial_velocity_min = 0.15
+initial_velocity_max = 0.45
+gravity = Vector3(0, 0, 0)
+scale_min = 0.5
+scale_max = 1.2
+color_ramp = SubResource("GradientTexture1D_t206m")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wcynn"]
+render_priority = 0
+shader = ExtResource("4_fjsho")
+shader_parameter/tint = null
+shader_parameter/energy = 2.5
+shader_parameter/softness = 1.4
+shader_parameter/streak = null
+
+[sub_resource type="QuadMesh" id="QuadMesh_34n01"]
+material = SubResource("ShaderMaterial_wcynn")
+size = Vector2(0.07, 0.07)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2gg2d"]
+shading_mode = 0
+albedo_color = Color(0.85, 0.97, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_ceq5j"]
+radius = 0.07
+height = 0.14
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nsjmd"]
+shading_mode = 0
+albedo_color = Color(0.85, 0.97, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_5ymwg"]
+radius = 0.07
+height = 0.14
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vlkp7"]
+shading_mode = 0
+albedo_color = Color(0.85, 0.97, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_7gqs8"]
+radius = 0.07
+height = 0.14
+
+[node name="WaterCircle" type="Node3D"]
+script = ExtResource("1_rtgom")
+kind = 0
+cycle_colors = true
+seconds_per_color = 3.0
+orb_radius = 1.95
+orb_speed = 0.85
+
+[node name="Surface" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, 0)
+material_override = SubResource("ShaderMaterial_fe5hf")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_new8q")
+
+[node name="Rim" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+material_override = SubResource("ShaderMaterial_3terp")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_kf5pp")
+
+[node name="Sparks" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+amount = 36
+lifetime = 2.4
+visibility_aabb = AABB(-14, -2, -14, 28, 14, 28)
+transform_align = 1
+process_material = SubResource("ParticleProcessMaterial_cgf18")
+draw_pass_1 = SubResource("QuadMesh_34n01")
+
+[node name="Orbs" type="Node3D" parent="."]
+
+[node name="Orb0" type="Node3D" parent="Orbs"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Orbs/Orb0"]
+material_override = SubResource("StandardMaterial3D_2gg2d")
+mesh = SubResource("SphereMesh_ceq5j")
+
+[node name="Light" type="OmniLight3D" parent="Orbs/Orb0"]
+light_color = Color(0.45, 0.8, 1, 1)
+light_energy = 1.4
+omni_range = 3.2
+omni_attenuation = 1.6
+
+[node name="Orb1" type="Node3D" parent="Orbs"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Orbs/Orb1"]
+material_override = SubResource("StandardMaterial3D_nsjmd")
+mesh = SubResource("SphereMesh_5ymwg")
+
+[node name="Light" type="OmniLight3D" parent="Orbs/Orb1"]
+light_color = Color(0.45, 0.8, 1, 1)
+light_energy = 1.4
+omni_range = 3.2
+omni_attenuation = 1.6
+
+[node name="Orb2" type="Node3D" parent="Orbs"]
+
+[node name="Mesh" type="MeshInstance3D" parent="Orbs/Orb2"]
+material_override = SubResource("StandardMaterial3D_vlkp7")
+mesh = SubResource("SphereMesh_7gqs8")
+
+[node name="Light" type="OmniLight3D" parent="Orbs/Orb2"]
+light_color = Color(0.45, 0.8, 1, 1)
+light_energy = 1.4
+omni_range = 3.2
+omni_attenuation = 1.6
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+light_energy = 2.2
+omni_range = 6.5
+omni_attenuation = 1.4
