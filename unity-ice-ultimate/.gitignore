@@ -1,0 +1,12 @@
+# Unity (se apri questa cartella direttamente come progetto)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/Assets/IceUltimate/Generated/
+/Assets/IceUltimate/Generated.meta
+*.csproj
+*.sln

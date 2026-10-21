@@ -20,6 +20,7 @@ Ogni funzione build_* e' indipendente: modifica i parametri e riesegui.
 import math
 import os
 import random
+import sys
 
 import bpy  # deve precedere bmesh quando si usa il modulo bpy di PyPI
 import bmesh
@@ -27,6 +28,9 @@ from mathutils import Matrix, Vector
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "models")
+# `-- --fbx <cartella>` esporta anche in FBX (per Unity) nella cartella indicata
+_args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+FBX_OUT = _args[_args.index("--fbx") + 1] if "--fbx" in _args else None
 
 
 # ------------------------------------------------------------------ util
@@ -55,6 +59,26 @@ def export(objects, filename, animations=False):
         kw["export_animation_mode"] = "ACTIONS"
     bpy.ops.export_scene.gltf(**kw)
     print("  ->", os.path.relpath(path, ROOT), flush=True)
+    if FBX_OUT:
+        export_fbx(objects, filename.replace(".glb", ".fbx"), animations)
+
+
+def export_fbx(objects, filename, animations):
+    """FBX per Unity: Y-up, -Z forward (il fronte -Y di Blender diventa +Z in Unity).
+    Le mesh statiche hanno la conversione d'assi applicata ai vertici (niente
+    rotazione di -90 gradi sull'oggetto); il personaggio esporta le azioni come clip."""
+    os.makedirs(FBX_OUT, exist_ok=True)
+    path = os.path.join(FBX_OUT, filename)
+    has_armature = any(o.type == "ARMATURE" for o in objects)
+    kw = dict(filepath=path, use_selection=True, apply_scale_options="FBX_SCALE_ALL",
+              axis_forward="-Z", axis_up="Y", use_mesh_modifiers=True, mesh_smooth_type="FACE",
+              add_leaf_bones=False, bake_space_transform=not has_armature,
+              object_types={"MESH", "ARMATURE"}, bake_anim=animations)
+    if animations:
+        kw.update(bake_anim_use_all_actions=True, bake_anim_use_nla_strips=False,
+                  bake_anim_force_startend_keying=True, bake_anim_simplify_factor=0.0)
+    bpy.ops.export_scene.fbx(**kw)
+    print("  ->", path, flush=True)
 
 
 def flat_shade(ob):
