@@ -28,7 +28,7 @@ func _apply() -> void:
 	if c:
 		c.scale = Vector3.ONE * lerpf(0.5, 1.0, charge)
 		for child in c.get_children():
-			set_param(NodePath("Crescents/" + child.name), &"intensity", intensity * 4.0)
+			set_param(NodePath("Crescents/" + child.name), &"intensity", intensity * 6.0)
 	set_param(^"Bubble", &"intensity", intensity * (0.4 + charge * 0.6))
 	set_param(^"Glow", &"intensity", intensity * charge * 0.5)
 

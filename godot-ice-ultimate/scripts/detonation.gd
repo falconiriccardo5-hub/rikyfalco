@@ -31,6 +31,11 @@ func _apply() -> void:
 	var sw := get_node_or_null(^"Shockwave") as Node3D
 	if sw:
 		sw.visible = progress > 0.001 and progress < 0.999
+	var dome := get_node_or_null(^"Dome") as Node3D
+	if dome:
+		dome.visible = progress > 0.001 and progress < 0.999
+		dome.scale = Vector3(1.0, 0.7, 1.0) * lerpf(1.0, 9.0, progress)
+		set_param(^"Dome", &"intensity", 1.6 * (1.0 - progress) * fade)
 	var loops := get_node_or_null(^"Loops") as Node3D
 	if loops:
 		loops.visible = flash > 0.01

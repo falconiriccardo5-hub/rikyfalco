@@ -10,17 +10,30 @@ var _decay := 1.5
 var _t := 0.0
 var _base: Transform3D
 var _noise := FastNoiseLite.new()
+var _base_fov := 0.0
+var _fov_tween: Tween
 
 
 func _ready() -> void:
 	add_to_group(&"vfx_camera_shake")
 	_base = transform
+	_base_fov = fov
 	_noise.frequency = 1.0
 
 
 func add_shake(amount: float, duration: float) -> void:
 	_trauma = clampf(maxf(_trauma, amount), 0.0, 1.5)
 	_decay = _trauma / maxf(duration, 0.05)
+
+
+## Zoom d'impatto: stringe il FOV di colpo e lo riapre con easing.
+func punch(fov_degrees: float, duration: float) -> void:
+	if _fov_tween:
+		_fov_tween.kill()
+	fov = _base_fov - fov_degrees
+	_fov_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	_fov_tween.tween_interval(duration * 0.15)
+	_fov_tween.tween_property(self, "fov", _base_fov, duration * 0.85)
 
 
 func _process(delta: float) -> void:

@@ -1,5 +1,7 @@
 extends SceneTree
-## Builder: genera tutte le scene del progetto (.tscn) e la mesh del cristallo.
+## Builder: genera tutte le scene del progetto (.tscn).
+## Richiede gli asset Blender gia' esportati e importati: textures/flipbooks/*,
+## models/*.glb e meshes/*.res (vedi tools/extract_meshes.gd).
 ##
 ##   godot --headless --path . --script res://tools/build_scenes.gd
 ##
@@ -15,6 +17,7 @@ const SH_ORB := "res://shaders/fresnel_orb.gdshader"
 const SH_CRYSTAL := "res://shaders/ice_crystal.gdshader"
 const SH_DISTORT := "res://shaders/screen_distortion.gdshader"
 const SH_POST := "res://shaders/post_fx.gdshader"
+const SH_TRAIL := "res://shaders/trail_mesh.gdshader"
 
 const C_ICE := Color(0.8, 0.88, 0.97)
 const C_DEEP := Color(0.5, 0.63, 0.86)
@@ -29,10 +32,6 @@ var noise: Texture2D
 func _initialize() -> void:
 	noise = tex("noise_fbm")
 	DirAccess.make_dir_recursive_absolute("res://scenes/vfx")
-	DirAccess.make_dir_recursive_absolute("res://meshes")
-	var crystal_script := load("res://scripts/crystal_cluster.gd")
-	var cmesh: ArrayMesh = crystal_script.make_crystal_mesh()
-	ResourceSaver.save(cmesh, "res://meshes/ice_crystal.tres")
 
 	save_scene(build_target_flares(), "res://scenes/vfx/target_flares.tscn")
 	save_scene(build_cast_frost(), "res://scenes/vfx/cast_frost.tscn")
@@ -71,10 +70,29 @@ func sprite_mat(t: String, color: Color, inten: float, bb := 1, angle := false, 
 	})
 
 
-func smoke_mat(inten := 1.0) -> ShaderMaterial:
-	var m := sprite_mat("smoke_puff", C_ICE, inten, 1, true)
-	m.set_shader_parameter("soft_distance", 1.2)
+func mesh(n: String) -> Mesh:
+	return load("res://meshes/%s.res" % n)
+
+
+## Sprite animato da flipbook 8x8 renderizzato in Blender (blender/flipbooks.py).
+func flipbook_mat(fb: String, color: Color, inten: float, soft := 1.2) -> ShaderMaterial:
+	var m := sprite_mat("flipbooks/%s_8x8" % fb, color, inten, 1, true)
+	m.set_shader_parameter("flipbook_grid", Vector2(8, 8))
+	m.set_shader_parameter("soft_distance", soft)
 	return m
+
+
+func smoke_mat(inten := 1.0, fb := "smoke_puff") -> ShaderMaterial:
+	return flipbook_mat(fb, C_ICE, inten)
+
+
+## Scia su mesh Blender (nastro a spirale / mezzaluna) con trail_mesh.gdshader.
+func trail(parent: Node, nm: String, mesh_name: String, params: Dictionary, xf := Transform3D.IDENTITY) -> MeshInstance3D:
+	var p := {"noise_tex": noise, "color": C_ICE, "intensity": 0.0}
+	p.merge(params, true)
+	var mi := mesh_node(parent, nm, mesh(mesh_name), smat(SH_TRAIL, p))
+	mi.transform = xf
+	return mi
 
 
 func add(parent: Node, node: Node, nm: String) -> Node:
@@ -182,6 +200,11 @@ func particles(parent: Node, nm: String, cfg: Dictionary) -> GPUParticles3D:
 	p.fixed_fps = 0
 	p.visibility_aabb = BIG_AABB
 	p.process_material = cfg["process"]
+	# flipbook: il frame scorre su tutta la vita della particella
+	var fg = cfg["mat"].get_shader_parameter("flipbook_grid")
+	if fg is Vector2 and fg.x * fg.y > 1.0:
+		cfg["process"].anim_speed_min = 1.0
+		cfg["process"].anim_speed_max = 1.0
 	p.draw_pass_1 = cfg.get("mesh", quad(0.2))
 	p.material_override = cfg["mat"]
 	p.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -256,9 +279,9 @@ func build_cast_frost() -> Node3D:
 	sprite(root, "Glow", "soft_glow", 2.6, C_DEEP, 0.0, Vector3(-0.5, 1.6, -0.4))
 	var sw := Node3D.new()
 	add(root, sw, "Swirl")
-	arc(sw, "ArcA", 2.4, {"radius": 0.42, "thickness": 0.015, "arc_length": 0.4, "spin_speed": 1.6, "chroma_fringe": 0.004}, Vector3(-90, 0, 0), Vector3(0, 0.35, 0))
-	arc(sw, "ArcB", 1.9, {"radius": 0.42, "thickness": 0.02, "arc_length": 0.35, "spin_speed": -1.3, "arc_offset": 0.3}, Vector3(-80, 0, 10), Vector3(0, 1.0, 0))
-	arc(sw, "ArcC", 1.5, {"radius": 0.42, "thickness": 0.02, "arc_length": 0.3, "spin_speed": 2.1, "arc_offset": 0.6}, Vector3(-100, 0, -10), Vector3(0, 1.6, 0))
+	trail(sw, "ArcA", "swirl_ribbon", {"auto_speed": 0.9, "trail_length": 0.7}, Transform3D(Basis.from_scale(Vector3(1.9, 2.2, 1.9)), Vector3(0, 0.05, 0)))
+	trail(sw, "ArcB", "swirl_ribbon", {"auto_speed": 1.2, "trail_length": 0.5, "edge_power": 2.5}, Transform3D(Basis(Vector3.UP, 2.1).scaled(Vector3(1.4, 1.9, 1.4)), Vector3(0, 0.3, 0)))
+	trail(sw, "ArcC", "swirl_ribbon", {"auto_speed": 0.7, "trail_length": 0.6, "edge_power": 3.0}, Transform3D(Basis(Vector3.UP, 4.2).scaled(Vector3(2.4, 1.4, 2.4)), Vector3(0, 0.0, 0)))
 	particles(root, "Sparks", {
 		"amount": 70, "lifetime": 0.9, "one_shot": true, "explosiveness": 0.9,
 		"pos": Vector3(0, 0.9, 0),
@@ -306,6 +329,8 @@ func build_ice_orb() -> Node3D:
 	arc(arcs, "ArcA", 1.5, {"radius": 0.42, "thickness": 0.02, "arc_length": 0.45, "spin_speed": 1.8, "chroma_fringe": 0.004})
 	arc(arcs, "ArcB", 1.3, {"radius": 0.42, "thickness": 0.025, "arc_length": 0.35, "spin_speed": -2.4, "arc_offset": 0.4}, Vector3(70, 20, 0))
 	arc(arcs, "ArcC", 1.8, {"radius": 0.42, "thickness": 0.015, "arc_length": 0.3, "spin_speed": 1.2, "arc_offset": 0.7, "chroma_fringe": 0.006}, Vector3(20, 80, 40))
+	trail(arcs, "RibbonA", "swirl_ribbon", {"auto_speed": 1.8, "trail_length": 0.6}, Transform3D(Basis.from_scale(Vector3(1.3, 1.1, 1.3)), Vector3(0, -0.55, 0)))
+	trail(arcs, "RibbonB", "swirl_ribbon", {"auto_speed": 2.3, "trail_length": 0.5, "edge_power": 2.5}, Transform3D(Basis(Vector3.RIGHT, PI * 0.5).scaled(Vector3(1.1, 1.0, 1.1)), Vector3(0, 0, -0.5)))
 	particles(root, "Trail", {
 		"amount": 90, "lifetime": 0.9,
 		"process": ppm({
@@ -357,6 +382,16 @@ func build_impact() -> Node3D:
 		}),
 		"mesh": quad(1.0), "mat": smoke_mat(1.2),
 	})
+	particles(root, "Explosion", {
+		"amount": 4, "lifetime": 1.1, "one_shot": true, "explosiveness": 0.9,
+		"process": ppm({
+			"emission_shape": ParticleProcessMaterial.EMISSION_SHAPE_SPHERE, "emission_sphere_radius": 0.3,
+			"spread": 180.0, "initial_velocity_min": 0.5, "initial_velocity_max": 1.5, "damping_min": 1.0, "damping_max": 2.0,
+			"angle_min": -180.0, "angle_max": 180.0, "scale_min": 2.6, "scale_max": 3.6,
+			"color_ramp": fade_ramp(C_WHITE, 1.0),
+		}),
+		"mesh": quad(1.0), "mat": flipbook_mat("explosion", C_ICE, 0.6, 0.8),
+	})
 	particles(root, "Flakes", {
 		"amount": 24, "lifetime": 1.2, "one_shot": true, "explosiveness": 0.9,
 		"process": ppm({
@@ -393,9 +428,9 @@ func build_magic_circle() -> Node3D:
 			"initial_velocity_min": 0.2, "initial_velocity_max": 0.6,
 			"angle_min": -180.0, "angle_max": 180.0, "angular_velocity_min": -20.0, "angular_velocity_max": 20.0,
 			"scale_min": 2.0, "scale_max": 3.6, "scale_curve": curve([[0, 0.5], [1, 1]]),
-			"color_ramp": fade_ramp(Color(0.8, 0.88, 1.0), 0.4),
+			"color_ramp": fade_ramp(Color(0.8, 0.88, 1.0), 0.45),
 		}),
-		"mesh": quad(1.0), "mat": smoke_mat(1.0),
+		"mesh": quad(1.0), "mat": smoke_mat(1.7, "frost_cloud"),
 	})
 	particles(root, "Streaks", {
 		"amount": 36, "lifetime": 0.75, "pos": Vector3(0, 1.3, 0),
@@ -432,7 +467,9 @@ func build_charge_core() -> Node3D:
 	var cr := Node3D.new()
 	add(root, cr, "Crescents")
 	for i in 3:
-		arc(cr, "Crescent%d" % (i + 1), 2.6, {"radius": 0.43, "thickness": 0.022, "arc_length": 0.3, "spin_speed": 0.9 + i * 0.3, "arc_offset": i * 0.33, "chroma_fringe": 0.006, "color": C_WHITE}, Vector3(0, i * 60.0, 0))
+		var b := Basis(Vector3.UP, i * TAU / 3.0) * Basis(Vector3.RIGHT, deg_to_rad(-20.0 + i * 15.0))
+		trail(cr, "Crescent%d" % (i + 1), "crescent", {"auto_speed": 0.8 + i * 0.25, "trail_length": 0.9, "edge_power": 1.0, "color": C_WHITE},
+			Transform3D(b.scaled(Vector3.ONE * (3.4 + i * 0.4)), Vector3.ZERO))
 	return root
 
 
@@ -480,6 +517,19 @@ func build_detonation() -> Node3D:
 		}),
 		"mesh": quad(0.08, 1.5), "mat": sprite_mat("spark_streak", C_WHITE, 6.0, 2),
 	})
+	particles(root, "Explosion", {
+		"amount": 8, "lifetime": 1.6, "one_shot": true, "explosiveness": 0.95, "pos": Vector3(0, 1.4, 0),
+		"process": ppm({
+			"emission_shape": ParticleProcessMaterial.EMISSION_SHAPE_SPHERE, "emission_sphere_radius": 0.9,
+			"spread": 180.0, "initial_velocity_min": 1.5, "initial_velocity_max": 3.5, "damping_min": 2.0, "damping_max": 3.0,
+			"angle_min": -180.0, "angle_max": 180.0, "scale_min": 4.5, "scale_max": 6.5,
+			"color_ramp": fade_ramp(C_WHITE, 1.0),
+		}),
+		"mesh": quad(1.0), "mat": flipbook_mat("explosion", C_ICE, 0.9, 1.0),
+	})
+	var dome := mesh_node(root, "Dome", mesh("shock_dome"), smat(SH_ORB, {"noise_tex": noise, "intensity": 0.0, "rim_power": 2.0, "core_amount": 0.05, "iridescence": 0.5}))
+	dome.material_override.render_priority = 1
+	dome.visible = false
 	particles(root, "SmokeRing", {
 		"amount": 34, "lifetime": 2.2, "one_shot": true, "explosiveness": 0.95, "pos": Vector3(0, 0.3, 0),
 		"process": ppm({
@@ -487,31 +537,38 @@ func build_detonation() -> Node3D:
 			"direction": Vector3(1, 0, 0), "spread": 180.0, "flatness": 1.0,
 			"initial_velocity_min": 4.0, "initial_velocity_max": 8.0, "damping_min": 3.0, "damping_max": 5.0,
 			"angle_min": -180.0, "angle_max": 180.0, "scale_min": 3.0, "scale_max": 5.0,
-			"scale_curve": curve([[0, 0.4], [1, 1]]), "color_ramp": fade_ramp(Color(0.8, 0.9, 1.0), 0.35),
+			"scale_curve": curve([[0, 0.4], [1, 1]]), "color_ramp": fade_ramp(Color(0.8, 0.9, 1.0), 0.45),
 		}),
-		"mesh": quad(1.0), "mat": smoke_mat(1.3),
+		"mesh": quad(1.0), "mat": smoke_mat(1.3, "frost_cloud"),
 	})
 	return root
 
 
 func build_crystal_eruption() -> Node3D:
 	var root := module_root("CrystalEruption", "res://scripts/crystal_eruption.gd")
-	var cmesh: Mesh = load("res://meshes/ice_crystal.tres")
 	ground(root, "Frost", "frost_ground", 9.0, C_FROST, 1.0, 0.04, {"reveal": 0.0, "edge_boost": 1.0})
 	ground(root, "Cracks", "ground_cracks", 12.0, C_ICE, 1.0, 0.05, {"reveal": 0.0, "edge_boost": 2.0, "noise_amount": 0.2})
 	var ice_params := {"noise_tex": noise, "grow": 0.0, "tint": Color(0.7, 0.85, 1.0), "emission_strength": 2.0, "opacity": 0.3}
-	var cl := MultiMeshInstance3D.new()
-	cl.name = "Crystals"
-	cl.set_script(load("res://scripts/crystal_cluster.gd"))
-	cl.crystal_mesh = cmesh
-	cl.material_override = smat(SH_CRYSTAL, ice_params)
-	cl.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	root.add_child(cl)
-	cl.build()
+	for nm in ["Crystals", "Arms"]:
+		var cl := MultiMeshInstance3D.new()
+		cl.name = nm
+		cl.set_script(load("res://scripts/crystal_cluster.gd"))
+		cl.material_override = smat(SH_CRYSTAL, ice_params)
+		cl.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		if nm == "Crystals":  # spuntoni centrali: cristallo tozzo
+			cl.crystal_mesh = mesh("crystal_a")
+			cl.arm_count = 0
+			cl.width_ratio = 0.16
+		else:  # bracci a fiocco di neve: cristallo lungo a lama
+			cl.crystal_mesh = mesh("crystal_b")
+			cl.spike_count = 0
+			cl.arm_width = 0.32
+		root.add_child(cl)
+		cl.build()
 	var sword := Node3D.new()
 	add(root, sword, "Sword")
-	var blade := mesh_node(sword, "Blade", cmesh, smat(SH_CRYSTAL, {"noise_tex": noise, "grow": 1.0, "delay_spread": 0.0, "emission_strength": 1.6, "opacity": 0.7}))
-	blade.transform = Transform3D(Basis(Vector3.RIGHT, PI).scaled(Vector3(0.42, 6.0, 0.42)), Vector3(0, 6.0, 0))
+	var blade := mesh_node(sword, "Blade", mesh("ice_sword"), smat(SH_CRYSTAL, {"noise_tex": noise, "grow": 1.0, "delay_spread": 0.0, "emission_strength": 1.6, "opacity": 0.6}))
+	blade.scale = Vector3.ONE * 1.15
 	for i in 3:
 		arc(sword, "Crescent%s" % "ABC"[i], 1.3 - i * 0.15, {"radius": 0.38, "thickness": 0.045, "arc_length": 0.62, "arc_offset": 0.56, "tail_fade": 0.2, "billboard": true, "color": C_WHITE}, Vector3.ZERO, Vector3(0, 2.0 + i * 1.0, 0))
 	particles(root, "Glints", {
@@ -626,18 +683,20 @@ func build_cast_animation() -> Animation:
 	vtrack(a, "CrystalEruption:sword", [[0.0, 0.0], [6.90, 0.0, EASE_IN], [7.10, 1.0]])
 	vtrack(a, "CrystalEruption:cracks", [[0.0, 0.0], [6.90, 0.0, EASE_OUT], [7.50, 1.0]])
 	vtrack(a, "CrystalEruption:glow", [[0.0, 0.0], [6.90, 3.0, EASE_OUT], [7.60, 0.15]])
-	vtrack(a, "CrystalEruption:dissolve", [[0.0, 0.0], [8.60, 0.0, EASE_IN], [9.70, 1.0]])
+	vtrack(a, "CrystalEruption:dissolve", [[0.0, 0.0], [8.30, 0.0, EASE_IN], [9.50, 1.0]])
 	# --- eventi (particelle one-shot, camera shake, post-process, segnali)
 	mtrack(a, [
 		[0.02, &"evt_burst", [^"CastFrost"]],
 		[0.02, &"evt_shake", [0.25, 0.3]],
 		[2.52, &"evt_burst", [^"ImpactBurst"]],
 		[2.52, &"evt_shake", [0.6, 0.5]],
+		[2.52, &"evt_punch", [4.0, 0.5]],
 		[2.52, &"evt_post", [1.2, 0.4, 0.35, 0.6]],
 		[2.52, &"evt_signal", [&"impact"]],
 		[5.22, &"evt_burst", [^"CastFrost"]],
 		[6.88, &"evt_burst", [^"Detonation"]],
 		[6.88, &"evt_shake", [1.2, 0.9]],
+		[6.88, &"evt_punch", [14.0, 1.1]],
 		[6.88, &"evt_post", [2.2, 1.0, 1.1, 0.9]],
 		[6.88, &"evt_signal", [&"detonated"]],
 		[7.10, &"evt_shake", [0.45, 0.35]],
@@ -663,28 +722,14 @@ func build_reset_animation() -> Animation:
 
 
 # =============================================================== demo
-func mannequin(parent: Node, nm: String, pos: Vector3, look_target: Vector3) -> Node3D:
-	var m := Node3D.new()
-	add(parent, m, nm)
-	m.position = pos
+## Personaggio low-poly modellato e animato in Blender (models/caster.glb).
+func character(parent: Node, nm: String, pos: Vector3, look_target: Vector3) -> Node3D:
+	var c: Node3D = load("res://models/caster.glb").instantiate(PackedScene.GEN_EDIT_STATE_INSTANCE)
+	add(parent, c, nm)
+	c.position = pos
 	var dir := (look_target - pos) * Vector3(1, 0, 1)
-	m.basis = Basis.looking_at(dir.normalized(), Vector3.UP)
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.09, 0.1, 0.12)
-	mat.roughness = 0.45
-	mat.rim_enabled = true
-	mat.rim = 0.6
-	var body := CapsuleMesh.new()
-	body.radius = 0.26
-	body.height = 1.5
-	var head := SphereMesh.new()
-	head.radius = 0.15
-	head.height = 0.3
-	var b := mesh_node(m, "Body", body, mat, Vector3(0, 0.78, 0))
-	b.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-	var h := mesh_node(m, "Head", head, mat, Vector3(0, 1.68, 0))
-	h.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-	return m
+	c.basis = Basis.looking_at(dir.normalized(), Vector3.UP, true)
+	return c
 
 
 func build_demo() -> Node3D:
@@ -735,12 +780,12 @@ func build_demo() -> Node3D:
 
 	var ult := instance(root, "res://scenes/ice_ultimate.tscn", "IceUltimate")
 	var caster_pos: Vector3 = ult.caster_offset
-	mannequin(root, "Caster", caster_pos, Vector3.ZERO)
+	character(root, "Caster", caster_pos, Vector3.ZERO)
 	var enemies := Node3D.new()
 	add(root, enemies, "Enemies")
 	for i in 3:
 		var p: Vector3 = [Vector3(-3.4, 0, -3.0), Vector3(0.4, 0, -5.0), Vector3(2.6, 0, -3.6)][i]
-		mannequin(enemies, "Enemy%d" % (i + 1), p, caster_pos)
+		character(enemies, "Enemy%d" % (i + 1), p, caster_pos)
 
 	var cam := Camera3D.new()
 	cam.set_script(load("res://scripts/camera_shake.gd"))

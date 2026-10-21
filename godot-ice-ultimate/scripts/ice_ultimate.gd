@@ -55,6 +55,13 @@ func evt_shake(amount: float, duration: float) -> void:
 	get_tree().call_group(&"vfx_camera_shake", &"add_shake", amount, duration)
 
 
+## Zoom d'impatto della camera (FOV), nodi nel gruppo "vfx_camera_shake".
+func evt_punch(fov_degrees: float, duration: float) -> void:
+	if Engine.is_editor_hint():
+		return
+	get_tree().call_group(&"vfx_camera_shake", &"punch", fov_degrees, duration)
+
+
 ## Impulso di post-process (nodi nel gruppo "vfx_post_fx").
 func evt_post(chroma: float, blur: float, flash: float, duration: float) -> void:
 	if Engine.is_editor_hint():

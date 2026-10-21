@@ -36,6 +36,9 @@ func _apply() -> void:
 	set_param(^"Crystals", &"grow", grow)
 	set_param(^"Crystals", &"dissolve", dissolve)
 	set_param(^"Crystals", &"flash", glow)
+	set_param(^"Arms", &"grow", grow)
+	set_param(^"Arms", &"dissolve", dissolve)
+	set_param(^"Arms", &"flash", glow)
 	set_param(^"Sword/Blade", &"dissolve", dissolve)
 	set_param(^"Sword/Blade", &"flash", glow * 0.5)
 	var s := get_node_or_null(^"Sword") as Node3D

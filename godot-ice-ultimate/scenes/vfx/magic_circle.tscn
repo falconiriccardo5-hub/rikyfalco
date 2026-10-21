@@ -1,19 +1,19 @@
 [gd_scene load_steps=37 format=3]
 
-[ext_resource type="Script" path="res://scripts/magic_circle.gd" id="1_31v7a"]
-[ext_resource type="Shader" path="res://shaders/ground_layer.gdshader" id="2_g1i4o"]
-[ext_resource type="Texture2D" path="res://textures/soft_glow.png" id="3_tk0gl"]
-[ext_resource type="Texture2D" path="res://textures/noise_fbm.png" id="4_bw0o0"]
-[ext_resource type="Texture2D" path="res://textures/sigil_outer.png" id="5_ksct1"]
-[ext_resource type="Texture2D" path="res://textures/sigil_taiji.png" id="6_osppx"]
-[ext_resource type="Shader" path="res://shaders/vfx_particle_add.gdshader" id="7_1qgq3"]
-[ext_resource type="Texture2D" path="res://textures/smoke_puff.png" id="8_ryup5"]
-[ext_resource type="Texture2D" path="res://textures/spark_streak.png" id="9_xpfkl"]
+[ext_resource type="Script" path="res://scripts/magic_circle.gd" id="1_yf6eu"]
+[ext_resource type="Shader" path="res://shaders/ground_layer.gdshader" id="2_wyet2"]
+[ext_resource type="Texture2D" path="res://textures/soft_glow.png" id="3_lyyin"]
+[ext_resource type="Texture2D" path="res://textures/noise_fbm.png" id="4_7hay8"]
+[ext_resource type="Texture2D" path="res://textures/sigil_outer.png" id="5_0qt5i"]
+[ext_resource type="Texture2D" path="res://textures/sigil_taiji.png" id="6_bvwrr"]
+[ext_resource type="Shader" path="res://shaders/vfx_particle_add.gdshader" id="7_omf06"]
+[ext_resource type="Texture2D" path="res://textures/flipbooks/frost_cloud_8x8.png" id="8_7v30d"]
+[ext_resource type="Texture2D" path="res://textures/spark_streak.png" id="9_ow7xy"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_13qft"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d0w57"]
 resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("2_g1i4o")
+shader = ExtResource("2_wyet2")
 shader_parameter/color = Color(0.5, 0.63, 0.86, 1)
 shader_parameter/intensity = 0.0
 shader_parameter/reveal = null
@@ -26,16 +26,16 @@ shader_parameter/spin_speed = null
 shader_parameter/pulse_speed = null
 shader_parameter/pulse_amount = null
 shader_parameter/dissolve = null
-shader_parameter/layer_tex = ExtResource("3_tk0gl")
-shader_parameter/noise_tex = ExtResource("4_bw0o0")
+shader_parameter/layer_tex = ExtResource("3_lyyin")
+shader_parameter/noise_tex = ExtResource("4_7hay8")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_ruajq"]
+[sub_resource type="PlaneMesh" id="PlaneMesh_s3b36"]
 size = Vector2(9, 9)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kejdh"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_letlk"]
 resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("2_g1i4o")
+shader = ExtResource("2_wyet2")
 shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
 shader_parameter/intensity = 0.0
 shader_parameter/reveal = 0.0
@@ -48,16 +48,16 @@ shader_parameter/spin_speed = null
 shader_parameter/pulse_speed = 1.5
 shader_parameter/pulse_amount = 0.12
 shader_parameter/dissolve = null
-shader_parameter/layer_tex = ExtResource("5_ksct1")
-shader_parameter/noise_tex = ExtResource("4_bw0o0")
+shader_parameter/layer_tex = ExtResource("5_0qt5i")
+shader_parameter/noise_tex = ExtResource("4_7hay8")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_w0x5c"]
+[sub_resource type="PlaneMesh" id="PlaneMesh_r7ore"]
 size = Vector2(7, 7)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_mudci"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lrgrw"]
 resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("2_g1i4o")
+shader = ExtResource("2_wyet2")
 shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
 shader_parameter/intensity = 0.0
 shader_parameter/reveal = 0.0
@@ -70,42 +70,45 @@ shader_parameter/spin_speed = null
 shader_parameter/pulse_speed = null
 shader_parameter/pulse_amount = null
 shader_parameter/dissolve = null
-shader_parameter/layer_tex = ExtResource("6_osppx")
-shader_parameter/noise_tex = ExtResource("4_bw0o0")
+shader_parameter/layer_tex = ExtResource("6_bvwrr")
+shader_parameter/noise_tex = ExtResource("4_7hay8")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_vx5pb"]
+[sub_resource type="PlaneMesh" id="PlaneMesh_qshtc"]
 size = Vector2(3, 3)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kkrgx"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g0eyo"]
 resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("7_1qgq3")
+shader = ExtResource("7_omf06")
 shader_parameter/color = Color(0.8, 0.88, 0.97, 1)
-shader_parameter/intensity = 1.0
+shader_parameter/intensity = 1.7
 shader_parameter/billboard_mode = 1
 shader_parameter/use_particle_angle = true
 shader_parameter/spin_speed = 0.0
 shader_parameter/erosion = null
 shader_parameter/soft_distance = 1.2
 shader_parameter/compatibility_depth = null
-shader_parameter/albedo_tex = ExtResource("8_ryup5")
-shader_parameter/erosion_noise = ExtResource("4_bw0o0")
+shader_parameter/flipbook_grid = Vector2(8, 8)
+shader_parameter/flipbook_blend = null
+shader_parameter/frame_override = null
+shader_parameter/albedo_tex = ExtResource("8_7v30d")
+shader_parameter/erosion_noise = ExtResource("4_7hay8")
 
-[sub_resource type="Gradient" id="Gradient_hq6ae"]
+[sub_resource type="Gradient" id="Gradient_8fnus"]
 offsets = PackedFloat32Array(0, 0.1, 0.6, 1)
-colors = PackedColorArray(0.8, 0.88, 1, 0, 0.8, 0.88, 1, 0.4, 0.8, 0.88, 1, 0.24, 0.8, 0.88, 1, 0)
+colors = PackedColorArray(0.8, 0.88, 1, 0, 0.8, 0.88, 1, 0.45, 0.8, 0.88, 1, 0.27, 0.8, 0.88, 1, 0)
 
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_txuyo"]
-gradient = SubResource("Gradient_hq6ae")
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_an46y"]
+gradient = SubResource("Gradient_8fnus")
 
-[sub_resource type="Curve" id="Curve_lbon4"]
+[sub_resource type="Curve" id="Curve_5kvy8"]
 _data = [Vector2(0, 0.5), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
-[sub_resource type="CurveTexture" id="CurveTexture_pin8y"]
-curve = SubResource("Curve_lbon4")
+[sub_resource type="CurveTexture" id="CurveTexture_3xt4s"]
+curve = SubResource("Curve_5kvy8")
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_562da"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_lwr31"]
 emission_shape = 6
 emission_ring_axis = Vector3(0, 1, 0)
 emission_ring_height = 0.2
@@ -123,15 +126,17 @@ angular_velocity_max = 20.0
 gravity = Vector3(0, 0, 0)
 scale_min = 2.0
 scale_max = 3.6
-scale_curve = SubResource("CurveTexture_pin8y")
-color_ramp = SubResource("GradientTexture1D_txuyo")
+scale_curve = SubResource("CurveTexture_3xt4s")
+color_ramp = SubResource("GradientTexture1D_an46y")
+anim_speed_min = 1.0
+anim_speed_max = 1.0
 
-[sub_resource type="QuadMesh" id="QuadMesh_spmh0"]
+[sub_resource type="QuadMesh" id="QuadMesh_ckgpa"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_to24v"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m4smx"]
 resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("7_1qgq3")
+shader = ExtResource("7_omf06")
 shader_parameter/color = Color(0.95, 0.97, 1, 1)
 shader_parameter/intensity = 5.0
 shader_parameter/billboard_mode = 2
@@ -140,24 +145,27 @@ shader_parameter/spin_speed = 0.0
 shader_parameter/erosion = null
 shader_parameter/soft_distance = null
 shader_parameter/compatibility_depth = null
-shader_parameter/albedo_tex = ExtResource("9_xpfkl")
-shader_parameter/erosion_noise = ExtResource("4_bw0o0")
+shader_parameter/flipbook_grid = null
+shader_parameter/flipbook_blend = null
+shader_parameter/frame_override = null
+shader_parameter/albedo_tex = ExtResource("9_ow7xy")
+shader_parameter/erosion_noise = ExtResource("4_7hay8")
 
-[sub_resource type="Gradient" id="Gradient_afja7"]
+[sub_resource type="Gradient" id="Gradient_i87k1"]
 offsets = PackedFloat32Array(0, 0.35, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0.8, 0.88, 0.97, 0.9, 0.5, 0.63, 0.86, 0)
 
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_b6dp5"]
-gradient = SubResource("Gradient_afja7")
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ayqvv"]
+gradient = SubResource("Gradient_i87k1")
 
-[sub_resource type="Curve" id="Curve_sgr4s"]
+[sub_resource type="Curve" id="Curve_1ccy8"]
 _data = [Vector2(0, 0.3), 0.0, 0.0, 0, 0, Vector2(0.2, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.6), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="CurveTexture" id="CurveTexture_ij4du"]
-curve = SubResource("Curve_sgr4s")
+[sub_resource type="CurveTexture" id="CurveTexture_r3flf"]
+curve = SubResource("Curve_1ccy8")
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_uof2a"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ja1gc"]
 particle_flag_align_y = true
 emission_shape = 1
 emission_sphere_radius = 0.5
@@ -170,16 +178,16 @@ damping_min = 5.0
 damping_max = 8.0
 scale_min = 0.7
 scale_max = 1.3
-scale_curve = SubResource("CurveTexture_ij4du")
-color_ramp = SubResource("GradientTexture1D_b6dp5")
+scale_curve = SubResource("CurveTexture_r3flf")
+color_ramp = SubResource("GradientTexture1D_ayqvv")
 
-[sub_resource type="QuadMesh" id="QuadMesh_gmgs2"]
+[sub_resource type="QuadMesh" id="QuadMesh_ihd60"]
 size = Vector2(0.12, 1.1)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_e241q"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pw1w4"]
 resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("7_1qgq3")
+shader = ExtResource("7_omf06")
 shader_parameter/color = Color(0.95, 0.97, 1, 1)
 shader_parameter/intensity = 5.0
 shader_parameter/billboard_mode = 1
@@ -188,24 +196,27 @@ shader_parameter/spin_speed = 0.0
 shader_parameter/erosion = null
 shader_parameter/soft_distance = null
 shader_parameter/compatibility_depth = null
-shader_parameter/albedo_tex = ExtResource("3_tk0gl")
-shader_parameter/erosion_noise = ExtResource("4_bw0o0")
+shader_parameter/flipbook_grid = null
+shader_parameter/flipbook_blend = null
+shader_parameter/frame_override = null
+shader_parameter/albedo_tex = ExtResource("3_lyyin")
+shader_parameter/erosion_noise = ExtResource("4_7hay8")
 
-[sub_resource type="Gradient" id="Gradient_4n0xq"]
+[sub_resource type="Gradient" id="Gradient_bn43p"]
 offsets = PackedFloat32Array(0, 0.35, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0.8, 0.88, 0.97, 0.9, 0.5, 0.63, 0.86, 0)
 
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_hqm8j"]
-gradient = SubResource("Gradient_4n0xq")
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_uxpti"]
+gradient = SubResource("Gradient_bn43p")
 
-[sub_resource type="Curve" id="Curve_a1043"]
+[sub_resource type="Curve" id="Curve_hqgg4"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.15, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.3), 0.0, 0.0, 0, 0]
 point_count = 3
 
-[sub_resource type="CurveTexture" id="CurveTexture_0oo3b"]
-curve = SubResource("Curve_a1043")
+[sub_resource type="CurveTexture" id="CurveTexture_sd56s"]
+curve = SubResource("Curve_hqgg4")
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_d4nvc"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7weq3"]
 emission_shape = 6
 emission_ring_axis = Vector3(0, 1, 0)
 emission_ring_height = 0.05
@@ -218,14 +229,14 @@ initial_velocity_max = 2.5
 gravity = Vector3(0, 0, 0)
 scale_min = 0.5
 scale_max = 1.2
-scale_curve = SubResource("CurveTexture_0oo3b")
-color_ramp = SubResource("GradientTexture1D_hqm8j")
+scale_curve = SubResource("CurveTexture_sd56s")
+color_ramp = SubResource("GradientTexture1D_uxpti")
 
-[sub_resource type="QuadMesh" id="QuadMesh_y1hw0"]
+[sub_resource type="QuadMesh" id="QuadMesh_8vkh1"]
 size = Vector2(0.08, 0.08)
 
 [node name="MagicCircle" type="Node3D"]
-script = ExtResource("1_31v7a")
+script = ExtResource("1_yf6eu")
 reveal = 0.0
 intensity = 1.0
 spin_speed = 0.35
@@ -234,24 +245,24 @@ streaks_emitting = false
 
 [node name="Glow" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
-material_override = SubResource("ShaderMaterial_13qft")
+material_override = SubResource("ShaderMaterial_d0w57")
 cast_shadow = 0
-mesh = SubResource("PlaneMesh_ruajq")
+mesh = SubResource("PlaneMesh_s3b36")
 
 [node name="Outer" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, 0)
-material_override = SubResource("ShaderMaterial_kejdh")
+material_override = SubResource("ShaderMaterial_letlk")
 cast_shadow = 0
-mesh = SubResource("PlaneMesh_w0x5c")
+mesh = SubResource("PlaneMesh_r7ore")
 
 [node name="Taiji" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
-material_override = SubResource("ShaderMaterial_mudci")
+material_override = SubResource("ShaderMaterial_lrgrw")
 cast_shadow = 0
-mesh = SubResource("PlaneMesh_vx5pb")
+mesh = SubResource("PlaneMesh_qshtc")
 
 [node name="Mist" type="GPUParticles3D" parent="."]
-material_override = SubResource("ShaderMaterial_kkrgx")
+material_override = SubResource("ShaderMaterial_g0eyo")
 cast_shadow = 0
 emitting = false
 amount = 64
@@ -259,12 +270,12 @@ lifetime = 2.4
 randomness = 0.3
 fixed_fps = 0
 visibility_aabb = AABB(-12, -2, -12, 24, 16, 24)
-process_material = SubResource("ParticleProcessMaterial_562da")
-draw_pass_1 = SubResource("QuadMesh_spmh0")
+process_material = SubResource("ParticleProcessMaterial_lwr31")
+draw_pass_1 = SubResource("QuadMesh_ckgpa")
 
 [node name="Streaks" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
-material_override = SubResource("ShaderMaterial_to24v")
+material_override = SubResource("ShaderMaterial_m4smx")
 cast_shadow = 0
 emitting = false
 amount = 36
@@ -272,11 +283,11 @@ lifetime = 0.75
 randomness = 0.3
 fixed_fps = 0
 visibility_aabb = AABB(-12, -2, -12, 24, 16, 24)
-process_material = SubResource("ParticleProcessMaterial_uof2a")
-draw_pass_1 = SubResource("QuadMesh_gmgs2")
+process_material = SubResource("ParticleProcessMaterial_ja1gc")
+draw_pass_1 = SubResource("QuadMesh_ihd60")
 
 [node name="EdgeSparks" type="GPUParticles3D" parent="."]
-material_override = SubResource("ShaderMaterial_e241q")
+material_override = SubResource("ShaderMaterial_pw1w4")
 cast_shadow = 0
 emitting = false
 amount = 70
@@ -284,5 +295,5 @@ lifetime = 0.9
 randomness = 0.3
 fixed_fps = 0
 visibility_aabb = AABB(-12, -2, -12, 24, 16, 24)
-process_material = SubResource("ParticleProcessMaterial_d4nvc")
-draw_pass_1 = SubResource("QuadMesh_y1hw0")
+process_material = SubResource("ParticleProcessMaterial_7weq3")
+draw_pass_1 = SubResource("QuadMesh_8vkh1")

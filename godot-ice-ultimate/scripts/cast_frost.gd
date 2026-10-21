@@ -30,8 +30,10 @@ func _apply() -> void:
 	set_param(^"Cracks", &"fade", fade)
 	set_param(^"Snowflake", &"intensity", flash * 2.0)
 	set_param(^"Glow", &"intensity", flash * 0.7)
-	for arc in [^"Swirl/ArcA", ^"Swirl/ArcB", ^"Swirl/ArcC"]:
-		set_param(arc, &"intensity", flash * 3.0)
+	var sw := get_node_or_null(^"Swirl")
+	if sw:
+		for c in sw.get_children():
+			set_param(NodePath("Swirl/" + c.name), &"intensity", flash * 4.5)
 	var s := get_node_or_null(^"Snowflake") as Node3D
 	if s:
 		s.visible = flash > 0.01

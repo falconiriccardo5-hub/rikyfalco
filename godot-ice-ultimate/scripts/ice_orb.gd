@@ -39,8 +39,10 @@ func _apply() -> void:
 	set_param(^"Core", &"intensity", intensity * 0.6)
 	set_param(^"Glow", &"intensity", intensity * 0.25)
 	set_param(^"Snowflake", &"intensity", intensity * 1.4)
-	for arc in [^"Arcs/ArcA", ^"Arcs/ArcB", ^"Arcs/ArcC"]:
-		set_param(arc, &"intensity", intensity * 3.0)
+	var arcs := get_node_or_null(^"Arcs")
+	if arcs:
+		for c in arcs.get_children():
+			set_param(NodePath("Arcs/" + c.name), &"intensity", intensity * 3.0)
 	set_emitting(^"Trail", intensity > 0.2)
 	set_emitting(^"MistTrail", intensity > 0.2)
 

@@ -1,2 +1,4 @@
 .godot/
 *.translation
+textures/flipbooks/_frames/
+textures/flipbooks/_test/

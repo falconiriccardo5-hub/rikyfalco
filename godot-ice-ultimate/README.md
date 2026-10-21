@@ -2,7 +2,13 @@
 
 Ricostruzione in Godot dell'abilità "ultimate" di ghiaccio del video di riferimento
 (10 s, Unreal). Tutto è modificabile: scene `.tscn`, shader `.gdshader`, script `.gd`,
-texture (generate da uno script Python) e coreografia (AnimationPlayer).
+texture, coreografia (AnimationPlayer) e asset Blender (script Python in `blender/`).
+
+Pipeline ibrida, come nei team VFX di produzione:
+- **Blender**: flipbook volumetrici (fumo, esplosione, nube di gelo), mesh (nastri a
+  spirale, mezzelune, cupola d'urto, spada, cristalli) e personaggio con scheletro e
+  animazione di cast.
+- **Godot**: regia (timeline), particelle, shader in tempo reale, camera e post-process.
 
 ![Confronto fotogrammi](docs/confronto_fotogrammi.png)
 
@@ -46,6 +52,11 @@ attiva `compatibility_depth` nei materiali del fumo per le soft particles corret
 
 ```
 project.godot
+blender/
+  flipbooks.py           volumi procedurali Cycles -> sprite sheet 8x8 (textures/flipbooks/)
+  meshes.py              mesh + personaggio animato -> models/*.glb
+models/*.glb             export glTF da Blender
+meshes/*.res             mesh estratte dai .glb (tools/extract_meshes.gd)
 scenes/
   demo.tscn              scena di prova: ambiente, pavimento, manichini, camera, post FX
   ice_ultimate.tscn      ORCHESTRATORE: istanzia i moduli + AnimationPlayer "cast"
@@ -58,17 +69,18 @@ scripts/
   camera_shake.gd        shake a "trauma" con rumore
   post_fx.gd             impulsi di aberrazione cromatica, blur radiale e flash
 shaders/
-  vfx_particle_add       sprite/particelle additivi (billboard, asse Y per le scie, soft particles)
+  vfx_particle_add       sprite/particelle additivi (billboard, scie, soft particles, flipbook con blend)
   arc_ring               archi luminosi procedurali in coordinate polari
+  trail_mesh             scie che scorrono sulle mesh Blender (nastri, mezzelune)
   ground_layer           strati a terra con reveal radiale, bordo luminoso, rotazione, dissolve
   fresnel_orb            bolle/sfere con fresnel, flusso di rumore e iridescenza
   ice_crystal            ghiaccio: rifrazione, fresnel, crescita con overshoot, dissolve
   screen_distortion      onda d'urto (distorsione dello schermo)
   post_fx                post-process a schermo intero
 textures/                PNG in scala di grigi (il colore arriva dagli shader)
-meshes/ice_crystal.tres  prisma esagonale del cristallo
 tools/
-  generate_textures.py   rigenera tutte le texture (numpy + Pillow)
+  generate_textures.py   rigenera le texture procedurali (numpy + Pillow)
+  extract_meshes.gd      estrae le mesh dai .glb in meshes/*.res (non tocca le scene)
   build_scenes.gd        rigenera tutte le scene da zero (vedi sotto)
 ```
 
@@ -100,11 +112,35 @@ lunghezze, inclinazione e bracci, poi spunta **regenerate**.
 (WenQuanYi o Noto CJK), altrimenti glifi procedurali. In alternativa sostituisci
 direttamente `textures/sigil_outer.png` con un disegno tuo.
 
+### Modificare gli asset in Blender
+
+Gli script girano senza interfaccia con Blender 4.2+ (o con il modulo `bpy` di PyPI);
+puoi anche aprirli nel tab *Scripting* di Blender e premere *Run Script*.
+
+```bash
+blender -b --python blender/meshes.py                    # mesh + personaggio -> models/
+blender -b --python blender/flipbooks.py -- all          # flipbook -> textures/flipbooks/
+godot --headless --path . --import
+godot --headless --path . --script res://tools/extract_meshes.gd   # aggiorna meshes/*.res
+```
+
+- **Flipbook**: forma, densità, velocità ed emissione sono nel dizionario `PRESETS` di
+  `flipbooks.py`; `-- smoke --test 1` rende solo 5 frame di anteprima. Con una GPU puoi
+  alzare `--size 512 --samples 64`.
+- **Mesh**: ogni `build_*` in `meshes.py` ha i suoi parametri (giri e raggio della spirale,
+  ampiezza della mezzaluna, sfaccettature dei cristalli…).
+- **Personaggio**: le pose dell'animazione `cast` sono in `build_caster()` (sincronizzate
+  con la timeline: spinta a 0.12 s, braccia alzate a 5.5 s, colpo a 6.9 s). Puoi anche
+  sostituire `models/caster.glb` con un tuo personaggio che abbia le animazioni `idle` e `cast`.
+
 ### Rigenerare tutto da zero
 
 ```bash
 python3 tools/generate_textures.py
+blender -b --python blender/meshes.py
+blender -b --python blender/flipbooks.py -- all
 godot --headless --path . --import
+godot --headless --path . --script res://tools/extract_meshes.gd
 godot --headless --path . --script res://tools/build_scenes.gd   # SOVRASCRIVE scenes/
 ```
 
