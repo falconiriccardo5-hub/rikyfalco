@@ -1,0 +1,122 @@
+[
+ {
+  "slot": "a01",
+  "id": "a01",
+  "who": "R",
+  "text": "Questa è una scheda che vedo quasi ogni settimana.",
+  "at": 0.3,
+  "speed": 1.12
+ },
+ {
+  "slot": "a02",
+  "id": "a02",
+  "who": "R",
+  "text": "Ecco cosa cambierei, in un minuto.",
+  "at": 3.23,
+  "speed": 1.12
+ },
+ {
+  "slot": "a03",
+  "id": "a03",
+  "who": "R",
+  "text": "Lunedì petto, martedì schiena, mercoledì gambe, e ogni giorno sei esercizi diversi.",
+  "at": 5.55,
+  "speed": 1.12
+ },
+ {
+  "slot": "a04",
+  "id": "a04",
+  "who": "R",
+  "text": "Sembra completa, ma dopo tre mesi il fisico è sempre uguale.",
+  "at": 10.77,
+  "speed": 1.12
+ },
+ {
+  "slot": "a05",
+  "id": "a05",
+  "who": "R",
+  "text": "Il motivo è semplice: ogni muscolo viene allenato una sola volta a settimana.",
+  "at": 14.7,
+  "speed": 1.12
+ },
+ {
+  "slot": "a06",
+  "id": "a06",
+  "who": "R",
+  "text": "Non c'è nessun carico scritto, e gli esercizi cambiano prima di poter progredire.",
+  "at": 18.86,
+  "speed": 1.12
+ },
+ {
+  "slot": "a07",
+  "id": "a07",
+  "who": "R",
+  "text": "Così non puoi sapere se stai migliorando.",
+  "at": 23.28,
+  "speed": 1.12
+ },
+ {
+  "slot": "a08",
+  "id": "a08",
+  "who": "R",
+  "text": "La prima cosa che controllo è quanti giorni hai davvero a disposizione.",
+  "at": 25.76,
+  "speed": 1.12
+ },
+ {
+  "slot": "a09",
+  "id": "a09",
+  "who": "R",
+  "text": "Poi faccio tre modifiche.",
+  "at": 29.82,
+  "speed": 1.12
+ },
+ {
+  "slot": "a10",
+  "id": "a10",
+  "who": "R",
+  "text": "Uno: ogni muscolo almeno due volte a settimana, con sedute complete.",
+  "at": 31.49,
+  "speed": 1.12
+ },
+ {
+  "slot": "a11",
+  "id": "a11",
+  "who": "R",
+  "text": "Due: pochi esercizi fondamentali, gli stessi per qualche settimana.",
+  "at": 35.75,
+  "speed": 1.12
+ },
+ {
+  "slot": "a12",
+  "id": "a12",
+  "who": "R",
+  "text": "Tre: accanto a ogni esercizio, carichi e ripetizioni da battere.",
+  "at": 39.63,
+  "speed": 1.12
+ },
+ {
+  "slot": "a13",
+  "id": "a13",
+  "who": "R",
+  "text": "Così ogni seduta ti dice se stai progredendo.",
+  "at": 43.93,
+  "speed": 1.12
+ },
+ {
+  "slot": "a14",
+  "id": "a14",
+  "who": "R",
+  "text": "È lo stesso controllo che faccio nell'analisi gratuita: guardo la tua scheda e ti dico cosa cambiare.",
+  "at": 46.6,
+  "speed": 1.12
+ },
+ {
+  "slot": "a15",
+  "id": "a15",
+  "who": "R",
+  "text": "Vuoi che guardi la tua? Scrivimi analisi in privato.",
+  "at": 51.77,
+  "speed": 1.12
+ }
+]
