@@ -1,0 +1,114 @@
+[
+ {
+  "slot": "e01",
+  "id": "e01",
+  "who": "R",
+  "text": "Due persone fanno lo stesso esercizio.",
+  "at": 0.3,
+  "speed": 1.12
+ },
+ {
+  "slot": "e02",
+  "id": "e02",
+  "who": "R",
+  "text": "Una migliora, l'altra no. Perché?",
+  "at": 2.54,
+  "speed": 1.12
+ },
+ {
+  "slot": "e03",
+  "id": "e03",
+  "who": "R",
+  "text": "Stesso squat, stessa palestra, stessi tre allenamenti a settimana.",
+  "at": 5.58,
+  "speed": 1.12
+ },
+ {
+  "slot": "e04",
+  "id": "e04",
+  "who": "R",
+  "text": "Dopo tre mesi, una è più forte e più tonica. L'altra è ferma.",
+  "at": 10.06,
+  "speed": 1.12
+ },
+ {
+  "slot": "e05",
+  "id": "e05",
+  "who": "R",
+  "text": "La differenza non è l'esercizio.",
+  "at": 14.19,
+  "speed": 1.12
+ },
+ {
+  "slot": "e06",
+  "id": "e06",
+  "who": "R",
+  "text": "È tutto quello che c'è intorno: come lo esegui, quanto carichi e come progredisci.",
+  "at": 16.44,
+  "speed": 1.12
+ },
+ {
+  "slot": "e07",
+  "id": "e07",
+  "who": "R",
+  "text": "Un programma generico non tiene conto di niente di tutto questo.",
+  "at": 21.18,
+  "speed": 1.12
+ },
+ {
+  "slot": "e08",
+  "id": "e08",
+  "who": "R",
+  "text": "Ecco cosa cambia con un piano personalizzato.",
+  "at": 24.75,
+  "speed": 1.12
+ },
+ {
+  "slot": "e09",
+  "id": "e09",
+  "who": "R",
+  "text": "Uno: l'esercizio si adatta al tuo corpo, alla tua mobilità e ai tuoi limiti.",
+  "at": 28.02,
+  "speed": 1.12
+ },
+ {
+  "slot": "e10",
+  "id": "e10",
+  "who": "R",
+  "text": "Due: i carichi partono dal tuo livello, non da quello di qualcun altro.",
+  "at": 33.57,
+  "speed": 1.12
+ },
+ {
+  "slot": "e11",
+  "id": "e11",
+  "who": "R",
+  "text": "Tre: la progressione segue i tuoi dati, settimana dopo settimana.",
+  "at": 37.62,
+  "speed": 1.12
+ },
+ {
+  "slot": "e12",
+  "id": "e12",
+  "who": "R",
+  "text": "Stesso tempo in palestra, ma ogni serie lavora per te.",
+  "at": 41.61,
+  "speed": 1.12
+ },
+ {
+  "slot": "e13",
+  "id": "e13",
+  "who": "R",
+  "text": "È così che costruisco ogni percorso: parto da te, non da una scheda già pronta.",
+  "at": 45.14,
+  "speed": 1.12
+ },
+ {
+  "slot": "e14",
+  "id": "e14",
+  "who": "R",
+  "text": "Vuoi sapere cosa cambierei nel tuo allenamento? Scrivimi analisi in privato.",
+  "at": 49.75,
+  "speed": 1.12
+ }
+]

@@ -26,12 +26,12 @@ const Duo: React.FC<{a: number; b: number; good?: number; bad?: number; labels?:
   const lp = enter(t, labelAt ?? a);
   return (
     <AbsoluteFill>
-      <World cam={{z: mix(0.98, 1.04, prog(t, a, b, E.lin)), cx: 540, cy: 1000}}>
+      <World cam={{z: mix(1.22, 1.28, prog(t, a, b, E.lin)), cx: 540, cy: 1110}}>
         <GirlSide x={290} y={FLOOR} scale={0.72} sq={sq} bar plateColor={C.blue} plate={34} quads={good} glute={good * 0.6} lumbarOk={good * 0.6} smile={0.4 + good * 0.6} sway={Math.sin(t * 4)} />
         <GirlSide x={790} y={FLOOR} scale={0.72 + bigA * 0} sq={sq} bar heelUp={bad * 0.6} round={bad * 0.4 * sq} lumbar={bad * 0.5 * sq} plateColor={C.ink} smile={0.4 - bad * 0.7} hurt={bad * 0.4} sway={Math.sin(t * 4 + 1)} />
       </World>
-      <Label x={290} y={560} text={labels[0]} bg={C.blue} p={lp} />
-      <Label x={790} y={560} text={labels[1]} bg={C.ink} p={lp} />
+      <Label x={230} y={420} text={labels[0]} bg={C.blue} p={lp} />
+      <Label x={850} y={420} text={labels[1]} bg={C.ink} p={lp} />
       {children}
     </AbsoluteFill>
   );
@@ -44,8 +44,8 @@ const E02: SceneFC = ({a, b}) => {
   const t = useT();
   return (
     <Duo a={a} b={b} good={prog(t, w[1] - 0.1, w[1] + 0.3)} bad={prog(t, w[3] - 0.1, w[3] + 0.3)}>
-      <Tag t0={w[1] - 0.05} at={[290, 440]} text="MIGLIORA ↑" bg={C.blue} fg="#fff" size={44} />
-      <Tag t0={w[3] - 0.05} at={[790, 440]} text="FERMA =" bg={C.red} fg="#fff" size={44} />
+      <Tag t0={w[1] - 0.05} at={[230, 1250]} text="MIGLIORA ↑" bg={C.blue} fg="#fff" size={44} />
+      <Tag t0={w[3] - 0.05} at={[850, 1250]} text="FERMA =" bg={C.red} fg="#fff" size={44} />
       <Burst t0={w[4] - 0.05} x={540} y={300} text="PERCHÉ?" color={C.blue} size={76} hold={3} />
     </Duo>
   );
@@ -78,8 +78,8 @@ const E04: SceneFC = ({a, b}) => {
           <div style={{fontSize: 80, color: C.blue, padding: '0 30px'}}>3 MESI</div>
         </div>
       </div>
-      <Tag t0={w[6] - 0.05} at={[290, 1210]} text="PIÙ FORTE E TONICA" bg={C.blue} fg="#fff" size={34} />
-      <Tag t0={w[12] - 0.05} at={[790, 1210]} text="FERMA" bg={C.red} fg="#fff" size={40} />
+      <Tag t0={w[6] - 0.05} at={[260, 1240]} text="PIÙ FORTE E TONICA" bg={C.blue} fg="#fff" size={34} />
+      <Tag t0={w[12] - 0.05} at={[850, 1240]} text="FERMA" bg={C.red} fg="#fff" size={40} />
     </Duo>
   );
 };
@@ -173,8 +173,8 @@ const E10: SceneFC = ({a}) => {
       <StepCard n="2" title="Carichi dal tuo livello" t0={a + 0.05} sub="non da quello di qualcun altro" />
       <div style={{position: 'absolute', left: 0, right: 0, top: 480, display: 'flex', justifyContent: 'center', gap: 50}}>
         {[
-          {who: 'TU', kg: '12 kg', col: C.blue, at: w[5]},
-          {who: 'LEI', kg: '30 kg', col: '#D9D6E2', at: w[9]},
+          {who: 'TU', kg: '12 kg', col: C.blue, at: Math.min(w[5], a + 0.4)},
+          {who: 'LEI', kg: '30 kg', col: '#D9D6E2', at: Math.min(w[9], a + 1.0)},
         ].map((c, i) => (
           <div key={i} style={{width: 400, transform: `scale(${prog(t, c.at - 0.1, c.at + 0.2, E.back)})`, ...cardStyle('#fff', 10), overflow: 'hidden', textAlign: 'center', fontFamily: FONT, fontWeight: 900}}>
             <div style={{background: i ? C.ink : C.blue, color: '#fff', fontSize: 40, padding: '8px 0'}}>{c.who}</div>
