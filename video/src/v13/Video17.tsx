@@ -107,9 +107,9 @@ const C03: React.FC<{a: number; b: number}> = ({a, b}) => {
   const w = wd('c03');
   return (
     <Gym a={a} b={b} noCoach cam={{z: mix(1.15, 1.22, prog(t, a, b, E.lin)), cx: 470, cy: 1040}} girl={{h: repH(t, a, 2.4), smile: 0.5}}>
-      <div style={{position: 'absolute', right: 60, top: 470, width: 260, ...cardStyle('#fff', 10), overflow: 'hidden', textAlign: 'center', fontFamily: FONT, fontWeight: 900, transform: `rotate(5deg) scale(${enter(t, w[5] - 0.2)})`}}>
+      <div style={{position: 'absolute', right: 50, top: 470, width: 300, ...cardStyle('#fff', 10), overflow: 'hidden', textAlign: 'center', fontFamily: FONT, fontWeight: 900, transform: `rotate(5deg) scale(${enter(t, w[5] - 0.2)})`}}>
         <div style={{background: C.ink, color: '#fff', fontSize: 30, padding: '6px 0'}}>DA SOLA DA</div>
-        <div style={{fontSize: 96, color: C.blue, lineHeight: 1.15}}>1 ANNO</div>
+        <div style={{fontSize: 74, color: C.blue, lineHeight: 1.2}}>1 ANNO</div>
       </div>
       <Tag t0={w[9]} at={[250, 520]} text="IMPEGNO" icon="ok" size={42} />
       <Tag t0={w[11]} at={[300, 640]} text="COSTANZA" icon="ok" size={42} rot={2} />
@@ -287,11 +287,11 @@ const C12: React.FC<{a: number; b: number}> = ({a, b}) => {
   const cam = {z: mix(1.2, 1.28, prog(t, a, b, E.lin)), cx: 470, cy: 1050};
   const gl = w2s(gW(g.hip[0] - 40, g.hip[1] + 20), cam);
   return (
-    <Gym a={a} b={b} noCoach cam={cam} girl={{h, glute: prog(t, w[5] - 0.1, w[5] + 0.3) * (0.7 + 0.3 * Math.sin(t * 6)), lumbarOk: prog(t, w[10], w[10] + 0.4) * 0.8, smile: 1}}>
+    <Gym a={a} b={b} noCoach cam={cam} girl={{h, glute: prog(t, w[6] - 0.1, w[6] + 0.3) * (0.7 + 0.3 * Math.sin(t * 6)), lumbarOk: prog(t, w[12], w[12] + 0.4) * 0.8, smile: 1}}>
       <Tag t0={w[0]} at={[760, 480]} text="STESSO PESO" size={44} />
-      <Tag t0={w[5]} at={[gl[0] - 120, gl[1] + 240]} text="GLUTEI + FEMORALI" bg={C.blue} fg="#fff" size={42} />
-      <Tag t0={w[11]} at={[330, 600]} text="SCHIENA TRANQUILLA" icon="ok" size={40} />
-      <Sparkles t0={w[12]} x={540} y={800} n={10} />
+      <Tag t0={w[6]} at={[gl[0] - 120, gl[1] + 240]} text="GLUTEI + FEMORALI" bg={C.blue} fg="#fff" size={42} />
+      <Tag t0={w[13]} at={[330, 600]} text="SCHIENA TRANQUILLA" icon="ok" size={40} />
+      <Sparkles t0={w[14]} x={540} y={800} n={10} />
     </Gym>
   );
 };
@@ -363,7 +363,7 @@ const buildCaps = (): CapLine[] => {
     c09: [2, 6, 8],
     c10: [5, 8, 9, 14],
     c11: [3, 5],
-    c12: [0, 5, 7, 12],
+    c12: [0, 6, 9, 14],
     c13: [1, 4, 6],
     c14: [7],
   };

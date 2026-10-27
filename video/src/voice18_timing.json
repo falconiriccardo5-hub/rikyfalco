@@ -1,0 +1,293 @@
+[
+ {
+  "slot": "d01",
+  "who": "R",
+  "id": "d01",
+  "text": "Hai solo quaranta minuti, due volte a settimana?",
+  "t0": 0.3,
+  "t1": 3.06,
+  "words": [
+   0.3,
+   0.645,
+   0.99,
+   1.335,
+   1.68,
+   2.025,
+   2.37,
+   2.715
+  ]
+ },
+ {
+  "slot": "d02",
+  "who": "R",
+  "id": "d02",
+  "text": "Possono bastare, se smetti di fare questo errore.",
+  "t0": 3.41,
+  "t1": 6.17,
+  "words": [
+   3.41,
+   3.755,
+   4.1,
+   4.445,
+   4.79,
+   5.135,
+   5.48,
+   5.825
+  ]
+ },
+ {
+  "slot": "d03",
+  "who": "R",
+  "id": "d03",
+  "text": "Arrivi in palestra dopo il lavoro, fai qualche esercizio a caso e speri che basti.",
+  "t0": 6.52,
+  "t1": 11.52,
+  "words": [
+   6.52,
+   6.853,
+   7.187,
+   7.52,
+   7.853,
+   8.187,
+   8.52,
+   8.853,
+   9.187,
+   9.52,
+   9.853,
+   10.187,
+   10.52,
+   10.853,
+   11.187
+  ]
+ },
+ {
+  "slot": "d04",
+  "who": "R",
+  "id": "d04",
+  "text": "Dopo qualche mese, il fisico non è cambiato.",
+  "t0": 11.87,
+  "t1": 14.63,
+  "words": [
+   11.87,
+   12.215,
+   12.56,
+   12.905,
+   13.25,
+   13.595,
+   13.94,
+   14.285
+  ]
+ },
+ {
+  "slot": "d05",
+  "who": "R",
+  "id": "d05",
+  "text": "Il problema non è il poco tempo.",
+  "t0": 14.98,
+  "t1": 17.42,
+  "words": [
+   14.98,
+   15.329,
+   15.677,
+   16.026,
+   16.374,
+   16.723,
+   17.071
+  ]
+ },
+ {
+  "slot": "d06",
+  "who": "R",
+  "id": "d06",
+  "text": "È che senza un piano non sai se stai progredendo, o se ripeti sempre la stessa seduta.",
+  "t0": 17.77,
+  "t1": 23.41,
+  "words": [
+   17.77,
+   18.102,
+   18.434,
+   18.765,
+   19.097,
+   19.429,
+   19.761,
+   20.092,
+   20.424,
+   20.756,
+   21.088,
+   21.419,
+   21.751,
+   22.083,
+   22.415,
+   22.746,
+   23.078
+  ]
+ },
+ {
+  "slot": "d07",
+  "who": "R",
+  "id": "d07",
+  "text": "E il tempo che hai lo sprechi a decidere cosa fare.",
+  "t0": 23.76,
+  "t1": 27.48,
+  "words": [
+   23.76,
+   24.098,
+   24.436,
+   24.775,
+   25.113,
+   25.451,
+   25.789,
+   26.127,
+   26.465,
+   26.804,
+   27.142
+  ]
+ },
+ {
+  "slot": "d08",
+  "who": "R",
+  "id": "d08",
+  "text": "Ecco da dove partirei.",
+  "t0": 27.83,
+  "t1": 29.31,
+  "words": [
+   27.83,
+   28.2,
+   28.57,
+   28.94
+  ]
+ },
+ {
+  "slot": "d09",
+  "who": "R",
+  "id": "d09",
+  "text": "Uno: cinque esercizi fondamentali, per allenare tutto il corpo.",
+  "t0": 29.66,
+  "t1": 32.74,
+  "words": [
+   29.66,
+   30.002,
+   30.344,
+   30.687,
+   31.029,
+   31.371,
+   31.713,
+   32.056,
+   32.398
+  ]
+ },
+ {
+  "slot": "d10",
+  "who": "R",
+  "id": "d10",
+  "text": "Due: recuperi brevi, da un minuto a un minuto e mezzo tra le serie.",
+  "t0": 33.09,
+  "t1": 37.77,
+  "words": [
+   33.09,
+   33.424,
+   33.759,
+   34.093,
+   34.427,
+   34.761,
+   35.096,
+   35.43,
+   35.764,
+   36.099,
+   36.433,
+   36.767,
+   37.101,
+   37.436
+  ]
+ },
+ {
+  "slot": "d11",
+  "who": "R",
+  "id": "d11",
+  "text": "Tre: scrivi carichi e ripetizioni, e prova a migliorarli ogni settimana.",
+  "t0": 38.12,
+  "t1": 41.84,
+  "words": [
+   38.12,
+   38.458,
+   38.796,
+   39.135,
+   39.473,
+   39.811,
+   40.149,
+   40.487,
+   40.825,
+   41.164,
+   41.502
+  ]
+ },
+ {
+  "slot": "d12",
+  "who": "R",
+  "id": "d12",
+  "text": "Due sedute fatte così valgono più di quattro fatte a caso.",
+  "t0": 42.19,
+  "t1": 45.91,
+  "words": [
+   42.19,
+   42.528,
+   42.866,
+   43.205,
+   43.543,
+   43.881,
+   44.219,
+   44.557,
+   44.895,
+   45.234,
+   45.572
+  ]
+ },
+ {
+  "slot": "d13",
+  "who": "R",
+  "id": "d13",
+  "text": "È proprio su questo che lavoro con i miei clienti: allenamenti brevi, sostenibili e misurabili.",
+  "t0": 46.26,
+  "t1": 51.26,
+  "words": [
+   46.26,
+   46.593,
+   46.927,
+   47.26,
+   47.593,
+   47.927,
+   48.26,
+   48.593,
+   48.927,
+   49.26,
+   49.593,
+   49.927,
+   50.26,
+   50.593,
+   50.927
+  ]
+ },
+ {
+  "slot": "d14",
+  "who": "R",
+  "id": "d14",
+  "text": "Se hai poco tempo e vuoi capire come organizzarti, scrivimi analisi in privato.",
+  "t0": 51.61,
+  "t1": 55.97,
+  "words": [
+   51.61,
+   51.945,
+   52.281,
+   52.616,
+   52.952,
+   53.287,
+   53.622,
+   53.958,
+   54.293,
+   54.628,
+   54.964,
+   55.299,
+   55.635
+  ]
+ }
+]

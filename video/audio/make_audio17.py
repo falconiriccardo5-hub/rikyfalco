@@ -85,7 +85,7 @@ def build_sfx():
     w = wd('c09'); S.add(M.stamp(), W['c09'][0] + 0.1, 0.6); S.add(M.pop(400, 0.2, 1.4), w[6], 0.6)
     w = wd('c10'); S.add(M.pop(700), w[5], 0.6); S.add(M.whoosh(0.6, 2500, 500, 0.5), w[9], 0.45); S.add(M.thud(0.3, 90), w[14], 0.7); S.add(M.chime(988, 0.7), w[14] + 0.05, 0.35)
     w = wd('c11'); S.add(M.beep(1000), w[3], 0.45); S.add(M.pop(640), w[3] + 0.1, 0.5); S.add(M.pop(760), w[5], 0.5)
-    w = wd('c12'); S.add(M.pop(640), w[0], 0.5); S.add(M.sparkle(1174.7, 5), w[5], 0.6); S.add(M.chime(1046.5, 0.8), w[11], 0.4, 0.3)
+    w = wd('c12'); S.add(M.pop(640), w[0], 0.5); S.add(M.sparkle(1174.7, 5), w[6], 0.6); S.add(M.chime(1046.5, 0.8), w[13], 0.4, 0.3)
     # ---- fiducia / CTA
     w = wd('c13')
     for i, k in enumerate((1, 4, 11)):

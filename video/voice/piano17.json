@@ -1,0 +1,114 @@
+[
+ {
+  "slot": "c01",
+  "id": "c01",
+  "who": "R",
+  "text": "Questa è una parte del mio lavoro che di solito non si vede.",
+  "at": 0.3,
+  "speed": 1.12
+ },
+ {
+  "slot": "c02",
+  "id": "c02",
+  "who": "R",
+  "text": "Una correzione in tempo reale.",
+  "at": 3.91,
+  "speed": 1.12
+ },
+ {
+  "slot": "c03",
+  "id": "c03",
+  "who": "R",
+  "text": "Lei si allena da sola da un anno, con impegno e costanza.",
+  "at": 6.08,
+  "speed": 1.12
+ },
+ {
+  "slot": "c04",
+  "id": "c04",
+  "who": "R",
+  "text": "Ma negli stacchi rumeni la schiena si stanca prima delle gambe.",
+  "at": 9.75,
+  "speed": 1.12
+ },
+ {
+  "slot": "c05",
+  "id": "c05",
+  "who": "R",
+  "text": "Da fuori sembra tutto corretto.",
+  "at": 13.5,
+  "speed": 1.12
+ },
+ {
+  "slot": "c06",
+  "id": "c06",
+  "who": "R",
+  "text": "Il problema è che da soli non vediamo i nostri compensi, e li ripetiamo a ogni serie.",
+  "at": 15.44,
+  "speed": 1.12
+ },
+ {
+  "slot": "c07",
+  "id": "c07",
+  "who": "R",
+  "text": "Ripetizione dopo ripetizione, diventano un'abitudine.",
+  "at": 20.63,
+  "speed": 1.12
+ },
+ {
+  "slot": "c08",
+  "id": "c08",
+  "who": "R",
+  "text": "Ecco cosa faccio io.",
+  "at": 24.62,
+  "speed": 1.12
+ },
+ {
+  "slot": "c09",
+  "id": "c09",
+  "who": "R",
+  "text": "Prima la guardo fare una serie, senza dire niente.",
+  "at": 26.11,
+  "speed": 1.12
+ },
+ {
+  "slot": "c10",
+  "id": "c10",
+  "who": "R",
+  "text": "Poi le do una sola indicazione: spingi i fianchi indietro, come per chiudere una porta.",
+  "at": 29.22,
+  "speed": 1.12
+ },
+ {
+  "slot": "c11",
+  "id": "c11",
+  "who": "R",
+  "text": "Alla serie dopo, rifilmiamo e confrontiamo.",
+  "at": 34.52,
+  "speed": 1.12
+ },
+ {
+  "slot": "c12",
+  "id": "c12",
+  "who": "R",
+  "text": "Stesso peso, ma ora lavorano i glutei e i femorali, e la schiena resta tranquilla.",
+  "at": 37.79,
+  "speed": 1.12
+ },
+ {
+  "slot": "c13",
+  "id": "c13",
+  "who": "R",
+  "text": "Una correzione alla volta, verificata sul video: è così che seguo ogni cliente.",
+  "at": 43.18,
+  "speed": 1.12
+ },
+ {
+  "slot": "c14",
+  "id": "c14",
+  "who": "R",
+  "text": "Vuoi una correzione sul tuo esercizio? Scrivimi analisi in privato.",
+  "at": 48.06,
+  "speed": 1.12
+ }
+]

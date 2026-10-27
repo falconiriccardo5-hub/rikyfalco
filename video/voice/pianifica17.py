@@ -17,7 +17,7 @@ TAKES = [
     ("c09", "c09", "R", 'Prima la guardo fare una serie, senza dire niente.', 1.12, None),
     ("c10", "c10", "R", 'Poi le do una sola indicazione: spingi i fianchi indietro, come per chiudere una porta.', 1.12, None),
     ("c11", "c11", "R", 'Alla serie dopo, rifilmiamo e confrontiamo.', 1.12, None),
-    ("c12", "c12", "R", 'Stesso peso, ma ora lavorano glutei e femorali, e la schiena resta tranquilla.', 1.12, None),
+    ("c12", "c12", "R", 'Stesso peso, ma ora lavorano i glutei e i femorali, e la schiena resta tranquilla.', 1.12, None),
     ("c13", "c13", "R", 'Una correzione alla volta, verificata sul video: è così che seguo ogni cliente.', 1.12, None),
     ("c14", "c14", "R", 'Vuoi una correzione sul tuo esercizio? Scrivimi analisi in privato.', 1.12, None),
 ]

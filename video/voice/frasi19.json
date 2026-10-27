@@ -1,0 +1,104 @@
+[
+ {
+  "n": 1101,
+  "id": "e01",
+  "who": "R",
+  "text": "Due persone fanno lo stesso esercizio.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 1102,
+  "id": "e02",
+  "who": "R",
+  "text": "Una migliora, l'altra no. Perché?",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 1103,
+  "id": "e03",
+  "who": "R",
+  "text": "Stesso squat, stessa palestra, stessi tre allenamenti a settimana.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1104,
+  "id": "e04",
+  "who": "R",
+  "text": "Dopo tre mesi, una è più forte e più tonica. L'altra è ferma.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1105,
+  "id": "e05",
+  "who": "R",
+  "text": "La differenza non è l'esercizio.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 1106,
+  "id": "e06",
+  "who": "R",
+  "text": "È tutto quello che c'è intorno: come lo esegui, quanto carichi e come progredisci.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1107,
+  "id": "e07",
+  "who": "R",
+  "text": "Un programma generico non tiene conto di niente di tutto questo.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1108,
+  "id": "e08",
+  "who": "R",
+  "text": "Ecco cosa cambia con un piano personalizzato.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1109,
+  "id": "e09",
+  "who": "R",
+  "text": "Uno: l'esercizio si adatta al tuo corpo, alla tua mobilità e ai tuoi limiti.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1110,
+  "id": "e10",
+  "who": "R",
+  "text": "Due: i carichi partono dal tuo livello, non da quello di qualcun altro.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1111,
+  "id": "e11",
+  "who": "R",
+  "text": "Tre: la progressione segue i tuoi dati, settimana dopo settimana.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1112,
+  "id": "e12",
+  "who": "R",
+  "text": "Stesso tempo in palestra, ma ogni serie lavora per te.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1113,
+  "id": "e13",
+  "who": "R",
+  "text": "È così che costruisco ogni percorso: parto da te, non da una scheda già pronta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1114,
+  "id": "e14",
+  "who": "R",
+  "text": "Vuoi sapere cosa cambierei nel tuo allenamento? Scrivimi analisi in privato.",
+  "cfg": 0.4,
+  "exag": 0.6
+ }
+]

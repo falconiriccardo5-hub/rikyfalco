@@ -1,0 +1,285 @@
+[
+ {
+  "slot": "e01",
+  "who": "R",
+  "id": "e01",
+  "text": "Due persone fanno lo stesso esercizio.",
+  "t0": 0.3,
+  "t1": 2.42,
+  "words": [
+   0.3,
+   0.653,
+   1.007,
+   1.36,
+   1.713,
+   2.067
+  ]
+ },
+ {
+  "slot": "e02",
+  "who": "R",
+  "id": "e02",
+  "text": "Una migliora, l'altra no. Perché?",
+  "t0": 2.77,
+  "t1": 4.57,
+  "words": [
+   2.77,
+   3.13,
+   3.49,
+   3.85,
+   4.21
+  ]
+ },
+ {
+  "slot": "e03",
+  "who": "R",
+  "id": "e03",
+  "text": "Stesso squat, stessa palestra, stessi tre allenamenti a settimana.",
+  "t0": 4.92,
+  "t1": 8.0,
+  "words": [
+   4.92,
+   5.262,
+   5.604,
+   5.947,
+   6.289,
+   6.631,
+   6.973,
+   7.316,
+   7.658
+  ]
+ },
+ {
+  "slot": "e04",
+  "who": "R",
+  "id": "e04",
+  "text": "Dopo tre mesi, una è più forte e più tonica. L'altra è ferma.",
+  "t0": 8.35,
+  "t1": 12.71,
+  "words": [
+   8.35,
+   8.685,
+   9.021,
+   9.356,
+   9.692,
+   10.027,
+   10.362,
+   10.698,
+   11.033,
+   11.368,
+   11.704,
+   12.039,
+   12.375
+  ]
+ },
+ {
+  "slot": "e05",
+  "who": "R",
+  "id": "e05",
+  "text": "La differenza non è l'esercizio.",
+  "t0": 13.06,
+  "t1": 14.86,
+  "words": [
+   13.06,
+   13.42,
+   13.78,
+   14.14,
+   14.5
+  ]
+ },
+ {
+  "slot": "e06",
+  "who": "R",
+  "id": "e06",
+  "text": "È tutto quello che c'è intorno: come lo esegui, quanto carichi e come progredisci.",
+  "t0": 15.21,
+  "t1": 19.89,
+  "words": [
+   15.21,
+   15.544,
+   15.879,
+   16.213,
+   16.547,
+   16.881,
+   17.216,
+   17.55,
+   17.884,
+   18.219,
+   18.553,
+   18.887,
+   19.221,
+   19.556
+  ]
+ },
+ {
+  "slot": "e07",
+  "who": "R",
+  "id": "e07",
+  "text": "Un programma generico non tiene conto di niente di tutto questo.",
+  "t0": 20.24,
+  "t1": 23.96,
+  "words": [
+   20.24,
+   20.578,
+   20.916,
+   21.255,
+   21.593,
+   21.931,
+   22.269,
+   22.607,
+   22.945,
+   23.284,
+   23.622
+  ]
+ },
+ {
+  "slot": "e08",
+  "who": "R",
+  "id": "e08",
+  "text": "Ecco cosa cambia con un piano personalizzato.",
+  "t0": 24.31,
+  "t1": 26.75,
+  "words": [
+   24.31,
+   24.659,
+   25.007,
+   25.356,
+   25.704,
+   26.053,
+   26.401
+  ]
+ },
+ {
+  "slot": "e09",
+  "who": "R",
+  "id": "e09",
+  "text": "Uno: l'esercizio si adatta al tuo corpo, alla tua mobilità e ai tuoi limiti.",
+  "t0": 27.1,
+  "t1": 31.78,
+  "words": [
+   27.1,
+   27.434,
+   27.769,
+   28.103,
+   28.437,
+   28.771,
+   29.106,
+   29.44,
+   29.774,
+   30.109,
+   30.443,
+   30.777,
+   31.111,
+   31.446
+  ]
+ },
+ {
+  "slot": "e10",
+  "who": "R",
+  "id": "e10",
+  "text": "Due: i carichi partono dal tuo livello, non da quello di qualcun altro.",
+  "t0": 32.13,
+  "t1": 36.49,
+  "words": [
+   32.13,
+   32.465,
+   32.801,
+   33.136,
+   33.472,
+   33.807,
+   34.142,
+   34.478,
+   34.813,
+   35.148,
+   35.484,
+   35.819,
+   36.155
+  ]
+ },
+ {
+  "slot": "e11",
+  "who": "R",
+  "id": "e11",
+  "text": "Tre: la progressione segue i tuoi dati, settimana dopo settimana.",
+  "t0": 36.84,
+  "t1": 40.24,
+  "words": [
+   36.84,
+   37.18,
+   37.52,
+   37.86,
+   38.2,
+   38.54,
+   38.88,
+   39.22,
+   39.56,
+   39.9
+  ]
+ },
+ {
+  "slot": "e12",
+  "who": "R",
+  "id": "e12",
+  "text": "Stesso tempo in palestra, ma ogni serie lavora per te.",
+  "t0": 40.59,
+  "t1": 43.99,
+  "words": [
+   40.59,
+   40.93,
+   41.27,
+   41.61,
+   41.95,
+   42.29,
+   42.63,
+   42.97,
+   43.31,
+   43.65
+  ]
+ },
+ {
+  "slot": "e13",
+  "who": "R",
+  "id": "e13",
+  "text": "È così che costruisco ogni percorso: parto da te, non da una scheda già pronta.",
+  "t0": 44.34,
+  "t1": 49.34,
+  "words": [
+   44.34,
+   44.673,
+   45.007,
+   45.34,
+   45.673,
+   46.007,
+   46.34,
+   46.673,
+   47.007,
+   47.34,
+   47.673,
+   48.007,
+   48.34,
+   48.673,
+   49.007
+  ]
+ },
+ {
+  "slot": "e14",
+  "who": "R",
+  "id": "e14",
+  "text": "Vuoi sapere cosa cambierei nel tuo allenamento? Scrivimi analisi in privato.",
+  "t0": 49.69,
+  "t1": 53.41,
+  "words": [
+   49.69,
+   50.028,
+   50.366,
+   50.705,
+   51.043,
+   51.381,
+   51.719,
+   52.057,
+   52.395,
+   52.734,
+   53.072
+  ]
+ }
+]

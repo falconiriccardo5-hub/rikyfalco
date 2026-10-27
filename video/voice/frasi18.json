@@ -1,0 +1,104 @@
+[
+ {
+  "n": 1001,
+  "id": "d01",
+  "who": "R",
+  "text": "Hai solo quaranta minuti, due volte a settimana?",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 1002,
+  "id": "d02",
+  "who": "R",
+  "text": "Possono bastare, se smetti di fare questo errore.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 1003,
+  "id": "d03",
+  "who": "R",
+  "text": "Arrivi in palestra dopo il lavoro, fai qualche esercizio a caso e speri che basti.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1004,
+  "id": "d04",
+  "who": "R",
+  "text": "Dopo qualche mese, il fisico non è cambiato.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1005,
+  "id": "d05",
+  "who": "R",
+  "text": "Il problema non è il poco tempo.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 1006,
+  "id": "d06",
+  "who": "R",
+  "text": "È che senza un piano non sai se stai progredendo, o se ripeti sempre la stessa seduta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1007,
+  "id": "d07",
+  "who": "R",
+  "text": "E il tempo che hai lo sprechi a decidere cosa fare.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1008,
+  "id": "d08",
+  "who": "R",
+  "text": "Ecco da dove partirei.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1009,
+  "id": "d09",
+  "who": "R",
+  "text": "Uno: cinque esercizi fondamentali, per allenare tutto il corpo.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1010,
+  "id": "d10",
+  "who": "R",
+  "text": "Due: recuperi brevi, da un minuto a un minuto e mezzo tra le serie.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1011,
+  "id": "d11",
+  "who": "R",
+  "text": "Tre: scrivi carichi e ripetizioni, e prova a migliorarli ogni settimana.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1012,
+  "id": "d12",
+  "who": "R",
+  "text": "Due sedute fatte così valgono più di quattro fatte a caso.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1013,
+  "id": "d13",
+  "who": "R",
+  "text": "È proprio su questo che lavoro con i miei clienti: allenamenti brevi, sostenibili e misurabili.",
+  "cfg": 0.4
+ },
+ {
+  "n": 1014,
+  "id": "d14",
+  "who": "R",
+  "text": "Se hai poco tempo e vuoi capire come organizzarti, scrivimi analisi in privato.",
+  "cfg": 0.4,
+  "exag": 0.6
+ }
+]
