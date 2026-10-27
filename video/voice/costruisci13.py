@@ -13,8 +13,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FRASI = os.path.join(HERE, "frasi")
 ROOT = os.path.join(HERE, "..")
 SR = 44100
-TOTAL = int(130 * SR)  # buffer ampio: le prove a secco distanziano molto le frasi
-KEEP = int(46 * SR)
+TOTAL = int(float(os.environ.get('TOTAL_S', 130)) * SR)  # buffer ampio: le prove a secco distanziano molto le frasi
+KEEP = int(float(os.environ.get('KEEP_S', 46)) * SR)
 
 # id: (modo, valore, parola, fine_max)   modo "start": inizio frase a t · modo "word": parola #idx inizia a t
 # uso: costruisci_traccia.py [piano.json] [voce.wav] [timing.json] [env.json]

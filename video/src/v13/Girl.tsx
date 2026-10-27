@@ -39,24 +39,44 @@ export type GirlProps = {
   lumbarOk?: number; // alone viola "schiena ok"
   sway?: number; // oscillazione coda
   heel?: number; // 0..1 inclina il corpo indietro sui talloni
+  sq?: number; // 0..1 squat (al posto della flessione d'anca)
+  heelUp?: number; // 0..1 talloni sollevati
+  bar?: boolean; // bilanciere sulle spalle (squat)
+  brace?: number; // 0..1 addome "bloccato" (alone viola sul tronco)
+  quads?: number; // 0..1 alone sulle cosce (gambe al lavoro)
   noDb?: boolean;
   front?: React.ReactNode;
 };
 
-export const girlGeom = (h: number, round: number, backHand: number, heel = 0) => {
-  const ankle: Pt = [0, -38];
-  const hip: Pt = [-105 * h + heel * 26, -(38 + 362 - 17 * h)];
-  const th = (h * 78 - heel * 6) * (Math.PI / 180);
+export const girlGeom = (h: number, round: number, backHand: number, heel = 0, sq = 0, heelUp = 0, bar = false) => {
+  const ankle: Pt = [heelUp * 10, -38 - heelUp * 34];
+  let hip: Pt = [-105 * h + heel * 26, -(38 + 362 - 17 * h)];
+  let thDeg = h * 78 - heel * 6;
+  if (sq > 0) {
+    hip = [mix(hip[0], -125 + heelUp * 34, sq), mix(hip[1], -(38 + 150) - heelUp * 26, sq)];
+    thDeg = mix(thDeg, 36 + heelUp * 18 + round * 6, sq);
+  }
+  const th = thDeg * (Math.PI / 180);
   const L = 250;
   const sp: Pt = [hip[0] + L * Math.sin(th), hip[1] - L * Math.cos(th)];
   const knee = ik2(ankle, hip, 175, 190, 1);
   const hang: Pt = [sp[0] - 40 * h, sp[1] + 222];
   const back: Pt = [hip[0] - 62, hip[1] - 38];
-  const hand: Pt = [mix(hang[0], back[0], backHand), mix(hang[1], back[1], backHand)];
-  const elbow = ik2(sp, hand, 112, 118, -1);
-  const thH = th * 0.92 + round * 0.12;
+  let hand: Pt = [mix(hang[0], back[0], backHand), mix(hang[1], back[1], backHand)];
+  let elbow = ik2(sp, hand, 112, 118, -1);
+  // bilanciere: appoggiato sulla parte alta della schiena, gomiti in basso/dietro
+  const nx = -Math.cos(th);
+  const ny = -Math.sin(th);
+  const barP: Pt = [sp[0] + nx * 30 + Math.sin(th) * 6, sp[1] + ny * 30 - Math.cos(th) * 6];
+  if (bar) {
+    const dx = -Math.sin(th);
+    const dy = Math.cos(th);
+    elbow = [sp[0] + dx * 92 + nx * 26, sp[1] + dy * 92 + ny * 26];
+    hand = [barP[0] + 16, barP[1] + 10];
+  }
+  const thH = (sq > 0 ? mix(th * 0.92, th * 0.5, sq) : th * 0.92) + round * 0.12;
   const head: Pt = [sp[0] + 104 * Math.sin(thH), sp[1] - 104 * Math.cos(thH) + round * 22];
-  return {ankle, hip, th, sp, knee, hand, elbow, head, thH, hang};
+  return {ankle, hip, th, sp, knee, hand, elbow, head, thH, hang, barP};
 };
 
 const Limb: React.FC<{pts: Pt[]; w: number; fill: string; ink?: string}> = ({pts, w, fill, ink = C.ink}) => {
@@ -89,11 +109,16 @@ export const GirlSide: React.FC<GirlProps> = ({
   lumbarOk = 0,
   sway = 0,
   heel = 0,
+  sq = 0,
+  heelUp = 0,
+  bar = false,
+  brace = 0,
+  quads = 0,
   noDb = false,
   front,
 }) => {
-  const g = girlGeom(h, round, backHand, heel);
-  const {ankle, hip, th, sp, knee, hand, elbow, head, thH} = g;
+  const g = girlGeom(h, round, backHand, heel, sq, heelUp, bar);
+  const {ankle, hip, th, sp, knee, hand, elbow, head, thH, barP} = g;
   const tdeg = (th * 180) / Math.PI;
   const hdeg = (thH * 180) / Math.PI;
   // curva schiena: punto di controllo spostato indietro/su
@@ -104,7 +129,7 @@ export const GirlSide: React.FC<GirlProps> = ({
   const ctrl: Pt = [mid[0] + nx * bulge * 1.0, mid[1] + ny * bulge * 1.0];
   const torso = `M ${hip[0]} ${hip[1]} Q ${ctrl[0]} ${ctrl[1]} ${sp[0]} ${sp[1]}`;
   const lum: Pt = [mix(hip[0], sp[0], 0.2) + nx * (50 + bulge * 0.4), mix(hip[1], sp[1], 0.2) + ny * (50 + bulge * 0.4)];
-  const hang = !noDb;
+  const hang = !noDb && !bar;
   const eyeRy = 11 * (1 - lid * 0.9);
   return (
     <g transform={`translate(${x},${y}) scale(${flip ? -scale : scale},${scale})`}>
@@ -114,7 +139,7 @@ export const GirlSide: React.FC<GirlProps> = ({
         <Limb pts={[ankle, knee, hip]} w={44} fill={C.ink} />
       </g>
       {/* scarpe */}
-      <g stroke={C.ink} strokeWidth={OUT} strokeLinejoin="round">
+      <g stroke={C.ink} strokeWidth={OUT} strokeLinejoin="round" transform={`rotate(${17.7 * heelUp} 112 0)`}>
         <path d="M -52 -46 L 18 -46 C 64 -44 112 -22 116 0 L -56 0 Z" fill="#fff" />
         <path d="M -56 -9 L 116 -9" fill="none" />
         <path d="M -50 -26 C -20 -14 28 -16 52 -34" fill="none" stroke={C.blue} strokeWidth={9} />
@@ -122,6 +147,9 @@ export const GirlSide: React.FC<GirlProps> = ({
       {/* gamba vicina (leggings neri con riga viola) */}
       <Limb pts={[ankle, knee, hip]} w={46} fill={C.ink} />
       <polyline points={[ankle, knee, hip].map((q) => `${q[0] + 6},${q[1]}`).join(' ')} stroke={C.blue} strokeWidth={5} fill="none" strokeLinecap="round" strokeLinejoin="round" opacity={0.9} />
+      {quads > 0.02 && (
+        <polyline points={[knee, hip].map((q) => `${q[0] + 10},${q[1] - 8}`).join(' ')} stroke={C.blueL} strokeWidth={34} opacity={0.35 + 0.4 * quads} fill="none" strokeLinecap="round" />
+      )}
       {/* glutei */}
       <circle cx={hip[0] - 22} cy={hip[1] + 6} r={64} fill={C.ink} stroke={C.ink} strokeWidth={OUT} />
       {glute > 0.02 && (
@@ -150,6 +178,16 @@ export const GirlSide: React.FC<GirlProps> = ({
           <circle cx={lum[0]} cy={lum[1]} r={50 + lumbarOk * 16} fill={C.blueL} opacity={0.25 + 0.3 * lumbarOk} />
         </g>
       )}
+      {brace > 0.02 && (() => {
+        const c: Pt = [mix(hip[0], sp[0], 0.38), mix(hip[1], sp[1], 0.38)];
+        const ang = (th * 180) / Math.PI;
+        return (
+          <g transform={`translate(${c[0]},${c[1]}) rotate(${ang})`}>
+            <rect x={-66} y={-28} width={132} height={56} rx={14} fill={C.blueL} opacity={0.3 + 0.35 * brace} />
+            <rect x={-62} y={-24} width={124} height={48} rx={12} fill="none" stroke={C.ink} strokeWidth={5} strokeDasharray="10 8" opacity={brace} />
+          </g>
+        );
+      })()}
       {/* collo + testa */}
       <Limb pts={[sp, [sp[0] + 50 * Math.sin(thH), sp[1] - 50 * Math.cos(thH)]]} w={36} fill="#fff" />
       {/* coda di cavallo (dietro la testa) */}
@@ -193,6 +231,14 @@ export const GirlSide: React.FC<GirlProps> = ({
       )}
       {/* mano */}
       <circle cx={hand[0]} cy={hand[1]} r={hang ? 0 : 14} fill="#fff" stroke={C.ink} strokeWidth={OUT - 2} />
+      {bar && (
+        <g transform={`translate(${barP[0]},${barP[1]})`}>
+          <circle r={72} fill={C.ink} />
+          <circle r={64} fill={plateColor} stroke={C.cream} strokeWidth={5} />
+          <circle r={36} fill="none" stroke={C.ink} strokeWidth={4} opacity={0.35} />
+          <circle r={14} fill={C.steel} stroke={C.ink} strokeWidth={4} />
+        </g>
+      )}
       {front}
     </g>
   );
