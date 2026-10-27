@@ -30,6 +30,25 @@ type Slide = {
 const arm = {up: {hand: [273, 822] as [number, number]}, hip: {hand: [205, 760] as [number, number]}};
 
 export const DECKS: Record<string, Slide[]> = {
+  faq: [
+    {kind: 'cover', kicker: 'FAQ ONESTA', title: 'LE 5 DOMANDE CHE MI FATE PRIMA DI INIZIARE', sub: 'Risposte chiare, senza giri di parole.', riky: {smile: 0.9, brow: 8}},
+    {kind: 'pair', n: 1, title: '', errLabel: '? DOMANDA', fixLabel: '✓ RISPOSTA', err: '“Quanto costa?”', errSub: 'La domanda che tutti vogliono fare per prima.', fix: 'Dipende dal percorso', fixSub: 'Te lo dico in modo chiaro durante l’analisi gratuita, prima di qualsiasi impegno. Nessun costo nascosto.'},
+    {kind: 'pair', n: 2, title: '', errLabel: '? DOMANDA', fixLabel: '✓ RISPOSTA', err: '“Quante volte a settimana devo allenarmi?”', errSub: 'Lavoro, famiglia, poco tempo.', fix: 'Anche 2 volte possono bastare', fixSub: 'Costruiamo il piano sui giorni che hai davvero: meglio 2 sedute fatte bene che 4 saltate.'},
+    {kind: 'pair', n: 3, title: '', errLabel: '? DOMANDA', fixLabel: '✓ RISPOSTA', err: '“Online o in presenza?”', errSub: 'Dipende da dove sei e da come preferisci allenarti.', fix: 'Scegli tu', fixSub: 'Ci alleniamo insieme in presenza oppure segui il percorso online, con video e controlli regolari.'},
+    {kind: 'pair', n: 4, title: '', errLabel: '? DOMANDA', fixLabel: '✓ RISPOSTA', err: '“Serve esperienza?”', errSub: 'Non sono mai entrato in palestra / mi alleno da anni.', fix: 'No, si parte dal tuo livello', fixSub: 'Che tu sia alle prime armi o ti alleni da anni, partiamo da dove sei e impari la tecnica passo dopo passo.'},
+    {kind: 'pair', n: 5, title: '', errLabel: '? DOMANDA', fixLabel: '✓ RISPOSTA', err: '“E se ho dolori o infortuni?”', errSub: 'Schiena, spalle, ginocchia…', fix: 'Ne teniamo conto da subito', fixSub: 'Li valutiamo nell’analisi e adattiamo gli esercizi. Se serve, prima ti indirizzo da un fisioterapista.'},
+    {kind: 'check', title: 'COSA RICEVI NEL PERCORSO', items: ['Piano costruito su di te', 'Correzioni sui tuoi video', 'Progressione settimana per settimana', 'Controlli regolari dei progressi', 'Risposte alle tue domande']},
+    {kind: 'cta', title: 'HAI UN’ALTRA DOMANDA?', sub: 'Scrivimi ANALISI in DM: ti rispondo io, personalmente.', riky: {smile: 1, mouth: 0.4}},
+  ],
+  analisi: [
+    {kind: 'cover', kicker: 'COME FUNZIONA', title: 'COSA SUCCEDE QUANDO MI SCRIVI “ANALISI”', sub: '4 passi. Gratis e senza impegno.', riky: {smile: 1, brow: 6}},
+    {kind: 'step', n: 1, title: 'MI SCRIVI ANALISI', sub: 'Una parola in DM. Niente moduli lunghi, niente call obbligatorie.', riky: {smile: 0.8}},
+    {kind: 'step', n: 2, title: 'TI FACCIO QUALCHE DOMANDA', sub: 'Obiettivo, livello, giorni disponibili ed eventuali dolori.', riky: {smile: 0.7, brow: 6}},
+    {kind: 'step', n: 3, title: 'MI MANDI 1–2 VIDEO', sub: 'Un esercizio che fai spesso, ripreso di lato. Bastano 30 secondi.', riky: {smile: 0.8, brow: 8}},
+    {kind: 'step', n: 4, title: 'RICEVI LA TUA ANALISI', sub: 'Ti dico cosa funziona, cosa cambiare e da dove partire. Poi decidi tu se continuare con me.', riky: {smile: 1}},
+    {kind: 'check', title: 'COSA NON SUCCEDE', items: ['Zero obblighi di acquisto', 'Zero schede copia-incolla', 'Zero risposte automatiche', 'Zero giudizi sul tuo livello']},
+    {kind: 'cta', title: 'PRONTO A INIZIARE?', sub: 'Scrivimi ANALISI in DM. Ti rispondo io.', riky: {smile: 1, mouth: 0.4}},
+  ],
   dodici: [
     {kind: 'cover', kicker: 'DIETRO LE QUINTE', title: 'LE PRIME 12 SETTIMANE DI UN PERCORSO', sub: 'Cosa succede, settimana per settimana. Senza promesse miracolose.', riky: {smile: 0.9, brow: 6}},
     {kind: 'step', kicker: 'SETTIMANA', n: '0', title: 'ANALISI', sub: 'Obiettivo, livello, tempo disponibile, infortuni. Mi mandi il video di 2–3 esercizi e partiamo da dati reali.', riky: {smile: 0.7, brow: 6}},

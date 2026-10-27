@@ -76,7 +76,7 @@ const D05: SceneFC = ({a}) => {
   const x = prog(t, w[2], w[2] + 0.3);
   return (
     <Paper>
-      <div style={{position: 'absolute', left: 0, right: 0, top: 380, display: 'flex', justifyContent: 'center', transform: `scale(${enter(t, a)})`}}>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 540, display: 'flex', justifyContent: 'center', transform: `scale(${enter(t, a)})`}}>
         <div style={{position: 'relative'}}>
           <Clock sec={40 * 60} size={260} color={C.ink} />
           <svg width={600} height={240} style={{position: 'absolute', left: -20, top: -20}}>
@@ -84,7 +84,7 @@ const D05: SceneFC = ({a}) => {
           </svg>
         </div>
       </div>
-      <BigSign t0={w[5] - 0.1} top={760} bg={C.red}>NON È IL TEMPO</BigSign>
+      <BigSign t0={w[5] - 0.1} top={900} bg={C.red}>NON È IL TEMPO</BigSign>
     </Paper>
   );
 };
@@ -97,7 +97,7 @@ const D06: SceneFC = ({a}) => {
       <StepCard n="?" title="Stai progredendo?" t0={a + 0.05} sub="senza un piano non lo sai" bad />
       <div style={{position: 'absolute', left: 50, right: 50, top: 520, display: 'flex', gap: 18, justifyContent: 'center'}}>
         {['SEDUTA 1', 'SEDUTA 2', 'SEDUTA 3'].map((s, i) => {
-          const p = prog(t, w[12] + i * 0.2 - 0.2, w[12] + i * 0.2 + 0.1, E.back);
+          const p = prog(t, a + 0.3 + i * 0.25, a + 0.6 + i * 0.25, E.back);
           return (
             <div key={i} style={{width: 290, ...cardStyle('#fff', 8), overflow: 'hidden', transform: `scale(${p})`, fontFamily: FONT, fontWeight: 900}}>
               <div style={{background: C.ink, color: '#fff', fontSize: 30, padding: '6px 14px'}}>{s}</div>
@@ -123,7 +123,7 @@ const D07: SceneFC = ({a}) => {
   const large = ang > 180 ? 1 : 0;
   return (
     <Paper>
-      <div style={{position: 'absolute', left: 0, right: 0, top: 260, display: 'flex', justifyContent: 'center', transform: `scale(${enter(t, a)})`}}>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 380, display: 'flex', justifyContent: 'center', transform: `scale(${enter(t, a)})`}}>
         <svg width={560} height={560} viewBox="-280 -280 560 560">
           <circle r={r + 14} fill={C.ink} />
           <circle r={r} fill={C.blue} />

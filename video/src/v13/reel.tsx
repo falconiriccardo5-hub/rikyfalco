@@ -38,7 +38,7 @@ export const buildCaps = (
   const small = Object.entries(meta)
     .map(([slot, hl]) => {
       const x = T.v(slot);
-      return {t0: x.words[0] - 0.15, t1: x.t1 + 0.35, text: display[slot] ?? x.text, hl, times: x.words, bottom: 300, wrapAt: 20, fs: 54, bg: '#fff'} as CapLine;
+      return {t0: x.words[0] - 0.15, t1: x.t1 + 0.35, text: display[slot] ?? x.text, hl, times: x.words, bottom: 300, wrapAt: 19, fs: 50, bg: '#fff'} as CapLine;
     })
     .sort((p, q) => p.t0 - q.t0);
   small.forEach((l, i) => {

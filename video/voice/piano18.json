@@ -1,0 +1,114 @@
+[
+ {
+  "slot": "d01",
+  "id": "d01",
+  "who": "R",
+  "text": "Hai solo quaranta minuti, due volte a settimana?",
+  "at": 0.3,
+  "speed": 1.12
+ },
+ {
+  "slot": "d02",
+  "id": "d02",
+  "who": "R",
+  "text": "Possono bastare, se smetti di fare questo errore.",
+  "at": 3.03,
+  "speed": 1.12
+ },
+ {
+  "slot": "d03",
+  "id": "d03",
+  "who": "R",
+  "text": "Arrivi in palestra dopo il lavoro, fai qualche esercizio a caso e speri che basti.",
+  "at": 6.0,
+  "speed": 1.12
+ },
+ {
+  "slot": "d04",
+  "id": "d04",
+  "who": "R",
+  "text": "Dopo qualche mese, il fisico non è cambiato.",
+  "at": 10.69,
+  "speed": 1.12
+ },
+ {
+  "slot": "d05",
+  "id": "d05",
+  "who": "R",
+  "text": "Il problema non è il poco tempo.",
+  "at": 13.82,
+  "speed": 1.12
+ },
+ {
+  "slot": "d06",
+  "id": "d06",
+  "who": "R",
+  "text": "È che senza un piano non sai se stai progredendo, o se ripeti sempre la stessa seduta.",
+  "at": 15.71,
+  "speed": 1.12
+ },
+ {
+  "slot": "d07",
+  "id": "d07",
+  "who": "R",
+  "text": "E il tempo che hai lo sprechi a decidere cosa fare.",
+  "at": 20.55,
+  "speed": 1.12
+ },
+ {
+  "slot": "d08",
+  "id": "d08",
+  "who": "R",
+  "text": "Ecco da dove partirei.",
+  "at": 23.52,
+  "speed": 1.12
+ },
+ {
+  "slot": "d09",
+  "id": "d09",
+  "who": "R",
+  "text": "Uno: cinque esercizi fondamentali, per allenare tutto il corpo.",
+  "at": 25.17,
+  "speed": 1.12
+ },
+ {
+  "slot": "d10",
+  "id": "d10",
+  "who": "R",
+  "text": "Due: recuperi brevi, da un minuto a un minuto e mezzo tra le serie.",
+  "at": 28.94,
+  "speed": 1.12
+ },
+ {
+  "slot": "d11",
+  "id": "d11",
+  "who": "R",
+  "text": "Tre: scrivi carichi e ripetizioni, e prova a migliorarli ogni settimana.",
+  "at": 33.65,
+  "speed": 1.12
+ },
+ {
+  "slot": "d12",
+  "id": "d12",
+  "who": "R",
+  "text": "Due sedute fatte così valgono più di quattro fatte a caso.",
+  "at": 38.24,
+  "speed": 1.12
+ },
+ {
+  "slot": "d13",
+  "id": "d13",
+  "who": "R",
+  "text": "È proprio su questo che lavoro con i miei clienti: allenamenti brevi, sostenibili e misurabili.",
+  "at": 42.49,
+  "speed": 1.12
+ },
+ {
+  "slot": "d14",
+  "id": "d14",
+  "who": "R",
+  "text": "Se hai poco tempo e vuoi capire come organizzarti, scrivimi analisi in privato.",
+  "at": 48.28,
+  "speed": 1.12
+ }
+]
