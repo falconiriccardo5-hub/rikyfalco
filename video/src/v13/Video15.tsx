@@ -485,7 +485,7 @@ const buildCaps = (): CapLine[] => {
     a14: [6, 7],
     a15: [6],
   };
-  const DISPLAY: Record<string, string> = {a15: 'Vuoi che guardi la tua? Scrivimi ANALISI in DM.'};
+  const DISPLAY: Record<string, string> = {a15: 'Vuoi che guardi la tua? Scrivimi ANALISI in privato.'};
   const small = Object.entries(meta)
     .map(([slot, hl]) => {
       const x = v(slot);

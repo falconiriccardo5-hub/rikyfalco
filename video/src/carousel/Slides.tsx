@@ -10,8 +10,10 @@ export const SH = 1350;
 type Slide = {
   kind: 'cover' | 'q' | 'result' | 'step' | 'cta' | 'info' | 'pair' | 'check' | 'table' | 'timeline' | 'week' | 'rule';
   note?: string;
-  n?: number;
+  n?: number | string;
   kicker?: string;
+  errLabel?: string;
+  fixLabel?: string;
   err?: string;
   errSub?: string;
   fix?: string;
@@ -28,6 +30,27 @@ type Slide = {
 const arm = {up: {hand: [273, 822] as [number, number]}, hip: {hand: [205, 760] as [number, number]}};
 
 export const DECKS: Record<string, Slide[]> = {
+  dodici: [
+    {kind: 'cover', kicker: 'DIETRO LE QUINTE', title: 'LE PRIME 12 SETTIMANE DI UN PERCORSO', sub: 'Cosa succede, settimana per settimana. Senza promesse miracolose.', riky: {smile: 0.9, brow: 6}},
+    {kind: 'step', n: '0', title: 'ANALISI', sub: 'Obiettivo, livello, tempo disponibile, infortuni. Mi mandi il video di 2–3 esercizi e partiamo da dati reali.', riky: {smile: 0.7, brow: 6}},
+    {kind: 'step', n: '1–2', title: 'BASI E TECNICA', sub: 'Impari bene gli esercizi fondamentali con carichi prudenti. Iniziamo a registrare pesi e ripetizioni.', riky: {smile: 0.8}},
+    {kind: 'step', n: '3–6', title: 'PROGRESSIONE', sub: 'Carichi o ripetizioni salgono settimana dopo settimana. Ogni 2 settimane controlliamo la tecnica sui video.', riky: {smile: 1, brow: 8}},
+    {kind: 'step', n: '7', title: 'CONTROLLO', sub: 'Misure, foto e numeri a confronto. Quello che funziona resta, il resto si cambia.', riky: {smile: 0.6, brow: 10}},
+    {kind: 'step', n: '8–12', title: 'CONSOLIDAMENTO', sub: 'La progressione continua, introduciamo varianti mirate e una settimana di scarico se serve.', riky: {smile: 1}},
+    {kind: 'check', title: 'COSA MISURIAMO OGNI SETTIMANA', items: ['Carichi e ripetizioni', 'Video della tecnica', 'Misure e foto', 'Energia e sonno', 'Sedute completate']},
+    {kind: 'cta', title: 'VUOI PARTIRE DALLA SETTIMANA 0?', sub: 'Scrivimi ANALISI in DM: è il primo passo ed è gratuito.', riky: {smile: 1, mouth: 0.4}},
+  ],
+  miti: [
+    {kind: 'cover', kicker: 'DA SALVARE', title: '7 COSE CHE SENTI IN PALESTRA (E PERCHÉ NON È COSÌ)', sub: 'Quante ne hai sentite almeno una volta?', riky: {smile: 0.5, brow: 12}},
+    {kind: 'pair', n: 1, title: '', errLabel: '✕ LO SENTI DIRE', fixLabel: '✓ COME STA DAVVERO', err: '“Per dimagrire serve solo cardio”', errSub: 'Ore di tapis roulant, zero pesi.', fix: 'Conta il bilancio calorico', fixSub: 'Dimagrisci se consumi più di quello che mangi. I pesi ti aiutano a non perdere muscolo mentre perdi grasso.'},
+    {kind: 'pair', n: 2, title: '', errLabel: '✕ LO SENTI DIRE', fixLabel: '✓ COME STA DAVVERO', err: '“Se non sudi, non ti sei allenato”', errSub: 'Più sudore = allenamento migliore.', fix: 'Il sudore non misura niente', fixSub: 'Dipende da temperatura e persona. Conta la progressione: carichi e ripetizioni che migliorano.'},
+    {kind: 'pair', n: 3, title: '', errLabel: '✕ LO SENTI DIRE', fixLabel: '✓ COME STA DAVVERO', err: '“Con i pesi le donne diventano grosse”', errSub: 'Meglio pesi leggerissimi e tante ripetizioni.', fix: 'I pesi danno forma, non volume', fixSub: 'Mettere tanta massa richiede anni di lavoro specifico e molte calorie. Non succede per caso.'},
+    {kind: 'pair', n: 4, title: '', errLabel: '✕ LO SENTI DIRE', fixLabel: '✓ COME STA DAVVERO', err: '“Gli addominali tolgono la pancia”', errSub: '100 crunch al giorno per la pancia piatta.', fix: 'Non dimagrisci in un punto solo', fixSub: 'Gli addominali rinforzano il tronco. Il grasso cala con il deficit calorico complessivo.'},
+    {kind: 'pair', n: 5, title: '', errLabel: '✕ LO SENTI DIRE', fixLabel: '✓ COME STA DAVVERO', err: '“Più ti alleni, più risultati hai”', errSub: 'Tutti i giorni, sempre al massimo.', fix: 'I risultati arrivano nel recupero', fixSub: 'Troppo volume senza riposo ti blocca. Meglio poche sedute fatte bene e dormire 7 ore.'},
+    {kind: 'pair', n: 6, title: '', errLabel: '✕ LO SENTI DIRE', fixLabel: '✓ COME STA DAVVERO', err: '“Fai stretching prima, così non ti fai male”', errSub: 'Lunghi allungamenti da fermo prima dei pesi.', fix: 'Prima scalda, poi allunga', fixSub: 'Prima dell’allenamento serve un riscaldamento attivo. Lo stretching lungo è meglio a fine seduta.'},
+    {kind: 'pair', n: 7, title: '', errLabel: '✕ LO SENTI DIRE', fixLabel: '✓ COME STA DAVVERO', err: '“Cambia scheda ogni mese per confondere i muscoli”', errSub: 'Esercizi nuovi ogni volta.', fix: 'I muscoli rispondono alla progressione', fixSub: 'Stessi esercizi finché migliori. Si cambia quando smetti di progredire, non per noia.'},
+    {kind: 'cta', title: 'BASTA CONSIGLI A CASO?', sub: 'Scrivimi ANALISI in DM: ti dico cosa serve davvero a te, in base ai tuoi obiettivi.', riky: {smile: 1, mouth: 0.4}},
+  ],
   settimana: [
     {kind: 'cover', kicker: 'MODELLO DA SALVARE', title: '2 ALLENAMENTI DA 40 MINUTI A SETTIMANA', sub: 'La settimana tipo per chi ha poco tempo ma vuole progredire davvero.', riky: {smile: 1, brow: 6}},
     {kind: 'timeline', title: 'COM’È FATTA OGNI SEDUTA', items: ["5'|Riscaldamento|Mobilità + 1–2 serie leggere del primo esercizio", "30'|Lavoro|5 esercizi, 60–90 secondi di recupero tra le serie", "5'|Defaticamento|Respirazione e allungamento leggero"]},
@@ -199,7 +222,7 @@ export const CarouselSlide: React.FC<{deck: string; index: number}> = ({deck, in
           <div style={{background: '#fff', border: `6px solid ${C.ink}`, borderRadius: 30, boxShadow: `10px 10px 0 ${C.red}`, padding: '26px 32px 32px'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: 18}}>
               <div style={{width: 84, height: 84, borderRadius: 42, background: C.red, border: `6px solid ${C.ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center', ...wrap, fontSize: 52, color: '#fff', flexShrink: 0, letterSpacing: 0}}>{s.n}</div>
-              <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 34, color: C.red, letterSpacing: 3}}>✕ ERRORE</div>
+              <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 34, color: C.red, letterSpacing: 3}}>{s.errLabel ?? '✕ ERRORE'}</div>
             </div>
             <div style={{...wrap, fontSize: 76, color: C.ink, marginTop: 18}}>{s.err}</div>
             <div style={{fontFamily: FONT, fontWeight: 700, fontSize: 38, lineHeight: 1.3, color: C.ink, opacity: 0.75, marginTop: 14}}>{s.errSub}</div>
@@ -210,7 +233,7 @@ export const CarouselSlide: React.FC<{deck: string; index: number}> = ({deck, in
           <div style={{background: C.blue, border: `6px solid ${C.ink}`, borderRadius: 30, boxShadow: `10px 10px 0 ${C.ink}`, padding: '26px 32px 32px'}}>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20}}>
               <div>
-                <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 34, color: '#fff', letterSpacing: 3}}>✓ ESERCIZIO</div>
+                <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 34, color: '#fff', letterSpacing: 3}}>{s.fixLabel ?? '✓ ESERCIZIO'}</div>
                 <div style={{...wrap, fontSize: 72, color: '#fff', marginTop: 14}}>{s.fix}</div>
               </div>
               <div style={{flexShrink: 0}}>{s.icon && <Icon k={s.icon} />}</div>
