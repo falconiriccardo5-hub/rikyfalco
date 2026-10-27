@@ -20,7 +20,7 @@ TAKES = [
     ("a12", "a12", "R", 'Tre: accanto a ogni esercizio, carichi e ripetizioni da battere.', 1.12, None),
     ("a13", "a13", "R", 'Così ogni seduta ti dice se stai progredendo.', 1.12, None),
     ("a14", "a14", "R", "È lo stesso controllo che faccio nell'analisi gratuita: guardo la tua scheda e ti dico cosa cambiare.", 1.12, None),
-    ("a15", "a15", "R", 'Vuoi che guardi la tua? Scrivimi analisi in direct.', 1.12, None),
+    ("a15", "a15", "R", 'Vuoi che guardi la tua? Scrivimi analisi in privato.', 1.12, None),
 ]
 GAP = {"a01": 0.25, "a02": 0.45, "a03": 0.3, "a04": 0.45, "a05": 0.25, "a06": 0.25, "a07": 0.5, "a08": 0.4, "a09": 0.35, "a10": 0.4, "a11": 0.4, "a12": 0.4, "a13": 0.5, "a14": 0.5}
 

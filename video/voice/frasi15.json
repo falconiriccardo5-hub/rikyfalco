@@ -1,17 +1,110 @@
 [
- {"n":701,"id":"a01","who":"R","text":"Questa è una scheda che vedo quasi ogni settimana.","cfg":0.4,"exag":0.6},
- {"n":702,"id":"a02","who":"R","text":"Ecco cosa cambierei, in un minuto.","cfg":0.4,"exag":0.6},
- {"n":703,"id":"a03","who":"R","text":"Lunedì petto, martedì schiena, mercoledì gambe, e ogni giorno sei esercizi diversi.","cfg":0.4},
- {"n":704,"id":"a04","who":"R","text":"Sembra completa, ma dopo tre mesi il fisico è sempre uguale.","cfg":0.4},
- {"n":705,"id":"a05","who":"R","text":"Il motivo è semplice: ogni muscolo viene allenato una sola volta a settimana.","cfg":0.4},
- {"n":706,"id":"a06","who":"R","text":"Non c'è nessun carico scritto, e gli esercizi cambiano prima di poter progredire.","cfg":0.4},
- {"n":707,"id":"a07","who":"R","text":"Così non puoi sapere se stai migliorando.","cfg":0.4},
- {"n":708,"id":"a08","who":"R","text":"La prima cosa che controllo è quanti giorni hai davvero a disposizione.","cfg":0.4},
- {"n":709,"id":"a09","who":"R","text":"Poi faccio tre modifiche.","cfg":0.4},
- {"n":710,"id":"a10","who":"R","text":"Uno: ogni muscolo almeno due volte a settimana, con sedute complete.","cfg":0.4},
- {"n":711,"id":"a11","who":"R","text":"Due: pochi esercizi fondamentali, gli stessi per qualche settimana.","cfg":0.4},
- {"n":712,"id":"a12","who":"R","text":"Tre: accanto a ogni esercizio, carichi e ripetizioni da battere.","cfg":0.4},
- {"n":713,"id":"a13","who":"R","text":"Così ogni seduta ti dice se stai progredendo.","cfg":0.4},
- {"n":714,"id":"a14","who":"R","text":"È lo stesso controllo che faccio nell'analisi gratuita: guardo la tua scheda e ti dico cosa cambiare.","cfg":0.4},
- {"n":715,"id":"a15","who":"R","text":"Vuoi che guardi la tua? Scrivimi analisi in direct.","cfg":0.4,"exag":0.6}
+ {
+  "n": 701,
+  "id": "a01",
+  "who": "R",
+  "text": "Questa è una scheda che vedo quasi ogni settimana.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 702,
+  "id": "a02",
+  "who": "R",
+  "text": "Ecco cosa cambierei, in un minuto.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 703,
+  "id": "a03",
+  "who": "R",
+  "text": "Lunedì petto, martedì schiena, mercoledì gambe, e ogni giorno sei esercizi diversi.",
+  "cfg": 0.4
+ },
+ {
+  "n": 704,
+  "id": "a04",
+  "who": "R",
+  "text": "Sembra completa, ma dopo tre mesi il fisico è sempre uguale.",
+  "cfg": 0.4
+ },
+ {
+  "n": 705,
+  "id": "a05",
+  "who": "R",
+  "text": "Il motivo è semplice: ogni muscolo viene allenato una sola volta a settimana.",
+  "cfg": 0.4
+ },
+ {
+  "n": 706,
+  "id": "a06",
+  "who": "R",
+  "text": "Non c'è nessun carico scritto, e gli esercizi cambiano prima di poter progredire.",
+  "cfg": 0.4
+ },
+ {
+  "n": 707,
+  "id": "a07",
+  "who": "R",
+  "text": "Così non puoi sapere se stai migliorando.",
+  "cfg": 0.4
+ },
+ {
+  "n": 708,
+  "id": "a08",
+  "who": "R",
+  "text": "La prima cosa che controllo è quanti giorni hai davvero a disposizione.",
+  "cfg": 0.4
+ },
+ {
+  "n": 709,
+  "id": "a09",
+  "who": "R",
+  "text": "Poi faccio tre modifiche.",
+  "cfg": 0.4
+ },
+ {
+  "n": 710,
+  "id": "a10",
+  "who": "R",
+  "text": "Uno: ogni muscolo almeno due volte a settimana, con sedute complete.",
+  "cfg": 0.4
+ },
+ {
+  "n": 711,
+  "id": "a11",
+  "who": "R",
+  "text": "Due: pochi esercizi fondamentali, gli stessi per qualche settimana.",
+  "cfg": 0.4
+ },
+ {
+  "n": 712,
+  "id": "a12",
+  "who": "R",
+  "text": "Tre: accanto a ogni esercizio, carichi e ripetizioni da battere.",
+  "cfg": 0.4
+ },
+ {
+  "n": 713,
+  "id": "a13",
+  "who": "R",
+  "text": "Così ogni seduta ti dice se stai progredendo.",
+  "cfg": 0.4
+ },
+ {
+  "n": 714,
+  "id": "a14",
+  "who": "R",
+  "text": "È lo stesso controllo che faccio nell'analisi gratuita: guardo la tua scheda e ti dico cosa cambiare.",
+  "cfg": 0.4
+ },
+ {
+  "n": 715,
+  "id": "a15",
+  "who": "R",
+  "text": "Vuoi che guardi la tua? Scrivimi analisi in privato.",
+  "cfg": 0.4,
+  "exag": 0.6
+ }
 ]

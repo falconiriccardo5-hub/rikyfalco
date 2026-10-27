@@ -374,8 +374,8 @@ const S15: React.FC<{a: number; b: number}> = ({a, b}) => {
   return (
     <AbsoluteFill>
       <World cam={{z: 1, cx: 540, cy: 960}} mat={false}>
-        <circle cx={300} cy={1250} r={260 * pin} fill={C.blue} />
-        <Riky x={300} y={mix(1800, 1640, pin)} scale={0.78} flip={false} mouth={talk} smile={0.9} brow={6} armR={{hand: [700, 560 + Math.sin(t * 4) * 20]}} />
+        <circle cx={300} cy={1080} r={250 * pin} fill={C.blue} />
+        <Riky x={300} y={mix(1700, 1450, pin)} scale={0.74} flip={false} mouth={talk} smile={0.9} brow={6} armR={{hand: [700, 560 + Math.sin(t * 4) * 20]}} />
       </World>
       <div style={{position: 'absolute', left: 60, right: 60, top: 130, display: 'flex', flexDirection: 'column', gap: 12, transform: `scale(${pin})`}}>
         <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 60, color: C.ink, letterSpacing: -1}}>COSÌ LAVORO</div>
@@ -406,8 +406,8 @@ const S16: React.FC<{a: number}> = ({a}) => {
   return (
     <AbsoluteFill>
       <World cam={{z: 1, cx: 540, cy: 960}} mat={false}>
-        <circle cx={540} cy={1330} r={330 * pin} fill={C.blue} />
-        <Riky x={540} y={mix(1900, 1720, pin)} scale={0.86} mouth={talk} smile={1} brow={8} armR={{hand: [650 + wave, 380]}} tilt={Math.sin(t * 3) * 2} />
+        <circle cx={540} cy={1170} r={320 * pin} fill={C.blue} />
+        <Riky x={540} y={mix(1800, 1560, pin)} scale={0.8} mouth={talk} smile={1} brow={8} armR={{hand: [650 + wave, 380]}} tilt={Math.sin(t * 3) * 2} />
       </World>
       <KeywordCTA t0={w[6] - 0.1} word="ANALISI" />
       <Handle t0={w[9]} top={720} />
@@ -440,7 +440,7 @@ const buildCaps = (): CapLine[] => {
     q15: [8, 11, 17],
     q16: [7],
   };
-  const DISPLAY: Record<string, string> = {q16: 'Vuoi che guardi il tuo squat? Scrivimi ANALISI in DM.'};
+  const DISPLAY: Record<string, string> = {q16: 'Vuoi che guardi il tuo squat? Scrivimi ANALISI in privato.'};
   const small = Object.entries(meta)
     .map(([slot, hl]) => {
       const x = v(slot);

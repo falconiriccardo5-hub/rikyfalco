@@ -1,0 +1,130 @@
+[
+ {
+  "slot": "q01",
+  "id": "q01",
+  "who": "R",
+  "text": "Ti fa male la schiena dopo lo squat?",
+  "at": 0.3,
+  "speed": 1.12
+ },
+ {
+  "slot": "q02",
+  "id": "q02",
+  "who": "R",
+  "text": "Il problema non è lo squat.",
+  "at": 1.97,
+  "speed": 1.12
+ },
+ {
+  "slot": "q03",
+  "id": "q03",
+  "who": "R",
+  "text": "Fai qualche serie, senti tirare in basso, e il giorno dopo la zona lombare è rigida.",
+  "at": 3.66,
+  "speed": 1.12
+ },
+ {
+  "slot": "q04",
+  "id": "q04",
+  "who": "R",
+  "text": "Così riduci il peso, o smetti di fare squat.",
+  "at": 8.25,
+  "speed": 1.12
+ },
+ {
+  "slot": "q05",
+  "id": "q05",
+  "who": "R",
+  "text": "Ma evitarlo non risolve niente.",
+  "at": 11.2,
+  "speed": 1.12
+ },
+ {
+  "slot": "q06",
+  "id": "q06",
+  "who": "R",
+  "text": "Quasi sempre il dolore arriva da tre errori che spostano il carico dalle gambe alla schiena.",
+  "at": 13.6,
+  "speed": 1.12
+ },
+ {
+  "slot": "q07",
+  "id": "q07",
+  "who": "R",
+  "text": "E più aumenti il peso, più quel carico cresce.",
+  "at": 18.52,
+  "speed": 1.12
+ },
+ {
+  "slot": "q08",
+  "id": "q08",
+  "who": "R",
+  "text": "Prima di tutto, filmati di lato e controlla tre cose.",
+  "at": 21.66,
+  "speed": 1.12
+ },
+ {
+  "slot": "q09",
+  "id": "q09",
+  "who": "R",
+  "text": "Uno: i talloni si alzano. Il peso va sulle punte e il busto cade in avanti.",
+  "at": 24.88,
+  "speed": 1.12
+ },
+ {
+  "slot": "q10",
+  "id": "q10",
+  "who": "R",
+  "text": "Tieni tutto il piede ben appoggiato a terra.",
+  "at": 29.8,
+  "speed": 1.12
+ },
+ {
+  "slot": "q11",
+  "id": "q11",
+  "who": "R",
+  "text": "Due: in fondo al movimento il bacino si arrotonda.",
+  "at": 32.49,
+  "speed": 1.12
+ },
+ {
+  "slot": "q12",
+  "id": "q12",
+  "who": "R",
+  "text": "Scendi solo fin dove la schiena resta neutra.",
+  "at": 35.84,
+  "speed": 1.12
+ },
+ {
+  "slot": "q13",
+  "id": "q13",
+  "who": "R",
+  "text": "Tre: non blocchi il tronco. Prendi aria, stringi l'addome, poi scendi.",
+  "at": 38.88,
+  "speed": 1.12
+ },
+ {
+  "slot": "q14",
+  "id": "q14",
+  "who": "R",
+  "text": "Così lavorano le gambe, e la schiena resta protetta.",
+  "at": 43.54,
+  "speed": 1.12
+ },
+ {
+  "slot": "q15",
+  "id": "q15",
+  "who": "R",
+  "text": "È quello che faccio con i miei clienti: guardo il video, correggo un dettaglio alla volta e misuriamo i progressi.",
+  "at": 47.3,
+  "speed": 1.12
+ },
+ {
+  "slot": "q16",
+  "id": "q16",
+  "who": "R",
+  "text": "Vuoi che guardi il tuo squat? Scrivimi analisi in privato.",
+  "at": 53.19,
+  "speed": 1.12
+ }
+]

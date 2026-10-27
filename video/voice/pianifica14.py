@@ -21,7 +21,7 @@ TAKES = [
     ("q13", "q13", "R", "Tre: non blocchi il tronco. Prendi aria, stringi l'addome, poi scendi.", 1.12, None),
     ("q14", "q14", "R", 'Così lavorano le gambe, e la schiena resta protetta.', 1.12, None),
     ("q15", "q15", "R", 'È quello che faccio con i miei clienti: guardo il video, correggo un dettaglio alla volta e misuriamo i progressi.', 1.12, None),
-    ("q16", "q16", "R", 'Vuoi che guardi il tuo squat? Scrivimi analisi in direct.', 1.12, None),
+    ("q16", "q16", "R", 'Vuoi che guardi il tuo squat? Scrivimi analisi in privato.', 1.12, None),
 ]
 GAP = {"q01": 0.25, "q02": 0.45, "q03": 0.25, "q04": 0.45, "q05": 0.3, "q06": 0.3, "q07": 0.5, "q08": 0.45, "q09": 0.25, "q10": 0.45, "q11": 0.25, "q12": 0.45, "q13": 0.35, "q14": 0.5, "q15": 0.5}
 

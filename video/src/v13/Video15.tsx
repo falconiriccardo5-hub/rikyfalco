@@ -453,8 +453,8 @@ const Cta: React.FC<{a: number}> = ({a}) => {
   return (
     <Paper>
       <svg width={VW} height={VH} style={{position: 'absolute', left: 0, top: 0}}>
-        <circle cx={540} cy={1330} r={330 * pin} fill={C.blue} />
-        <Riky x={540} y={mix(1900, 1720, pin)} scale={0.86} mouth={useTalk(ER)} smile={1} brow={8} armR={{hand: [650 + wave, 380]}} tilt={Math.sin(t * 3) * 2} />
+        <circle cx={540} cy={1170} r={320 * pin} fill={C.blue} />
+        <Riky x={540} y={mix(1800, 1560, pin)} scale={0.8} mouth={useTalk(ER)} smile={1} brow={8} armR={{hand: [650 + wave, 380]}} tilt={Math.sin(t * 3) * 2} />
       </svg>
       <KeywordCTA t0={w[5] - 0.1} word="ANALISI" />
       <Handle t0={w[8]} top={720} />
