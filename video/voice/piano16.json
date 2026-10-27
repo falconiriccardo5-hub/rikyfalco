@@ -1,0 +1,130 @@
+[
+ {
+  "slot": "b01",
+  "id": "b01",
+  "who": "R",
+  "text": "Ti alleni con costanza, ma il tuo fisico è fermo da mesi?",
+  "at": 0.3,
+  "speed": 1.12
+ },
+ {
+  "slot": "b02",
+  "id": "b02",
+  "who": "R",
+  "text": "Ci sono cinque segnali che te lo dicono.",
+  "at": 3.63,
+  "speed": 1.12
+ },
+ {
+  "slot": "b03",
+  "id": "b03",
+  "who": "R",
+  "text": "Vai in palestra tre volte a settimana, sudi, completi tutte le serie.",
+  "at": 6.14,
+  "speed": 1.12
+ },
+ {
+  "slot": "b04",
+  "id": "b04",
+  "who": "R",
+  "text": "Eppure allo specchio non cambia niente.",
+  "at": 10.27,
+  "speed": 1.12
+ },
+ {
+  "slot": "b05",
+  "id": "b05",
+  "who": "R",
+  "text": "Non è pigrizia, e non è genetica.",
+  "at": 13.02,
+  "speed": 1.12
+ },
+ {
+  "slot": "b06",
+  "id": "b06",
+  "who": "R",
+  "text": "Quando il corpo riceve sempre lo stesso stimolo, si adatta e smette di cambiare.",
+  "at": 15.17,
+  "speed": 1.12
+ },
+ {
+  "slot": "b07",
+  "id": "b07",
+  "who": "R",
+  "text": "Non ti stai più allenando per migliorare: stai solo mantenendo.",
+  "at": 19.45,
+  "speed": 1.12
+ },
+ {
+  "slot": "b08",
+  "id": "b08",
+  "who": "R",
+  "text": "Ecco i cinque segnali.",
+  "at": 23.12,
+  "speed": 1.12
+ },
+ {
+  "slot": "b09",
+  "id": "b09",
+  "who": "R",
+  "text": "Uno: usi gli stessi pesi da più di un mese.",
+  "at": 24.58,
+  "speed": 1.12
+ },
+ {
+  "slot": "b10",
+  "id": "b10",
+  "who": "R",
+  "text": "Due: finisci le serie con tante ripetizioni ancora in canna.",
+  "at": 27.61,
+  "speed": 1.12
+ },
+ {
+  "slot": "b11",
+  "id": "b11",
+  "who": "R",
+  "text": "Tre: non scrivi carichi e ripetizioni.",
+  "at": 31.46,
+  "speed": 1.12
+ },
+ {
+  "slot": "b12",
+  "id": "b12",
+  "who": "R",
+  "text": "Quattro: cambi scheda spesso, ma senza un criterio.",
+  "at": 33.91,
+  "speed": 1.12
+ },
+ {
+  "slot": "b13",
+  "id": "b13",
+  "who": "R",
+  "text": "Cinque: dormi poco e recuperi male.",
+  "at": 37.38,
+  "speed": 1.12
+ },
+ {
+  "slot": "b14",
+  "id": "b14",
+  "who": "R",
+  "text": "Se ne riconosci almeno due, ti serve una progressione chiara.",
+  "at": 40.17,
+  "speed": 1.12
+ },
+ {
+  "slot": "b15",
+  "id": "b15",
+  "who": "R",
+  "text": "Nei miei percorsi parto proprio da qui: dati, progressione e controlli regolari.",
+  "at": 43.6,
+  "speed": 1.12
+ },
+ {
+  "slot": "b16",
+  "id": "b16",
+  "who": "R",
+  "text": "Quanti segnali hai riconosciuto? Scrivimi analisi in privato.",
+  "at": 48.75,
+  "speed": 1.12
+ }
+]

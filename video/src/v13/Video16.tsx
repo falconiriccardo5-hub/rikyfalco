@@ -85,8 +85,8 @@ const FiveDots: React.FC<{a: number; b: number}> = ({a, b}) => {
   const p = enter(t, a);
   return (
     <Paper>
-      <RikyAt circle arm="point" y={1560} />
-      <div style={{position: 'absolute', left: 0, right: 0, top: 260, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: `scale(${p})`}}>
+      <RikyAt circle arm="point" y={1680} />
+      <div style={{position: 'absolute', left: 0, right: 0, top: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', transform: `scale(${p})`}}>
         <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 330, lineHeight: 0.9, color: C.blue, WebkitTextStroke: `14px ${C.ink}`, paintOrder: 'stroke fill', textShadow: `14px 14px 0 ${C.ink}`}}>5</div>
         <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 92, color: C.ink, letterSpacing: -2}}>SEGNALI</div>
         <div style={{display: 'flex', gap: 22, marginTop: 20}}>
@@ -216,7 +216,7 @@ const SignalIcon: React.FC<{k: string; t: number; a: number}> = ({k, t, a}) => {
     return (
       <div style={{display: 'flex', gap: 16, justifyContent: 'center'}}>
         {['SETT 1', 'SETT 2', 'SETT 3', 'SETT 4', 'SETT 5'].map((s, i) => (
-          <div key={i} style={{width: 160, ...cardStyle('#fff', 7), overflow: 'hidden', textAlign: 'center', fontFamily: FONT, fontWeight: 900, opacity: prog(t, a + 0.3 + i * 0.18, a + 0.5 + i * 0.18), transform: `translateY(${(1 - prog(t, a + 0.3 + i * 0.18, a + 0.5 + i * 0.18)) * 40}px)`}}>
+          <div key={i} style={{width: 150, ...cardStyle('#fff', 7), overflow: 'hidden', textAlign: 'center', fontFamily: FONT, fontWeight: 900, opacity: prog(t, a + 0.3 + i * 0.18, a + 0.5 + i * 0.18), transform: `translateY(${(1 - prog(t, a + 0.3 + i * 0.18, a + 0.5 + i * 0.18)) * 40}px)`}}>
             <div style={{background: C.ink, color: '#fff', fontSize: 24, padding: '4px 0'}}>{s}</div>
             <div style={{fontSize: 56, color: C.red, padding: '10px 0'}}>8 kg</div>
           </div>
@@ -292,7 +292,7 @@ const Signal: React.FC<{a: number; b: number; i: number}> = ({a, b, i}) => {
         ))}
       </div>
       <StepCard n={i + 1} title={s.title} t0={a + 0.05} bad top={190} />
-      <div style={{position: 'absolute', left: 0, right: 0, top: 520}}>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 580, transform: 'scale(1.15)', transformOrigin: '50% 0'}}>
         <SignalIcon k={s.icon} t={t} a={a} />
       </div>
       <RikyAt x={930} y={1560} scale={0.42} flip smile={0.2} brow={10} />
@@ -313,7 +313,7 @@ const Checklist: React.FC<{a: number; b: number}> = ({a, b}) => {
           return (
             <div key={i} style={{display: 'flex', alignItems: 'center', gap: 20, ...cardStyle('#fff', 7), padding: '16px 22px'}}>
               <div style={{width: 58, height: 58, borderRadius: 14, border: `${OUT - 1}px solid ${C.ink}`, background: on ? C.red : '#fff', color: '#fff', fontFamily: FONT, fontWeight: 900, fontSize: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{on ? '✓' : ''}</div>
-              <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 38, color: C.ink}}>{s.title}</div>
+              <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 42, color: C.ink}}>{s.title}</div>
             </div>
           );
         })}

@@ -32,11 +32,11 @@ const arm = {up: {hand: [273, 822] as [number, number]}, hip: {hand: [205, 760] 
 export const DECKS: Record<string, Slide[]> = {
   dodici: [
     {kind: 'cover', kicker: 'DIETRO LE QUINTE', title: 'LE PRIME 12 SETTIMANE DI UN PERCORSO', sub: 'Cosa succede, settimana per settimana. Senza promesse miracolose.', riky: {smile: 0.9, brow: 6}},
-    {kind: 'step', n: '0', title: 'ANALISI', sub: 'Obiettivo, livello, tempo disponibile, infortuni. Mi mandi il video di 2–3 esercizi e partiamo da dati reali.', riky: {smile: 0.7, brow: 6}},
-    {kind: 'step', n: '1–2', title: 'BASI E TECNICA', sub: 'Impari bene gli esercizi fondamentali con carichi prudenti. Iniziamo a registrare pesi e ripetizioni.', riky: {smile: 0.8}},
-    {kind: 'step', n: '3–6', title: 'PROGRESSIONE', sub: 'Carichi o ripetizioni salgono settimana dopo settimana. Ogni 2 settimane controlliamo la tecnica sui video.', riky: {smile: 1, brow: 8}},
-    {kind: 'step', n: '7', title: 'CONTROLLO', sub: 'Misure, foto e numeri a confronto. Quello che funziona resta, il resto si cambia.', riky: {smile: 0.6, brow: 10}},
-    {kind: 'step', n: '8–12', title: 'CONSOLIDAMENTO', sub: 'La progressione continua, introduciamo varianti mirate e una settimana di scarico se serve.', riky: {smile: 1}},
+    {kind: 'step', kicker: 'SETTIMANA', n: '0', title: 'ANALISI', sub: 'Obiettivo, livello, tempo disponibile, infortuni. Mi mandi il video di 2–3 esercizi e partiamo da dati reali.', riky: {smile: 0.7, brow: 6}},
+    {kind: 'step', kicker: 'SETTIMANE', n: '1–2', title: 'BASI E TECNICA', sub: 'Impari bene gli esercizi fondamentali con carichi prudenti. Iniziamo a registrare pesi e ripetizioni.', riky: {smile: 0.8}},
+    {kind: 'step', kicker: 'SETTIMANE', n: '3–6', title: 'PROGRESSIONE', sub: 'Carichi o ripetizioni salgono settimana dopo settimana. Ogni 2 settimane controlliamo la tecnica sui video.', riky: {smile: 1, brow: 8}},
+    {kind: 'step', kicker: 'SETTIMANA', n: '7', title: 'CONTROLLO', sub: 'Misure, foto e numeri a confronto. Quello che funziona resta, il resto si cambia.', riky: {smile: 0.6, brow: 10}},
+    {kind: 'step', kicker: 'SETTIMANE', n: '8–12', title: 'CONSOLIDAMENTO', sub: 'La progressione continua, introduciamo varianti mirate e una settimana di scarico se serve.', riky: {smile: 1}},
     {kind: 'check', title: 'COSA MISURIAMO OGNI SETTIMANA', items: ['Carichi e ripetizioni', 'Video della tecnica', 'Misure e foto', 'Energia e sonno', 'Sedute completate']},
     {kind: 'cta', title: 'VUOI PARTIRE DALLA SETTIMANA 0?', sub: 'Scrivimi ANALISI in DM: è il primo passo ed è gratuito.', riky: {smile: 1, mouth: 0.4}},
   ],
@@ -197,7 +197,7 @@ export const CarouselSlide: React.FC<{deck: string; index: number}> = ({deck, in
 
       {s.kind === 'step' && (
         <>
-          <div style={{position: 'absolute', left: 72, top: 150, ...wrap, fontSize: 38, color: C.blue, letterSpacing: 4}}>PASSO</div>
+          <div style={{position: 'absolute', left: 72, top: 150, ...wrap, fontSize: 38, color: C.blue, letterSpacing: 4}}>{s.kicker ?? 'PASSO'}</div>
           <div style={{position: 'absolute', left: 60, top: 170, ...wrap, fontSize: 330, color: C.blue, lineHeight: 1, letterSpacing: -10}}>{s.n}</div>
           <div style={{position: 'absolute', left: 72, width: 650, top: 520, ...wrap, fontSize: 80, color: fg}}>{s.title}</div>
           <div style={{position: 'absolute', left: 72, width: 520, top: 740, fontFamily: FONT, fontWeight: 700, fontSize: 38, lineHeight: 1.32, color: fg, opacity: 0.85}}>{s.sub}</div>
@@ -209,7 +209,7 @@ export const CarouselSlide: React.FC<{deck: string; index: number}> = ({deck, in
       )}
       {big && (
         <>
-          <div style={{position: 'absolute', left: 72, top: s.kind === 'cover' ? 200 : 240, width: 650, ...wrap, fontSize: s.kind === 'cover' ? 92 : 90, color: fg}}>{s.title}</div>
+          <div style={{position: 'absolute', left: 72, top: s.kind === 'cover' ? 200 : 240, width: 650, ...wrap, fontSize: s.title.length > 34 ? 78 : s.kind === 'cover' ? 92 : 90, color: fg}}>{s.title}</div>
           <div style={{position: 'absolute', left: 72, width: 560, top: s.kind === 'cover' ? 820 : 780, fontFamily: FONT, fontWeight: 700, fontSize: 42, lineHeight: 1.3, color: C.blueL}}>{s.sub}</div>
           {s.kind === 'cta' && (
             <div style={{position: 'absolute', left: 72, bottom: 140, padding: '20px 40px', background: C.blue, color: C.cream, border: `6px solid ${C.cream}`, borderRadius: 24, fontFamily: FONT, fontWeight: 900, fontSize: 72, letterSpacing: 2}}>ANALISI</div>
