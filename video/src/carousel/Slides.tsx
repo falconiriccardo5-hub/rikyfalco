@@ -43,7 +43,7 @@ export const DECKS: Record<string, Slide[]> = {
   analisi: [
     {kind: 'cover', kicker: 'COME FUNZIONA', title: 'COSA SUCCEDE QUANDO MI SCRIVI “ANALISI”', sub: '4 passi. Gratis e senza impegno.', riky: {smile: 1, brow: 6}},
     {kind: 'step', n: 1, title: 'MI SCRIVI ANALISI', sub: 'Una parola in DM. Niente moduli lunghi, niente call obbligatorie.', riky: {smile: 0.8}},
-    {kind: 'step', n: 2, title: 'TI FACCIO QUALCHE DOMANDA', sub: 'Obiettivo, livello, giorni disponibili ed eventuali dolori.', riky: {smile: 0.7, brow: 6}},
+    {kind: 'step', n: 2, title: 'POCHE DOMANDE', sub: 'Obiettivo, livello, giorni disponibili ed eventuali dolori.', riky: {smile: 0.7, brow: 6}},
     {kind: 'step', n: 3, title: 'MI MANDI 1–2 VIDEO', sub: 'Un esercizio che fai spesso, ripreso di lato. Bastano 30 secondi.', riky: {smile: 0.8, brow: 8}},
     {kind: 'step', n: 4, title: 'RICEVI LA TUA ANALISI', sub: 'Ti dico cosa funziona, cosa cambiare e da dove partire. Poi decidi tu se continuare con me.', riky: {smile: 1}},
     {kind: 'check', title: 'COSA NON SUCCEDE', items: ['Zero obblighi di acquisto', 'Zero schede copia-incolla', 'Zero risposte automatiche', 'Zero giudizi sul tuo livello']},
