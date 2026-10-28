@@ -12,11 +12,14 @@ Riferimenti in `video/refs/` (fronte · tre quarti · profilo · retro, versioni
 5. `05-studio-rf-coaching.webp` — **lo studio personal**: parete crema/beige, zoccolo petrolio con battiscopa in legno, finestra grande con cielo e alberi, quadro "RF COACHING" con manubrio viola, orologio da parete in legno, rastrelliera manubri esagonali con tappi colorati, kettlebell giallo e petrolio, tappetini arrotolati (verde/viola) in cassetta di legno, listelli verticali in legno, specchio, panca regolabile blu, pianta, pavimento in piastrelle gommate scure, tappetino corallo.
 
 ## Come animare i personaggi (REGOLA)
-- I personaggi vanno usati **esattamente come nelle immagini di riferimento**: niente ricostruzioni con forme geometriche.
-- Metodo: ritaglio dai riferimenti (`video/tools/rig/ext.py`, rembg `isnet-anime`) → marionetta a pezzi con pivot sulle articolazioni
-  (`tools/rig/rig_gprof.py` per la ragazza di profilo, `tools/rig/rig_r.py` per Riccardo fronte/tre quarti e ragazza tre quarti)
-  → pezzi in `video/public/rig/`, articolazioni in `video/src/v3d/rigs/*.json` → componente `video/src/v3d/puppet.tsx`.
-- Studio 3D (`src/v3d/studio.tsx`) come ambiente; le marionette sono proiettate nella scena (`Video21.tsx` è il modello da seguire).
+- Stile: **cartone animato 2D** (niente 3D, niente marionette a pezzi). Il cliente lo ha chiesto esplicitamente.
+- I personaggi sono **le tavole 2D originali** (riga "2D" dei riferimenti), vettorializzate e deformate su uno scheletro
+  (tecnica Live2D/Spine: braccia e gambe si piegano in modo continuo, senza tagli).
+  1. `video/tools/toon/trace2d.py` — vettorializza le viste 2D (vtracer) e le rasterizza ad alta risoluzione;
+  2. `video/tools/toon/alpha.py` — scontorno pulito (rembg + flood fill, alone eroso);
+  3. `video/tools/toon/rig2d.py` — mesh + pesi + ossa → `video/public/toon/*.png`, `video/src/toon/rigs/*.json`.
+- Motore: `video/src/toon/engine.ts` (pose, IK squat, skinning) + `video/src/toon/Stage.tsx` (sfondo studio 2D, personaggi, bocca/occhi).
+- Sfondo: studio vettorializzato dal riferimento (`video/public/toon/studio.png`). Modello da seguire: `video/src/toon/Video22.tsx`.
 
 ## Brand
 - Colori: viola `#6D3BD2` (principale), nero `#111`, bianco. Rosso `#E5484D` solo per errori.

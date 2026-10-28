@@ -1,4 +1,6 @@
 import React from 'react';
+import {Video22, DURATION22} from './toon/Video22';
+import {ToonTest} from './toon/ToonTest';
 import {Composition} from 'remotion';
 import {Video11, DURATION} from './Video11';
 import {Video12, DURATION12} from './v12/Video12';
@@ -35,6 +37,8 @@ export const Root: React.FC = () => (
   <Composition id="SquatTest" component={SquatTest} durationInFrames={1} fps={30} width={1920} height={1080} />
   <Composition id="Video20" component={Video20} durationInFrames={DURATION20} fps={30} width={1080} height={1920} />
   <Composition id="Video21" component={Video21} durationInFrames={DURATION21} fps={30} width={1080} height={1920} />
+  <Composition id="Video22" component={Video22} durationInFrames={DURATION22} fps={30} width={1080} height={1920} />
+  <Composition id="ToonTest" component={ToonTest} durationInFrames={7} fps={30} width={1080} height={1920} />
   <Composition id="Test3D" component={Test3D} durationInFrames={30} fps={30} width={1080} height={1920} />
   <Composition id="GirlTest" component={GirlTest} durationInFrames={1} fps={30} width={1920} height={1080} />
   </>
