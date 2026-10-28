@@ -10,6 +10,6 @@ const comp = await selectComposition({serveUrl, id: process.env.COMP || 'Video11
 for (const a of args) {
   const frame = a.startsWith('f') ? Number(a.slice(1)) : Math.round(Number(a) * 30);
   const out = `out/${process.env.PFX || 'still'}_${String(frame).padStart(4, '0')}.jpg`;
-  await renderStill({composition: comp, serveUrl, output: out, frame, browserExecutable, imageFormat: 'jpeg', jpegQuality: 85});
+  await renderStill({composition: comp, serveUrl, output: out, frame, browserExecutable, imageFormat: 'jpeg', jpegQuality: 85, chromiumOptions: {gl: 'swangle'}});
   console.log('ok', out);
 }

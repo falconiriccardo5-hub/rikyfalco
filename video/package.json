@@ -8,11 +8,15 @@
     "render": "remotion render src/index.ts Video11 out/video-11-ti-alleni-da-mesi.mp4 --codec=h264 --crf=16"
   },
   "dependencies": {
+    "@react-three/fiber": "8.17.10",
     "@remotion/cli": "^4.0.534",
+    "@remotion/three": "4.0.534",
     "@types/react": "^18.3.31",
+    "@types/three": "0.169.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "remotion": "^4.0.534",
+    "three": "0.169.0",
     "typescript": "^7.0.2"
   }
 }

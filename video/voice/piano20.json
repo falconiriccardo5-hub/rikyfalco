@@ -1,0 +1,117 @@
+[
+ {
+  "slot": "s01",
+  "id": "s01",
+  "who": "G",
+  "text": "Riccardo, ogni volta che faccio squat mi fa male la schiena!",
+  "at": 0.3,
+  "speed": 1.0,
+  "pitch": 1.0
+ },
+ {
+  "slot": "s02",
+  "id": "s02",
+  "who": "R",
+  "text": "Tranquilla: il problema non è lo squat.",
+  "at": 3.72,
+  "speed": 1.12
+ },
+ {
+  "slot": "s03",
+  "id": "s03",
+  "who": "G",
+  "text": "Faccio qualche serie, sento tirare in basso, e il giorno dopo sono tutta rigida.",
+  "at": 6.41,
+  "speed": 1.0,
+  "pitch": 1.0
+ },
+ {
+  "slot": "s04",
+  "id": "s04",
+  "who": "R",
+  "text": "E allora abbassi il peso, o smetti proprio di farlo, vero?",
+  "at": 10.95,
+  "speed": 1.12
+ },
+ {
+  "slot": "q05",
+  "id": "q05",
+  "who": "R",
+  "text": "Ma evitarlo non risolve niente.",
+  "at": 14.31,
+  "speed": 1.12
+ },
+ {
+  "slot": "q06",
+  "id": "q06",
+  "who": "R",
+  "text": "Quasi sempre il dolore arriva da tre errori che spostano il carico dalle gambe alla schiena.",
+  "at": 16.66,
+  "speed": 1.12
+ },
+ {
+  "slot": "q07",
+  "id": "q07",
+  "who": "R",
+  "text": "E più aumenti il peso, più quel carico cresce.",
+  "at": 21.58,
+  "speed": 1.12
+ },
+ {
+  "slot": "s08",
+  "id": "s08",
+  "who": "R",
+  "text": "Fai una serie: ti riprendo di lato.",
+  "at": 24.78,
+  "speed": 1.12
+ },
+ {
+  "slot": "s09",
+  "id": "s09",
+  "who": "R",
+  "text": "Uno: i talloni si alzano e il busto cade in avanti. Tieni tutto il piede a terra.",
+  "at": 26.94,
+  "speed": 1.12
+ },
+ {
+  "slot": "s10",
+  "id": "s10",
+  "who": "R",
+  "text": "Due: in fondo il bacino si arrotonda. Scendi solo fin dove la schiena resta neutra.",
+  "at": 31.58,
+  "speed": 1.12
+ },
+ {
+  "slot": "s11",
+  "id": "s11",
+  "who": "R",
+  "text": "Tre: prima di scendere, prendi aria e stringi l'addome.",
+  "at": 36.83,
+  "speed": 1.12
+ },
+ {
+  "slot": "s12",
+  "id": "s12",
+  "who": "G",
+  "text": "Wow! Adesso lavorano le gambe, e la schiena non tira più!",
+  "at": 40.31,
+  "speed": 1.0,
+  "pitch": 1.0
+ },
+ {
+  "slot": "q15",
+  "id": "q15",
+  "who": "R",
+  "text": "È quello che faccio con i miei clienti: guardo il video, correggo un dettaglio alla volta e misuriamo i progressi.",
+  "at": 43.55,
+  "speed": 1.12
+ },
+ {
+  "slot": "q16",
+  "id": "q16",
+  "who": "R",
+  "text": "Vuoi che guardi il tuo squat? Scrivimi analisi in privato.",
+  "at": 49.44,
+  "speed": 1.12
+ }
+]
