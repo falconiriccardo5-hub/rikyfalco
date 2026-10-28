@@ -12,6 +12,7 @@ import {Video19, DURATION19} from './v13/Video19';
 import {Test3D} from './v3d/Test3D';
 import {Cast} from './v3d/Cast';
 import {Video20, DURATION20} from './v3d/Video20';
+import {Video21, DURATION21} from './v3d/Video21';
 import {SquatTest} from './v3d/SquatTest';
 import {GirlTest} from './v13/Test';
 import {CarouselSlide, SW, SH} from './carousel/Slides';
@@ -33,6 +34,7 @@ export const Root: React.FC = () => (
   <Composition id="Cast2" component={Cast} durationInFrames={1} fps={30} width={1080} height={1920} defaultProps={{view: 2}} />
   <Composition id="SquatTest" component={SquatTest} durationInFrames={1} fps={30} width={1920} height={1080} />
   <Composition id="Video20" component={Video20} durationInFrames={DURATION20} fps={30} width={1080} height={1920} />
+  <Composition id="Video21" component={Video21} durationInFrames={DURATION21} fps={30} width={1080} height={1920} />
   <Composition id="Test3D" component={Test3D} durationInFrames={30} fps={30} width={1080} height={1920} />
   <Composition id="GirlTest" component={GirlTest} durationInFrames={1} fps={30} width={1920} height={1080} />
   </>

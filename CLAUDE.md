@@ -11,6 +11,13 @@ Riferimenti in `video/refs/` (fronte · tre quarti · profilo · retro, versioni
 4. `04-mamma-con-figli.webp` — **la mamma con i figli** (vita quotidiana / poco tempo): mamma con coda castana, cardigan senape, maglia verde petrolio, jeans, borsa viola a tracolla; bambina con salopette corallo e mollettina viola; bambino con t-shirt verde salvia e pantaloncini blu.
 5. `05-studio-rf-coaching.webp` — **lo studio personal**: parete crema/beige, zoccolo petrolio con battiscopa in legno, finestra grande con cielo e alberi, quadro "RF COACHING" con manubrio viola, orologio da parete in legno, rastrelliera manubri esagonali con tappi colorati, kettlebell giallo e petrolio, tappetini arrotolati (verde/viola) in cassetta di legno, listelli verticali in legno, specchio, panca regolabile blu, pianta, pavimento in piastrelle gommate scure, tappetino corallo.
 
+## Come animare i personaggi (REGOLA)
+- I personaggi vanno usati **esattamente come nelle immagini di riferimento**: niente ricostruzioni con forme geometriche.
+- Metodo: ritaglio dai riferimenti (`video/tools/rig/ext.py`, rembg `isnet-anime`) → marionetta a pezzi con pivot sulle articolazioni
+  (`tools/rig/rig_gprof.py` per la ragazza di profilo, `tools/rig/rig_r.py` per Riccardo fronte/tre quarti e ragazza tre quarti)
+  → pezzi in `video/public/rig/`, articolazioni in `video/src/v3d/rigs/*.json` → componente `video/src/v3d/puppet.tsx`.
+- Studio 3D (`src/v3d/studio.tsx`) come ambiente; le marionette sono proiettate nella scena (`Video21.tsx` è il modello da seguire).
+
 ## Brand
 - Colori: viola `#6D3BD2` (principale), nero `#111`, bianco. Rosso `#E5484D` solo per errori.
 - Font: Inter Black/ExtraBold/Bold (`video/public/fonts`).
