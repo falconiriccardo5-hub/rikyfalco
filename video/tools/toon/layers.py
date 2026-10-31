@@ -11,8 +11,9 @@ import numpy as np, cv2
 from PIL import Image
 
 SRC = sys.argv[1] if len(sys.argv) > 1 else '.'
-OUT_PNG = '/home/user/rikyfalco/video/public/layers'
-OUT_JSON = '/home/user/rikyfalco/video/src/toon/layers'
+FIGMA = os.environ.get('FIGMA') == '1'  # variante per Figma: tutti livelli rigidi
+OUT_PNG = '/home/user/rikyfalco/video/public/layers' if not FIGMA else os.environ.get('FIGMA_OUT', '/tmp/figma_layers')
+OUT_JSON = '/home/user/rikyfalco/video/src/toon/layers' if not FIGMA else os.environ.get('FIGMA_OUT', '/tmp/figma_layers')
 os.makedirs(OUT_PNG, exist_ok=True)
 os.makedirs(OUT_JSON, exist_ok=True)
 INK = np.array([22, 20, 20], np.float32)
@@ -175,7 +176,7 @@ def girl_profile():
     hipR, kneeR = 95, 70
     tubeT = (yy >= 1040) & (yy <= 1320)
     glute = (((xx - 452) / 78.0) ** 2 + ((yy - 1048) / 80.0) ** 2) <= 1
-    pelvis = (fromHip <= 168) & ((yy <= 1045) | glute)
+    pelvis = (fromHip <= 168) & ((yy <= (990 if FIGMA else 1045)) | glute)
     gback = glute & (xx < 455) & (yy > 1000)
     thigh = ((tubeT | s.disc(J['hip'], hipR)) & ~gback) | s.disc(J['knee'], kneeR)
     tubeS = (yy >= 1320) & (yy <= 1565)
@@ -190,17 +191,28 @@ def girl_profile():
         wth = smooth(1005 + 50 * back, 1105 + 30 * back, y)
         wp = np.clip(1 - wt - wth, 0, 1)
         return np.stack([wt, wp, wth], 1)
-    s.group('legs', Sbody, C, [
-        dict(name='shin', bone='shin', region=shin, arcs=[(J['knee'], kneeR, tubeS)]),
-        dict(name='thigh', bone='thigh', region=tubeT | s.disc(J['hip'], hipR) | s.disc(J['knee'], kneeR), arcs=[(J['knee'], kneeR, tubeT)]),
-    ])
-    s.group('foot', Sbody, C, [dict(name='foot', bone='foot', region=foot)])
-    s.group('shorts', Sbody, C, [dict(name='shorts', region=shortsR, bones=['trunk', 'pelvis', 'thigh'], weights=w_shorts)])
-    s.group('upper', Sbody, C, [
-        dict(name='pony', bone='pony', region=pony),
-        dict(name='torso', bone='trunk', region=torso),
-        dict(name='head', bone='head', region=head),
-    ])
+    if FIGMA:
+        s.group('body', Sbody, C, [
+            dict(name='shin', bone='shin', region=shin, arcs=[(J['knee'], kneeR, tubeS)]),
+            dict(name='thigh', bone='thigh', region=thigh, arcs=[(J['knee'], kneeR, tubeT), (J['hip'], hipR, tubeT)]),
+            dict(name='pelvis', bone='pelvis', region=pelvis, arcs=[(glute, (yy <= 1045))]),
+            dict(name='torso', bone='trunk', region=torso),
+            dict(name='pony', bone='pony', region=pony),
+            dict(name='head', bone='head', region=head),
+            dict(name='foot', bone='foot', region=foot),
+        ])
+    else:
+        s.group('legs', Sbody, C, [
+            dict(name='shin', bone='shin', region=shin, arcs=[(J['knee'], kneeR, tubeS)]),
+            dict(name='thigh', bone='thigh', region=tubeT | s.disc(J['hip'], hipR) | s.disc(J['knee'], kneeR), arcs=[(J['knee'], kneeR, tubeT)]),
+        ])
+        s.group('foot', Sbody, C, [dict(name='foot', bone='foot', region=foot)])
+        s.group('shorts', Sbody, C, [dict(name='shorts', region=shortsR, bones=['trunk', 'pelvis', 'thigh'], weights=w_shorts)])
+        s.group('upper', Sbody, C, [
+            dict(name='pony', bone='pony', region=pony),
+            dict(name='torso', bone='trunk', region=torso),
+            dict(name='head', bone='head', region=head),
+        ])
     # braccio vicino: spalla, avambraccio, mano
     elR, wrR = 50, 40
     tubeU = yy <= J['elbow'][1]

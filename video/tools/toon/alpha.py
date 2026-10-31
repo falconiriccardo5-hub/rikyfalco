@@ -18,6 +18,7 @@ for n in ['rfront','rtq','gtq','gprof']:
     a=cv2.morphologyEx(a.astype(np.uint8),cv2.MORPH_OPEN,np.ones((3,3),np.uint8))
     num,lab,st,_=cv2.connectedComponentsWithStats(a)
     big=1+np.argmax(st[1:,cv2.CC_STAT_AREA]); a=(lab==big)
+    Image.fromarray(np.dstack([r,(a*255).astype(np.uint8)])).save(n+'_art0.png')
     a=cv2.erode(a.astype(np.uint8),np.ones((7,7),np.uint8))>0
     af=cv2.GaussianBlur(a.astype(np.float32),(0,0),0.8)
     Image.fromarray(np.dstack([r,(af*255).astype(np.uint8)])).save(n+'_art.png')
