@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aura Souls</title>
+<meta name="description" content="Aura Souls: un action RPG souls-like con Lucario come protagonista.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* Layout: canvas 3D fisso dietro capitoli che scorrono; una sezione "regioni" bloccata con scorrimento orizzontale. */
+:root{
+  --bg:#07080c; --fg:#e9e4d6; --muted:#9a9384; --aura:#4fa8ff; --ember:#ff7a2e; --line:#2b2a26;
+  --f-display:"Cinzel",Georgia,serif; --f-body:"Cormorant Garamond",Georgia,serif; --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:20px;line-height:1.55;overflow-x:hidden}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 40%,rgba(0,0,0,.75) 100%)}
+.bar{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--aura),var(--ember));transform-origin:0 50%;transform:scaleX(0);z-index:6}
+nav{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 14px max(20px,env(safe-area-inset-left,0px));
+  font-family:var(--f-mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+nav b{font-family:var(--f-display);font-weight:800;letter-spacing:.2em;font-size:14px}
+nav a{color:var(--fg);text-decoration:none;border:1px solid var(--line);padding:8px 14px;background:rgba(7,8,12,.6)}
+nav a:hover,nav a:focus-visible{border-color:var(--aura);color:var(--aura);outline:none}
+main{position:relative;z-index:2}
+.wrap{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));max-width:1180px;margin:0 auto;width:100%}
+section.ch{min-height:100vh;display:flex;align-items:center;padding-block:110px}
+.txt{max-width:31rem;display:grid;gap:16px}
+.right .txt{margin-left:auto}
+.center .txt{margin:0 auto;text-align:center;max-width:40rem}
+.tag{font-family:var(--f-mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--aura)}
+.tag.ember{color:var(--ember)}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.05;text-wrap:balance;font-weight:500}
+h1{font-size:clamp(3rem,10vw,7.5rem);font-weight:800;letter-spacing:.06em;text-shadow:0 0 40px rgba(79,168,255,.35)}
+h2{font-size:clamp(2rem,5vw,3.4rem)}
+p{margin:0;color:var(--muted);text-shadow:0 1px 12px rgba(0,0,0,.9)}
+em{color:var(--fg)}
+.quote{font-style:italic;font-size:1.25em;color:var(--fg);border-left:1px solid var(--aura);padding-left:16px}
+.btn{justify-self:start;font-family:var(--f-mono);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--bg);background:var(--fg);padding:14px 22px;text-decoration:none;border:0;cursor:pointer}
+.btn:hover,.btn:focus-visible{background:var(--aura);outline:none}
+.center .btn{justify-self:center}
+.hint{font-family:var(--f-mono);font-size:12px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px}
+.stats div{background:rgba(7,8,12,.75);padding:14px;display:grid;gap:2px}
+.stats span{font-family:var(--f-mono);font-size:11px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+.stats b{font-family:var(--f-display);font-size:1.6rem;font-weight:500;font-variant-numeric:tabular-nums}
+.h-wrap{height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:28px}
+.h-head{padding-left:max(20px,8vw)}
+.track{display:flex;gap:22px;padding-left:max(20px,8vw);padding-right:8vw;will-change:transform}
+.region{flex:0 0 min(80vw,380px);border:1px solid var(--line);background:rgba(7,8,12,.72);backdrop-filter:blur(4px);padding:26px;display:grid;gap:10px;align-content:start}
+.region .n{font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;color:var(--ember)}
+.region h3{font-size:1.5rem}
+.boss{display:grid;gap:18px}
+.boss-list{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.boss-list div{background:rgba(7,8,12,.78);padding:16px 18px;display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.boss-list h3{font-size:1.15rem}
+.boss-list span{font-family:var(--f-mono);font-size:12px;color:var(--ember);letter-spacing:.12em}
+.died{font-family:var(--f-display);font-size:clamp(2.6rem,9vw,6rem);color:#a3201c;letter-spacing:.12em;opacity:0}
+footer{position:relative;z-index:2;padding-block:60px 50px;border-top:1px solid var(--line);background:var(--bg)}
+footer p{font-size:15px}
+@media (max-width:700px){.stats{grid-template-columns:1fr 1fr 1fr}.stats b{font-size:1.2rem}nav a{display:none}}
+@media (prefers-reduced-motion:reduce){.track{flex-wrap:wrap}.h-wrap{height:auto;padding-block:100px}.died{opacity:1}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="bar" aria-hidden="true"></div>
+<nav><b>Aura Souls</b><a href="#wishlist">Wishlist</a></nav>
+
+<main>
+  <section class="ch center" id="top"><div class="wrap"><div class="txt">
+    <span class="tag">Un action RPG souls-like</span>
+    <h1>AURA SOULS</h1>
+    <p>Il mondo si è spento. Rimane solo l'aura di un guerriero. Sei <em>Lucario</em>, ultimo custode dell'Aura, e devi riaccendere i Santuari prima che la Cenere inghiotta tutto.</p>
+    <span class="hint">↓ Scorri per risvegliarti</span>
+  </div></div></section>
+
+  <section class="ch right"><div class="wrap"><div class="txt reveal">
+    <span class="tag">I · Il risveglio</span>
+    <h2>Un custode senza memoria</h2>
+    <p class="quote">"Senti il battito del mondo. È debole, ma c'è ancora."</p>
+    <p>Ti svegli tra le rovine di Monte Corona, l'Aura ridotta a una fiammella. Ogni nemico abbattuto ti restituisce un frammento di ciò che eri.</p>
+  </div></div></section>
+
+  <section class="ch"><div class="wrap"><div class="txt reveal">
+    <span class="tag">II · Il combattimento</span>
+    <h2>Leggi l'Aura, non la barra della vita</h2>
+    <p>Lucario percepisce le intenzioni dei nemici: un attimo prima di ogni colpo la loro aura pulsa. Para nel momento giusto per caricare una <em>Forzasfera</em> e spezzare la loro guardia.</p>
+    <div class="stats">
+      <div><span>Vigore</span><b>18</b></div>
+      <div><span>Aura</span><b>24</b></div>
+      <div><span>Tempra</span><b>12</b></div>
+    </div>
+  </div></div></section>
+
+  <div class="h-wrap" id="regioni">
+    <div class="h-head"><span class="tag ember">III · Le regioni</span><h2>Un mondo spezzato in cinque</h2></div>
+    <div class="track">
+      <article class="region"><span class="n">Regione 1</span><h3>Rovine di Monte Corona</h3><p>Colonne crollate e il primo Santuario. Qui impari a parare e a schivare.</p></article>
+      <article class="region"><span class="n">Regione 2</span><h3>Bosco Smarrito</h3><p>Una nebbia che cancella i sentieri. I Pokémon selvatici sono diventati ombre ostili.</p></article>
+      <article class="region"><span class="n">Regione 3</span><h3>Città Sommersa</h3><p>Campanili sott'acqua e un coro che non smette mai. Respira tra un'onda e l'altra.</p></article>
+      <article class="region"><span class="n">Regione 4</span><h3>Fornace di Cenere</h3><p>Il cuore del vulcano, dove la Cenere è nata. Il terreno brucia sotto i tuoi passi.</p></article>
+      <article class="region"><span class="n">Regione 5</span><h3>Vetta della Torre Spenta</h3><p>L'ultimo Santuario. Nessuno è mai tornato indietro per raccontarlo.</p></article>
+    </div>
+  </div>
+
+  <section class="ch right" id="boss"><div class="wrap"><div class="txt boss reveal">
+    <span class="tag ember">IV · I guardiani caduti</span>
+    <h2>Ogni Santuario ha un custode corrotto</h2>
+    <div class="boss-list">
+      <div><h3>Il Cavaliere d'Acciaio Spento</h3><span>Monte Corona</span></div>
+      <div><h3>La Madre delle Spore</h3><span>Bosco Smarrito</span></div>
+      <div><h3>Il Coro Annegato</h3><span>Città Sommersa</span></div>
+      <div><h3>Il Drago di Cenere</h3><span>Fornace</span></div>
+    </div>
+  </div></div></section>
+
+  <section class="ch center"><div class="wrap"><div class="txt">
+    <p class="died" aria-label="Sei esausto">SEI ESAUSTO</p>
+    <p>Morirai. Molte volte. Ogni volta l'Aura ti riporta all'ultimo Santuario, un po' più forte di prima.</p>
+  </div></div></section>
+
+  <section class="ch center" id="wishlist"><div class="wrap"><div class="txt reveal">
+    <span class="tag">V · Riaccendi il mondo</span>
+    <h2>Aggiungi Aura Souls alla tua wishlist</h2>
+    <p>Segui lo sviluppo, ricevi le date delle demo e scopri per primo i nuovi boss.</p>
+    <a class="btn" href="#top">Wishlist presto disponibile</a>
+  </div></div></section>
+</main>
+
+<footer><div class="wrap"><p>Aura Souls è un fan game non ufficiale e non affiliato a Nintendo, Game Freak o The Pokémon Company. Pokémon e Lucario sono marchi dei rispettivi proprietari.</p></div></footer>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="vendor/lenis.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- scena ---------- */
+const canvas = document.getElementById("gl");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.shadowMap.enabled = true;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x07080c);
+scene.fog = new THREE.FogExp2(0x07080c, 0.075);
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+
+scene.add(new THREE.HemisphereLight(0x33405a, 0x0a0806, 0.5));
+const moon = new THREE.DirectionalLight(0x8fa6d0, 0.6); moon.position.set(-4, 8, 3); moon.castShadow = true; scene.add(moon);
+const auraLight = new THREE.PointLight(0x4fa8ff, 3, 9, 2); scene.add(auraLight);
+const fireLight = new THREE.PointLight(0xff7a2e, 2.2, 8, 2); fireLight.position.set(1.6, 0.5, 1.2); scene.add(fireLight);
+
+// terreno e rovine
+const ground = new THREE.Mesh(new THREE.CircleGeometry(30, 48), new THREE.MeshStandardMaterial({ color: 0x15140f, roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const stone = new THREE.MeshStandardMaterial({ color: 0x3a372f, roughness: 0.95, flatShading: true });
+for (let i = 0; i < 9; i++) {
+  const a = i / 9 * Math.PI * 2, r = 5 + (i % 3);
+  const h = 1.5 + Math.random() * 3.5;
+  const col = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.42, h, 7), stone);
+  col.position.set(Math.cos(a) * r, h / 2, Math.sin(a) * r);
+  col.rotation.z = (Math.random() - 0.5) * 0.25; col.castShadow = true; scene.add(col);
+}
+for (let i = 0; i < 14; i++) {
+  const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.2 + Math.random() * 0.4, 0), stone);
+  const a = Math.random() * Math.PI * 2, r = 2 + Math.random() * 6;
+  rock.position.set(Math.cos(a) * r, 0.1, Math.sin(a) * r); rock.rotation.set(Math.random(), Math.random(), 0); scene.add(rock);
+}
+// falò (santuario)
+const bonfire = new THREE.Group(); bonfire.position.set(1.6, 0, 1.2); scene.add(bonfire);
+for (let i = 0; i < 6; i++) {
+  const log = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.8, 5), new THREE.MeshStandardMaterial({ color: 0x2a1a10 }));
+  log.rotation.z = 1.1; log.rotation.y = i / 6 * Math.PI * 2; log.position.y = 0.2; bonfire.add(log);
+}
+const sword = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.1, 0.02), new THREE.MeshStandardMaterial({ color: 0x777777, metalness: 0.8, roughness: 0.4 }));
+sword.position.y = 0.55; sword.rotation.z = 0.1; bonfire.add(sword);
+
+/* ---------- guardiano dell'Aura (figura stilizzata originale) ---------- */
+const hero = new THREE.Group(); scene.add(hero);
+const blue = new THREE.MeshStandardMaterial({ color: 0x2e6fb8, roughness: 0.6, flatShading: true });
+const black = new THREE.MeshStandardMaterial({ color: 0x14161c, roughness: 0.7, flatShading: true });
+const cream = new THREE.MeshStandardMaterial({ color: 0xd8c78f, roughness: 0.7, flatShading: true });
+const steel = new THREE.MeshStandardMaterial({ color: 0xcfd6e0, metalness: 0.7, roughness: 0.3 });
+const red = new THREE.MeshBasicMaterial({ color: 0xff3030 });
+function part(geo, mat, x, y, z, parent = hero) { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; parent.add(m); return m; }
+// gambe
+part(new THREE.CapsuleGeometry(0.13, 0.55, 4, 8), black, -0.17, 0.45, 0);
+part(new THREE.CapsuleGeometry(0.13, 0.55, 4, 8), black, 0.17, 0.45, 0);
+// busto
+const torso = part(new THREE.CapsuleGeometry(0.3, 0.45, 4, 10), blue, 0, 1.2, 0);
+part(new THREE.SphereGeometry(0.24, 10, 8), cream, 0, 1.3, 0.13).scale.set(1, 1, 0.6);
+const spike = part(new THREE.ConeGeometry(0.06, 0.28, 6), steel, 0, 1.35, 0.32); spike.rotation.x = Math.PI / 2;
+// braccia
+const armL = new THREE.Group(); armL.position.set(-0.38, 1.45, 0); hero.add(armL);
+const armR = new THREE.Group(); armR.position.set(0.38, 1.45, 0); hero.add(armR);
+part(new THREE.CapsuleGeometry(0.09, 0.5, 4, 8), black, 0, -0.3, 0, armL);
+part(new THREE.CapsuleGeometry(0.09, 0.5, 4, 8), black, 0, -0.3, 0, armR);
+const spikeHandR = part(new THREE.ConeGeometry(0.045, 0.2, 6), steel, 0, -0.45, -0.1, armR); spikeHandR.rotation.x = -Math.PI / 2;
+const spikeHandL = part(new THREE.ConeGeometry(0.045, 0.2, 6), steel, 0, -0.45, -0.1, armL); spikeHandL.rotation.x = -Math.PI / 2;
+armR.rotation.x = -0.9; armR.rotation.z = 0.2;
+// testa
+const head = new THREE.Group(); head.position.set(0, 1.85, 0); hero.add(head);
+part(new THREE.SphereGeometry(0.25, 12, 10), blue, 0, 0, 0, head);
+const snout = part(new THREE.ConeGeometry(0.13, 0.3, 8), black, 0, -0.05, 0.25, head); snout.rotation.x = Math.PI / 2;
+part(new THREE.SphereGeometry(0.11, 8, 6), black, 0, 0.04, 0.17, head).scale.set(2.2, 0.7, 0.6); // maschera
+part(new THREE.SphereGeometry(0.025, 6, 6), red, -0.09, 0.05, 0.22, head);
+part(new THREE.SphereGeometry(0.025, 6, 6), red, 0.09, 0.05, 0.22, head);
+const earL = part(new THREE.ConeGeometry(0.07, 0.36, 6), blue, -0.15, 0.3, -0.02, head); earL.rotation.z = 0.35;
+const earR = part(new THREE.ConeGeometry(0.07, 0.36, 6), blue, 0.15, 0.3, -0.02, head); earR.rotation.z = -0.35;
+// appendici sul retro della testa
+const tails = [];
+for (let i = 0; i < 4; i++) {
+  const t = part(new THREE.CapsuleGeometry(0.03, 0.32, 3, 6), black, (i < 2 ? -1 : 1) * 0.08, -0.05 - (i % 2) * 0.08, -0.25, head);
+  t.rotation.x = 0.9; tails.push(t);
+}
+// coda
+const tail = part(new THREE.ConeGeometry(0.1, 0.45, 6), cream, 0, 0.85, -0.32); tail.rotation.x = -2.3;
+
+// sfera di Aura in mano
+const auraUniforms = { uTime: { value: 0 }, uPower: { value: 0.4 }, uGain: { value: 1 }, uColor: { value: new THREE.Color(0x4fa8ff) } };
+const auraMat = new THREE.ShaderMaterial({
+  uniforms: auraUniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `uniform float uTime; uniform float uPower; varying vec3 vN; varying vec3 vV;
+    void main(){ vec3 p = position + normal * (sin(position.y*12.0+uTime*4.0)*0.03*uPower);
+      vec4 mv = modelViewMatrix*vec4(p,1.0); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }`,
+  fragmentShader: `uniform vec3 uColor; uniform float uPower; uniform float uTime; uniform float uGain; varying vec3 vN; varying vec3 vV;
+    void main(){ float f = pow(1.0 - abs(dot(vN, vV)), 1.6); float core = pow(abs(dot(vN,vV)), 3.0)*0.6;
+      gl_FragColor = vec4(uColor*(f*1.8+core) * (0.6+uPower), (f+core)*0.95) * uGain; }`
+});
+const auraBall = new THREE.Mesh(new THREE.SphereGeometry(0.16, 32, 24), auraMat);
+scene.add(auraBall);
+// alone di Aura attorno al corpo
+const halo = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), auraMat.clone());
+halo.material.uniforms = { uTime: auraUniforms.uTime, uPower: { value: 0.1 }, uGain: { value: 0.22 }, uColor: auraUniforms.uColor };
+halo.scale.set(0.62, 1.1, 0.62); halo.position.y = 1.1; hero.add(halo);
+
+// braci e cenere
+const N = 900, pos = new Float32Array(N * 3), spd = new Float32Array(N);
+for (let i = 0; i < N; i++) { pos[i*3] = (Math.random()-0.5)*16; pos[i*3+1] = Math.random()*8; pos[i*3+2] = (Math.random()-0.5)*16; spd[i] = 0.2 + Math.random()*0.6; }
+const pg = new THREE.BufferGeometry(); pg.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+const embers = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xff8a40, size: 0.035, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false }));
+scene.add(embers);
+
+/* ---------- stato guidato dallo scroll ---------- */
+const cam = { angle: 0.25, radius: 6.5, height: 1.1, lookY: 2.6, shift: 0 };
+const mood = { fog: 0.075, fire: 2.2 };
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener("resize", resize); resize();
+
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const t = clock.getElapsedTime(), dt = Math.min(clock.getDelta(), 0.05);
+  auraUniforms.uTime.value = t;
+  // respiro e movimento idle
+  const breath = reduce ? 0 : Math.sin(t * 1.6) * 0.02;
+  torso.scale.y = 1 + breath; head.position.y = 1.85 + breath;
+  tails.forEach((tl, i) => tl.rotation.x = 0.9 + Math.sin(t * 2 + i) * 0.15);
+  // la sfera segue la mano destra
+  const hand = new THREE.Vector3(0, -0.6, 0.05); armR.localToWorld(hand);
+  auraBall.position.copy(hand); auraBall.scale.setScalar(0.8 + auraUniforms.uPower.value * 0.7 + Math.sin(t * 6) * 0.05);
+  auraLight.position.copy(hand); auraLight.intensity = 1.5 + auraUniforms.uPower.value * 4;
+  fireLight.intensity = mood.fire + Math.sin(t * 13) * 0.3 + Math.sin(t * 7) * 0.2;
+  scene.fog.density = mood.fog;
+  // braci che salgono
+  const a = pg.attributes.position.array;
+  for (let i = 0; i < N; i++) { a[i*3+1] += spd[i] * 0.01; a[i*3] += Math.sin(t + i) * 0.002; if (a[i*3+1] > 8) a[i*3+1] = 0; }
+  pg.attributes.position.needsUpdate = true;
+  // camera in orbita
+  const x = Math.sin(cam.angle) * cam.radius, z = Math.cos(cam.angle) * cam.radius;
+  camera.position.set(x, cam.height, z); camera.lookAt(0, cam.lookY, 0);
+  const sh = innerWidth < 760 ? 0 : cam.shift; camera.setViewOffset(innerWidth, innerHeight, -sh * innerWidth, 0, innerWidth, innerHeight);
+  renderer.render(scene, camera);
+});
+
+/* ---------- scroll ---------- */
+if (!reduce) {
+  const lenis = new Lenis({ lerp: 0.08 });
+  lenis.on("scroll", ScrollTrigger.update);
+  gsap.ticker.add(t => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  gsap.to(".bar", { scaleX: 1, ease: "none", scrollTrigger: { start: 0, end: "max", scrub: true } });
+
+  const tl = gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: "main", start: "top top", end: "bottom bottom", scrub: 1.2 } });
+  tl
+    // I: risveglio, la camera gira attorno
+    .to(cam, { angle: -0.9, radius: 3.8, height: 1.9, lookY: 1.4, shift: -0.22, duration: 1 }, 0)
+    .to(auraUniforms.uPower, { value: 0.8, duration: 1 }, 0)
+    // II: combattimento, inquadratura bassa e sfera carica
+    .to(cam, { angle: 0.9, radius: 3.4, height: 1.0, lookY: 1.4, shift: 0.22, duration: 1 }, 1)
+    .to(armR.rotation, { x: -1.6, z: 0.05, duration: 1 }, 1)
+    .to(auraUniforms.uPower, { value: 1.6, duration: 1 }, 1)
+    .to(halo.material.uniforms.uPower, { value: 0.6, duration: 1 }, 1)
+    // III: regioni, campo largo
+    .to(cam, { angle: 2.4, radius: 7.5, height: 3.5, lookY: 1.0, shift: 0, duration: 1.5 }, 2)
+    .to(auraUniforms.uPower, { value: 0.5, duration: 1 }, 2)
+    .to(halo.material.uniforms.uPower, { value: 0.1, duration: 1 }, 2)
+    // IV: boss, tutto vira al rosso
+    .to(auraUniforms.uColor, { r: 1, g: 0.35, b: 0.15, duration: 1 }, 3.5)
+    .to(mood, { fog: 0.12, fire: 4, duration: 1 }, 3.5)
+    .to(cam, { angle: 3.4, radius: 3.8, height: 2.6, lookY: 1.3, shift: -0.22, duration: 1 }, 3.5)
+    // morte: la luce si spegne
+    .to(mood, { fog: 0.2, fire: 0.6, duration: 0.8 }, 4.5)
+    .to(auraUniforms.uPower, { value: 0.05, duration: 0.8 }, 4.5)
+    // V: rinascita, torna il blu
+    .to(auraUniforms.uColor, { r: 0.31, g: 0.66, b: 1, duration: 1 }, 5.3)
+    .to(mood, { fog: 0.06, fire: 2.5, duration: 1 }, 5.3)
+    .to(auraUniforms.uPower, { value: 1.2, duration: 1 }, 5.3)
+    .to(cam, { angle: 6.5, radius: 6.5, height: 1.1, lookY: 2.6, shift: 0, duration: 1 }, 5.3);
+
+  const track = document.querySelector(".track");
+  gsap.to(track, { x: () => -(track.scrollWidth - innerWidth), ease: "none",
+    scrollTrigger: { trigger: ".h-wrap", start: "top top", pin: true, scrub: 1, end: () => "+=" + track.scrollWidth, invalidateOnRefresh: true } });
+
+  gsap.utils.toArray(".reveal").forEach(el => gsap.from(el, { y: 50, opacity: 0, duration: 1, ease: "power3.out",
+    scrollTrigger: { trigger: el, start: "top 80%", toggleActions: "play none none reverse" } }));
+
+  gsap.fromTo(".died", { opacity: 0, letterSpacing: "0.5em" }, { opacity: 1, letterSpacing: "0.12em", ease: "none",
+    scrollTrigger: { trigger: ".died", start: "top 85%", end: "top 40%", scrub: true } });
+
+  document.querySelector('nav a').addEventListener('click', e => { e.preventDefault(); lenis.scrollTo('#wishlist'); });
+}
+</script>
+</body>
+</html>
