@@ -262,7 +262,7 @@ def build_music():
 
 
 def load_voice():
-    path = os.path.join(ROOT, 'public', 'voce13.wav')
+    path = os.path.join(ROOT, 'public', os.environ.get('VOCE', 'voce13.wav'))
     if not os.path.exists(path):
         return None
     with wave.open(path) as w:
@@ -273,7 +273,7 @@ def load_voice():
 
 
 def main():
-    out = os.path.join(ROOT, 'public', 'soundtrack13.wav')
+    out = os.path.join(ROOT, 'public', os.environ.get('OUT', 'soundtrack13.wav'))
     S = build_sfx()
     mL, mR = build_music()
     mL = M.hp(mL, 35); mR = M.hp(mR, 35)

@@ -233,9 +233,16 @@ const Sparkles: React.FC<{t0: number; x: number; y: number; n?: number; hearts?:
 const useGirl = () => useTalk(EG);
 const useRiky = () => useTalk(ER);
 
-const RikyP: React.FC<{x?: number; y?: number; scale?: number; flip?: boolean} & Partial<RikyProps>> = ({x = RX, y = FLOOR, scale = 0.7, flip = true, ...rest}) => (
-  <Riky x={x} y={y} scale={scale} flip={flip} {...rest} />
-);
+/** versione «solo ragazza»: niente Riccardo, niente sottotitoli, solo la voce di lei */
+const Solo = React.createContext(false);
+const RikyP: React.FC<{x?: number; y?: number; scale?: number; flip?: boolean} & Partial<RikyProps>> = ({x = RX, y = FLOOR, scale = 0.7, flip = true, ...rest}) =>
+  React.useContext(Solo) ? null : <Riky x={x} y={y} scale={scale} flip={flip} {...rest} />;
+const Avatar: React.FC = () =>
+  React.useContext(Solo) ? (
+    <div style={{width: 112, height: 112, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: FONT, fontWeight: 900, fontSize: 44, color: '#fff'}}>RF</div>
+  ) : (
+    <svg width={112} height={112} viewBox="0 0 112 112"><g transform="translate(56,64) scale(0.24) translate(-409,-372)"><Riky x={409} y={1304} scale={1} shadow={false} smile={1} /></g></svg>
+  );
 
 /* ------------------------------------------------------------------ scene */
 const S1a: React.FC<{a: number}> = ({a}) => {
@@ -553,7 +560,7 @@ const S5: React.FC<{a: number}> = ({a}) => {
       {/* card profilo */}
       <div style={{position: 'absolute', left: 54, right: 54, top: 110, transform: `translateY(${(1 - p) * -80}px) scale(${mix(0.95, 1, p)})`, opacity: p, ...cardStyle('#fff', 10), padding: '22px 26px', display: 'flex', alignItems: 'center', gap: 22}}>
         <div style={{width: 112, height: 112, borderRadius: 56, background: C.blue, border: `${OUT}px solid ${C.ink}`, overflow: 'hidden', flexShrink: 0}}>
-          <svg width={112} height={112} viewBox="0 0 112 112"><g transform="translate(56,64) scale(0.24) translate(-409,-372)"><Riky x={409} y={1304} scale={1} shadow={false} smile={1} /></g></svg>
+          <Avatar />
         </div>
         <div style={{flex: 1, minWidth: 0}}>
           <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 40, color: C.ink, lineHeight: 1.05}}>riccardofalconi_coach</div>
@@ -623,7 +630,8 @@ const TRANS: Tr[] = [
   {t: W.s5[0], type: 'stripes', color: C.blue},
 ];
 
-export const Video13: React.FC = () => (
+const Video13Body: React.FC<{solo?: boolean}> = ({solo = false}) => (
+  <Solo.Provider value={solo}>
   <AbsoluteFill style={{background: '#fff', fontFamily: FONT}}>
     <style>{`
       @font-face{font-family:'Inter';font-weight:900;src:url(${staticFile('fonts/Inter-Black.otf')});}
@@ -640,10 +648,14 @@ export const Video13: React.FC = () => (
     <Show from={W.s4a[0]} to={W.s4a[1]}><S4a a={W.s4a[0]} /></Show>
     <Show from={W.s4b[0]} to={W.s4b[1]}><S4b a={W.s4b[0]} /></Show>
     <Show from={W.s5[0]} to={W.s5[1] + 1}><S5 a={W.s5[0]} /></Show>
-    <Captions lines={CAPS} />
+    {!solo && <Captions lines={CAPS} />}
     <Transitions list={TRANS} />
     <Grain />
-    <Audio src={staticFile('soundtrack13.wav')} />
+    <Audio src={staticFile(solo ? 'soundtrack13_ragazza.wav' : 'soundtrack13.wav')} />
   </AbsoluteFill>
+  </Solo.Provider>
 );
+export const Video13: React.FC = () => <Video13Body />;
+export const Video13Solo: React.FC = () => <Video13Body solo />;
+
 export {shake};
