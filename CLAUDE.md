@@ -11,15 +11,12 @@ Riferimenti in `video/refs/` (fronte · tre quarti · profilo · retro, versioni
 4. `04-mamma-con-figli.webp` — **la mamma con i figli** (vita quotidiana / poco tempo): mamma con coda castana, cardigan senape, maglia verde petrolio, jeans, borsa viola a tracolla; bambina con salopette corallo e mollettina viola; bambino con t-shirt verde salvia e pantaloncini blu.
 5. `05-studio-rf-coaching.webp` — **lo studio personal**: parete crema/beige, zoccolo petrolio con battiscopa in legno, finestra grande con cielo e alberi, quadro "RF COACHING" con manubrio viola, orologio da parete in legno, rastrelliera manubri esagonali con tappi colorati, kettlebell giallo e petrolio, tappetini arrotolati (verde/viola) in cassetta di legno, listelli verticali in legno, specchio, panca regolabile blu, pianta, pavimento in piastrelle gommate scure, tappetino corallo.
 
-## Come animare i personaggi (REGOLA)
-- Stile: **cartone animato 2D** (niente 3D, niente marionette a pezzi). Il cliente lo ha chiesto esplicitamente.
-- I personaggi sono **le tavole 2D originali** (riga "2D" dei riferimenti), vettorializzate e deformate su uno scheletro
-  (tecnica Live2D/Spine: braccia e gambe si piegano in modo continuo, senza tagli).
-  1. `video/tools/toon/trace2d.py` — vettorializza le viste 2D (vtracer) e le rasterizza ad alta risoluzione;
-  2. `video/tools/toon/alpha.py` — scontorno pulito (rembg + flood fill, alone eroso);
-  3. `video/tools/toon/rig2d.py` — mesh + pesi + ossa → `video/public/toon/*.png`, `video/src/toon/rigs/*.json`.
-- Motore: `video/src/toon/engine.ts` (pose, IK squat, skinning) + `video/src/toon/Stage.tsx` (sfondo studio 2D, personaggi, bocca/occhi).
-- Sfondo: studio vettorializzato dal riferimento (`video/public/toon/studio.png`). Modello da seguire: `video/src/toon/Video22.tsx`.
+## Stile dei video (REGOLA, aggiornata)
+- Per i nuovi reel usare **sempre lo stile dei video delle 4 settimane** (Video 12–19, `video/src/v13/`):
+  studio 2D bianco a puntini con zoccolo viola (`Room`/`World` in `src/v13/kit.tsx`), la ragazza `GirlSide` (`src/v13/Girl.tsx`),
+  Riccardo `Riky` (`src/Riky.tsx`), componenti `Headline`, `StepCard`, `Tag`, `KeywordCTA`, `Handle`, `Captions`.
+- NON usare i personaggi ritagliati/vettorializzati dalle tavole (`src/toon/`, `src/v3d/`): restano solo come archivio.
+- Video infografici (es. Video 23) vanno bene, ma con quei personaggi e quello sfondo.
 
 ## Brand
 - Colori: viola `#6D3BD2` (principale), nero `#111`, bianco. Rosso `#E5484D` solo per errori.
