@@ -20,6 +20,7 @@ import {Video21, DURATION21} from './v3d/Video21';
 import {SquatTest} from './v3d/SquatTest';
 import {GirlTest} from './v13/Test';
 import {CarouselSlide, SW, SH} from './carousel/Slides';
+import {Video23Premium, DURATION23P} from './v23/Video23Premium';
 
 export const Root: React.FC = () => (
   <>
@@ -42,6 +43,7 @@ export const Root: React.FC = () => (
   <Composition id="Video21" component={Video21} durationInFrames={DURATION21} fps={30} width={1080} height={1920} />
   <Composition id="Video22" component={Video22} durationInFrames={DURATION22} fps={30} width={1080} height={1920} />
   <Composition id="Video23" component={Video23} durationInFrames={DURATION23} fps={30} width={1080} height={1920} />
+  <Composition id="Video23Premium" component={Video23Premium} durationInFrames={DURATION23P} fps={30} width={1080} height={1920} />
   <Composition id="LayerTest" component={LayerTest} durationInFrames={LAYER_TEST_DUR} fps={30} width={1080} height={1920} />
   <Composition id="ToonTest" component={ToonTest} durationInFrames={7} fps={30} width={1080} height={1920} />
   <Composition id="Test3D" component={Test3D} durationInFrames={30} fps={30} width={1080} height={1920} />
