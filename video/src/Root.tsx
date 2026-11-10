@@ -20,6 +20,7 @@ import {Video21, DURATION21} from './v3d/Video21';
 import {SquatTest} from './v3d/SquatTest';
 import {GirlTest} from './v13/Test';
 import {CarouselSlide, SW, SH} from './carousel/Slides';
+import {Mese2Slide, SW2, SH2} from './carousel/Mese2';
 import {Video23Premium, DURATION23P} from './v23/Video23Premium';
 
 export const Root: React.FC = () => (
@@ -27,6 +28,7 @@ export const Root: React.FC = () => (
   <Composition id="Video12" component={Video12} durationInFrames={DURATION12} fps={30} width={1920} height={1080} />
   <Composition id="Video11" component={Video11} durationInFrames={DURATION} fps={30} width={1920} height={1080} />
   <Composition id="Slide" component={CarouselSlide} durationInFrames={1} fps={30} width={SW} height={SH} defaultProps={{deck: 'scheda', index: 0}} />
+  <Composition id="Slide2" component={Mese2Slide} durationInFrames={1} fps={30} width={SW2} height={SH2} defaultProps={{deck: "postura", index: 0}} />
   <Composition id="Video13" component={Video13} durationInFrames={DURATION13} fps={30} width={VW} height={VH} />
   <Composition id="Video13Solo" component={Video13Solo} durationInFrames={DURATION13} fps={30} width={VW} height={VH} />
   <Composition id="Video14" component={Video14} durationInFrames={DURATION14} fps={30} width={VW} height={VH} />
