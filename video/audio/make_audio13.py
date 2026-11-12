@@ -282,7 +282,7 @@ def main():
         sfx_g, mus_g, d_s, d_m, vo = 0.9, 0.42, np.ones(TOTAL), np.ones(TOTAL), np.zeros(TOTAL)
     else:
         e = M.voice_env(vo)
-        sfx_g, mus_g = 0.42, 0.26
+        sfx_g, mus_g = float(os.environ.get('SFX_G', 0.42)), float(os.environ.get('MUS_G', 0.26))
         d_s, d_m = 1 - 0.72 * e, 1 - 0.80 * e
     L = S.L * sfx_g * d_s + mL * mus_g * d_m + vo
     R = S.R * sfx_g * d_s + mR * mus_g * d_m + vo

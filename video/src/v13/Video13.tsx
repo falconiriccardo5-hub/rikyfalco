@@ -630,7 +630,7 @@ const TRANS: Tr[] = [
   {t: W.s5[0], type: 'stripes', color: C.blue},
 ];
 
-const Video13Body: React.FC<{solo?: boolean}> = ({solo = false}) => (
+export const Video13Body: React.FC<{solo?: boolean; audio?: string}> = ({solo = false, audio}) => (
   <Solo.Provider value={solo}>
   <AbsoluteFill style={{background: '#fff', fontFamily: FONT}}>
     <style>{`
@@ -651,7 +651,7 @@ const Video13Body: React.FC<{solo?: boolean}> = ({solo = false}) => (
     {!solo && <Captions lines={CAPS} />}
     <Transitions list={TRANS} />
     <Grain />
-    <Audio src={staticFile(solo ? 'soundtrack13_ragazza.wav' : 'soundtrack13.wav')} />
+    <Audio src={staticFile(audio ?? (solo ? 'soundtrack13_ragazza.wav' : 'soundtrack13.wav'))} />
   </AbsoluteFill>
   </Solo.Provider>
 );
