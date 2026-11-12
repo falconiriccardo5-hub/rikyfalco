@@ -52,19 +52,19 @@ const Room: React.FC = () => (
   <g>
     <defs>
       <pattern id="dots13" width={54} height={54} patternUnits="userSpaceOnUse">
-        <circle cx={27} cy={27} r={2.6} fill="rgba(17,17,17,0.10)" />
+        <circle cx={27} cy={27} r={2.6} fill="rgba(120,90,60,0.10)" />
       </pattern>
     </defs>
-    <rect x={-700} y={-700} width={2500} height={2200} fill="#FFFFFF" />
+    <rect x={-700} y={-700} width={2500} height={2200} fill="#F6F0E6" />
     <rect x={-700} y={-700} width={2500} height={2200} fill="url(#dots13)" />
     {/* finestra */}
     <g transform="translate(60,420)">
-      <rect width={300} height={340} rx={18} fill="#E4DAFB" stroke={C.ink} strokeWidth={OUT} />
+      <rect width={300} height={340} rx={18} fill="#CFE6F5" stroke={C.ink} strokeWidth={OUT} />
       <circle cx={215} cy={92} r={40} fill="#FFE9A8" stroke={C.ink} strokeWidth={OUT - 2} />
-      <path d="M 0 238 Q 74 196 150 238 T 300 228 L 300 340 L 0 340 Z" fill={C.blueL} opacity={0.7} />
+      <path d="M 0 238 Q 74 196 150 238 T 300 228 L 300 340 L 0 340 Z" fill="#8CC07A" />
       <line x1={150} y1={0} x2={150} y2={340} stroke={C.ink} strokeWidth={OUT} />
       <line x1={0} y1={170} x2={300} y2={170} stroke={C.ink} strokeWidth={OUT} />
-      <rect x={-14} y={340} width={328} height={22} rx={8} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
+      <rect x={-14} y={340} width={328} height={22} rx={8} fill="#C9A47A" stroke={C.ink} strokeWidth={OUT} />
     </g>
     {/* poster brand */}
     <g transform="translate(790,400)">
@@ -74,31 +74,42 @@ const Room: React.FC = () => (
       <text x={115} y={256} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={40} fill={C.ink}>COACH</text>
       <text x={115} y={296} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={40} fill={C.blue}>RIKY</text>
     </g>
-    {/* zoccolo viola */}
-    <rect x={-700} y={1010} width={2500} height={120} fill={C.blue} />
+    {/* zoccolo in legno */}
+    <rect x={-700} y={1010} width={2500} height={120} fill="#B98A5E" />
+    {Array.from({length: 18}).map((_, i) => (
+      <line key={'z' + i} x1={-700 + i * 150} y1={1014} x2={-700 + i * 150} y2={1126} stroke="#A5774D" strokeWidth={4} />
+    ))}
     <rect x={-700} y={1004} width={2500} height={10} fill={C.ink} />
     <rect x={-700} y={1126} width={2500} height={8} fill={C.ink} />
     {/* pavimento */}
-    <rect x={-700} y={1134} width={2500} height={900} fill="#2A2D33" />
+    <rect x={-700} y={1134} width={2500} height={900} fill="#3A3D42" />
     {Array.from({length: 14}).map((_, i) => (
-      <line key={i} x1={-500 + i * 190} y1={1134} x2={-640 + i * 220} y2={1900} stroke="#33373E" strokeWidth={4} />
+      <line key={i} x1={-500 + i * 190} y1={1134} x2={-640 + i * 220} y2={1900} stroke="#45484E" strokeWidth={4} />
     ))}
     {/* rastrelliera */}
     <g transform="translate(820,830)">
       <rect x={0} y={118} width={250} height={14} rx={6} fill={C.steel} stroke={C.ink} strokeWidth={OUT} />
       <rect x={10} y={16} width={230} height={14} rx={6} fill={C.steel} stroke={C.ink} strokeWidth={OUT} />
       {[0, 1, 2].map((i) => (
-        <Dumbbell key={'a' + i} x={50 + i * 75} y={8} s={0.36 + i * 0.03} color={i % 2 ? C.ink : C.blue} />
+        <Dumbbell key={'a' + i} x={50 + i * 75} y={8} s={0.36 + i * 0.03} color={i % 2 ? C.ink : "#5B5F66"} />
       ))}
       {[0, 1, 2].map((i) => (
-        <Dumbbell key={'b' + i} x={50 + i * 75} y={110} s={0.44 + i * 0.03} color={i % 2 ? C.blue : C.ink} />
+        <Dumbbell key={'b' + i} x={50 + i * 75} y={110} s={0.44 + i * 0.03} color={i % 2 ? "#5B5F66" : C.ink} />
       ))}
       <rect x={20} y={132} width={12} height={170} fill={C.steel} stroke={C.ink} strokeWidth={OUT - 2} />
       <rect x={218} y={132} width={12} height={170} fill={C.steel} stroke={C.ink} strokeWidth={OUT - 2} />
     </g>
     {/* tappetino */}
-    <rect x={-30} y={1316} width={760} height={80} rx={18} fill={C.blueD} stroke={C.ink} strokeWidth={OUT} />
-    <rect x={-30} y={1316} width={760} height={16} rx={8} fill={C.blue} />
+    <rect x={-30} y={1316} width={760} height={80} rx={18} fill="#2F6F73" stroke={C.ink} strokeWidth={OUT} />
+    <rect x={-30} y={1316} width={760} height={16} rx={8} fill="#3E8A8F" />
+    {/* pianta */}
+    <g transform="translate(735,1004)">
+      <path d="M 0 0 C -60 -40 -70 -120 -20 -170 C -10 -110 0 -60 0 0 Z" fill="#5E9E5A" stroke={C.ink} strokeWidth={OUT - 2} />
+      <path d="M 0 0 C 50 -50 80 -130 40 -190 C 20 -120 6 -60 0 0 Z" fill="#74B36B" stroke={C.ink} strokeWidth={OUT - 2} />
+      <path d="M 0 0 C -20 -70 10 -150 0 -220 C 30 -150 30 -70 0 0 Z" fill="#4E8C4B" stroke={C.ink} strokeWidth={OUT - 2} />
+      <path d="M -50 0 L 50 0 L 38 110 L -38 110 Z" fill="#C8734A" stroke={C.ink} strokeWidth={OUT} />
+      <rect x={-58} y={-8} width={116} height={22} rx={6} fill="#D9875C" stroke={C.ink} strokeWidth={OUT - 2} />
+    </g>
   </g>
 );
 
@@ -311,10 +322,10 @@ const S1c: React.FC<{a: number}> = ({a}) => {
         <g transform={`translate(${GX + 60},${FLOOR - 18}) scale(0.45)`}>
           <Dumbbell x={0} y={0} s={1} color={C.blue} />
         </g>
-        <CapeBehind x={RX} y={FLOOR - 0} scale={0.7 * mix(1, 1.04, heroP)} flip t={t} show={capeP} />
+        {!React.useContext(Solo) && <CapeBehind x={RX} y={FLOOR - 0} scale={0.7 * mix(1, 1.04, heroP)} flip t={t} show={capeP} />}
         <RikyP scale={0.7 * mix(1, 1.04, heroP)} mouth={talk} smile={1} brow={8} armL={{hand: [330, 846]}} armR={{hand: [490, 846]}} tilt={-3 * heroP} bob={Math.sin(t * 6) * 3 * heroP} hop={Math.abs(Math.sin(t * 6)) * 5 * heroP} />
       </World>
-      <Burst t0={w[3] + 0.0} x={880} y={560} text="SOS" size={84} color={C.blue} rot={8} />
+      <Burst t0={w[3] + 0.0} x={880} y={560} text="SOS" size={84} color={C.red} rot={8} />
       <Tag t0={w[6] - 0.05} at={[540, 360]} text="COACH RIKY AL VOLO" bg={C.blue} fg="#fff" size={40} />
       <Sparkles t0={w[3]} x={760} y={760} n={12} />
     </AbsoluteFill>
