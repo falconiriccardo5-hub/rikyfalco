@@ -1,0 +1,351 @@
+[
+ {
+  "n": 2104,
+  "id": "m04",
+  "who": "R",
+  "text": "Senza allenamento, la massa muscolare tende a calare un po' a ogni decennio.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2105,
+  "id": "m05",
+  "who": "R",
+  "text": "Non lo vedi subito allo specchio. Lo senti nella vita di tutti i giorni.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2106,
+  "id": "m06",
+  "who": "R",
+  "text": "Le scale pesano di più, le borse della spesa sembrano più pesanti, alzarsi da terra costa fatica.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2107,
+  "id": "m07",
+  "who": "R",
+  "text": "La buona notizia? Il muscolo risponde a ogni età.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2108,
+  "id": "m08",
+  "who": "R",
+  "text": "L'Organizzazione Mondiale della Sanità consiglia esercizi di forza almeno due giorni a settimana.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2109,
+  "id": "m09",
+  "who": "R",
+  "text": "Bastano esercizi semplici: squat, spinte e tirate.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2110,
+  "id": "m10",
+  "who": "R",
+  "text": "E un carico che aumenta un poco alla volta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2111,
+  "id": "m11",
+  "who": "R",
+  "text": "Nei miei programmi misuriamo forza e carichi a ogni controllo.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2112,
+  "id": "m12",
+  "who": "R",
+  "text": "Così vedi il muscolo che lavora, non solo lo specchio.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2113,
+  "id": "m13",
+  "who": "R",
+  "text": "Vuoi sapere da dove partire? Scrivimi analisi in privato.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2201,
+  "id": "s01",
+  "who": "R",
+  "text": "Hai mal di schiena e pensi che la cosa migliore sia stare fermo?",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2202,
+  "id": "s02",
+  "who": "R",
+  "text": "La ricerca dice un'altra cosa.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2203,
+  "id": "s03",
+  "who": "R",
+  "text": "Quando la schiena fa male, viene naturale proteggerla: divano, niente sforzi, aspettare che passi.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2204,
+  "id": "s04",
+  "who": "R",
+  "text": "Ma se il dolore dura da mesi, stare fermi spesso non aiuta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2205,
+  "id": "s05",
+  "who": "R",
+  "text": "I muscoli si indeboliscono, e i movimenti di tutti i giorni fanno sempre più paura.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2206,
+  "id": "s06",
+  "who": "R",
+  "text": "Una grande revisione scientifica del duemilaventuno ha raccolto centinaia di studi.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2207,
+  "id": "s07",
+  "who": "R",
+  "text": "Nel mal di schiena cronico, l'esercizio riduce dolore e limitazioni rispetto a nessun trattamento.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2208,
+  "id": "s08",
+  "who": "R",
+  "text": "La strada è il movimento graduale.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2209,
+  "id": "s09",
+  "who": "R",
+  "text": "Esercizi per glutei, schiena e addome, con carichi bassi all'inizio.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2210,
+  "id": "s10",
+  "who": "R",
+  "text": "E si aumenta quando il corpo risponde bene.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2211,
+  "id": "s11",
+  "who": "R",
+  "text": "Se il dolore è forte, improvviso o scende lungo la gamba, prima parla con il medico.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2212,
+  "id": "s12",
+  "who": "R",
+  "text": "Poi, nei miei programmi, scelgo esercizi e varianti seduta dopo seduta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2213,
+  "id": "s13",
+  "who": "R",
+  "text": "Vuoi ripartire nel modo giusto? Scrivimi analisi in privato.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2301,
+  "id": "d01",
+  "who": "R",
+  "text": "Stessa dieta, stesse calorie. Ma una persona perde molto meno grasso.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2302,
+  "id": "d02",
+  "who": "R",
+  "text": "Indovina perché.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2303,
+  "id": "d03",
+  "who": "R",
+  "text": "Lavoro, figli, telefono fino a tardi: alla fine si dorme cinque ore.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2304,
+  "id": "d04",
+  "who": "R",
+  "text": "Sembra solo stanchezza.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2305,
+  "id": "d05",
+  "who": "R",
+  "text": "In uno studio, persone a dieta hanno dormito prima otto ore e mezza, poi cinque ore e mezza.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2306,
+  "id": "d06",
+  "who": "R",
+  "text": "Due settimane per ciascuna condizione.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2307,
+  "id": "d07",
+  "who": "R",
+  "text": "Con meno sonno hanno perso circa il cinquantacinque per cento di grasso in meno.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2308,
+  "id": "d08",
+  "who": "R",
+  "text": "E una parte maggiore del peso perso era muscolo. In più, avevano più fame.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2309,
+  "id": "d09",
+  "who": "R",
+  "text": "Non serve essere perfetti.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2310,
+  "id": "d10",
+  "who": "R",
+  "text": "Orario fisso per andare a letto, schermi giù mezz'ora prima, e allenamenti non troppo tardi se ti agitano.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2311,
+  "id": "d11",
+  "who": "R",
+  "text": "Quando imposto un percorso guardo anche il sonno, non solo la scheda.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2312,
+  "id": "d12",
+  "who": "R",
+  "text": "Perché il dimagrimento si gioca anche fuori dalla palestra.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2313,
+  "id": "d13",
+  "who": "R",
+  "text": "Vuoi un piano che tenga conto di tutta la tua giornata? Scrivimi analisi in privato.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2401,
+  "id": "p01",
+  "who": "R",
+  "text": "Diecimila passi al giorno. Sai da dove arriva questo numero?",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2402,
+  "id": "p02",
+  "who": "R",
+  "text": "Non dalla ricerca scientifica.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2403,
+  "id": "p03",
+  "who": "R",
+  "text": "Arriva da un contapassi giapponese degli anni sessanta, lanciato con una campagna pubblicitaria.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2404,
+  "id": "p04",
+  "who": "R",
+  "text": "E così chi fa seimila passi pensa che non servano a niente.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2405,
+  "id": "p05",
+  "who": "R",
+  "text": "Invece una grande analisi su circa quarantasettemila adulti, pubblicata nel duemilaventidue, dice un'altra cosa.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2406,
+  "id": "p06",
+  "who": "R",
+  "text": "Ogni passo in più conta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2407,
+  "id": "p07",
+  "who": "R",
+  "text": "Il rischio di mortalità scendeva con l'aumentare dei passi.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2408,
+  "id": "p08",
+  "who": "R",
+  "text": "Fino a stabilizzarsi intorno a seimila, ottomila passi al giorno per gli over sessanta, e ottomila, diecimila per i più giovani.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2409,
+  "id": "p09",
+  "who": "R",
+  "text": "Se oggi ne fai tremila, non puntare subito a diecimila.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2410,
+  "id": "p10",
+  "who": "R",
+  "text": "Aggiungine mille a settimana.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2411,
+  "id": "p11",
+  "who": "R",
+  "text": "Passi dopo pranzo, scale invece dell'ascensore, telefonate camminando.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2412,
+  "id": "p12",
+  "who": "R",
+  "text": "Nei miei percorsi i passi sono un obiettivo che facciamo salire insieme, accanto all'allenamento di forza.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2413,
+  "id": "p13",
+  "who": "R",
+  "text": "Vuoi sapere quanti passi e quanti allenamenti servono a te? Scrivimi analisi in privato.",
+  "cfg": 0.4
+ }
+]

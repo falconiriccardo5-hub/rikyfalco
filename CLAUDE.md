@@ -17,6 +17,10 @@ Riferimenti in `video/refs/` (fronte · tre quarti · profilo · retro, versioni
   Riccardo `Riky` (`src/Riky.tsx`), componenti `Headline`, `StepCard`, `Tag`, `KeywordCTA`, `Handle`, `Captions`.
 - NON usare i personaggi ritagliati/vettorializzati dalle tavole (`src/toon/`, `src/v3d/`): restano solo come archivio.
 - Video infografici (es. Video 23) vanno bene, ma con quei personaggi e quello sfondo.
+- Ambiente con colori naturali (parete crema, finestra con cielo e verde, zoccolo e davanzale in legno, pavimento grigio, piante):
+  viola/bianco/nero solo per personaggi ed elementi chiave (cartelli, etichette, CTA). Cartelli di allarme (es. "SOS") in rosso.
+- Reel con il clone HeyGen: clone in riquadro nell'angolo in basso a sinistra sopra il video animato, sottotitoli a destra,
+  motion design ed effetti sonori sulle transizioni (vedi `src/v13/Video13Clone.tsx`).
 
 ## Brand
 - Colori: viola `#6D3BD2` (principale), nero `#111`, bianco. Rosso `#E5484D` solo per errori.

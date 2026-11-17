@@ -1,0 +1,95 @@
+[
+ {
+  "n": 2401,
+  "id": "p01",
+  "who": "R",
+  "text": "Diecimila passi al giorno. Sai da dove arriva questo numero?",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2402,
+  "id": "p02",
+  "who": "R",
+  "text": "Non dalla ricerca scientifica.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2403,
+  "id": "p03",
+  "who": "R",
+  "text": "Arriva da un contapassi giapponese degli anni sessanta, lanciato con una campagna pubblicitaria.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2404,
+  "id": "p04",
+  "who": "R",
+  "text": "E così chi fa seimila passi pensa che non servano a niente.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2405,
+  "id": "p05",
+  "who": "R",
+  "text": "Invece una grande analisi su circa quarantasettemila adulti, pubblicata nel duemilaventidue, dice un'altra cosa.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2406,
+  "id": "p06",
+  "who": "R",
+  "text": "Ogni passo in più conta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2407,
+  "id": "p07",
+  "who": "R",
+  "text": "Il rischio di mortalità scendeva con l'aumentare dei passi.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2408,
+  "id": "p08",
+  "who": "R",
+  "text": "Fino a stabilizzarsi intorno a seimila, ottomila passi al giorno per gli over sessanta, e ottomila, diecimila per i più giovani.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2409,
+  "id": "p09",
+  "who": "R",
+  "text": "Se oggi ne fai tremila, non puntare subito a diecimila.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2410,
+  "id": "p10",
+  "who": "R",
+  "text": "Aggiungine mille a settimana.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2411,
+  "id": "p11",
+  "who": "R",
+  "text": "Passi dopo pranzo, scale invece dell'ascensore, telefonate camminando.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2412,
+  "id": "p12",
+  "who": "R",
+  "text": "Nei miei percorsi i passi sono un obiettivo che facciamo salire insieme, accanto all'allenamento di forza.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2413,
+  "id": "p13",
+  "who": "R",
+  "text": "Vuoi sapere quanti passi e quanti allenamenti servono a te? Scrivimi analisi in privato.",
+  "cfg": 0.4
+ }
+]

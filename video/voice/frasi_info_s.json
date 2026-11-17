@@ -1,0 +1,95 @@
+[
+ {
+  "n": 2201,
+  "id": "s01",
+  "who": "R",
+  "text": "Hai mal di schiena e pensi che la cosa migliore sia stare fermo?",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2202,
+  "id": "s02",
+  "who": "R",
+  "text": "La ricerca dice un'altra cosa.",
+  "cfg": 0.4,
+  "exag": 0.6
+ },
+ {
+  "n": 2203,
+  "id": "s03",
+  "who": "R",
+  "text": "Quando la schiena fa male, viene naturale proteggerla: divano, niente sforzi, aspettare che passi.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2204,
+  "id": "s04",
+  "who": "R",
+  "text": "Ma se il dolore dura da mesi, stare fermi spesso non aiuta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2205,
+  "id": "s05",
+  "who": "R",
+  "text": "I muscoli si indeboliscono, e i movimenti di tutti i giorni fanno sempre più paura.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2206,
+  "id": "s06",
+  "who": "R",
+  "text": "Una grande revisione scientifica del duemilaventuno ha raccolto centinaia di studi.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2207,
+  "id": "s07",
+  "who": "R",
+  "text": "Nel mal di schiena cronico, l'esercizio riduce dolore e limitazioni rispetto a nessun trattamento.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2208,
+  "id": "s08",
+  "who": "R",
+  "text": "La strada è il movimento graduale.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2209,
+  "id": "s09",
+  "who": "R",
+  "text": "Esercizi per glutei, schiena e addome, con carichi bassi all'inizio.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2210,
+  "id": "s10",
+  "who": "R",
+  "text": "E si aumenta quando il corpo risponde bene.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2211,
+  "id": "s11",
+  "who": "R",
+  "text": "Se il dolore è forte, improvviso o scende lungo la gamba, prima parla con il medico.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2212,
+  "id": "s12",
+  "who": "R",
+  "text": "Poi, nei miei programmi, scelgo esercizi e varianti seduta dopo seduta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2213,
+  "id": "s13",
+  "who": "R",
+  "text": "Vuoi ripartire nel modo giusto? Scrivimi analisi in privato.",
+  "cfg": 0.4
+ }
+]
