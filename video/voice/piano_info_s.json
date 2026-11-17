@@ -1,0 +1,106 @@
+[
+ {
+  "slot": "s01",
+  "id": "s01",
+  "who": "R",
+  "text": "Hai mal di schiena e pensi che la cosa migliore sia stare fermo?",
+  "at": 0.24,
+  "speed": 1.1
+ },
+ {
+  "slot": "s02",
+  "id": "s02",
+  "who": "R",
+  "text": "La ricerca dice un'altra cosa.",
+  "at": 3.44,
+  "speed": 1.1
+ },
+ {
+  "slot": "s03",
+  "id": "s03",
+  "who": "R",
+  "text": "Quando la schiena fa male, viene naturale proteggerla: divano, niente sforzi, aspettare che passi.",
+  "at": 7.16,
+  "speed": 1.1
+ },
+ {
+  "slot": "s04",
+  "id": "s04",
+  "who": "R",
+  "text": "Ma se il dolore dura da mesi, stare fermi spesso non aiuta.",
+  "at": 12.82,
+  "speed": 1.1
+ },
+ {
+  "slot": "s05",
+  "id": "s05",
+  "who": "R",
+  "text": "I muscoli si indeboliscono, e i movimenti di tutti i giorni fanno sempre più paura.",
+  "at": 16.1,
+  "speed": 1.1
+ },
+ {
+  "slot": "s06",
+  "id": "s06",
+  "who": "R",
+  "text": "Una grande revisione scientifica del duemilaventuno ha raccolto centinaia di studi.",
+  "at": 20.08,
+  "speed": 1.1
+ },
+ {
+  "slot": "s07",
+  "id": "s07",
+  "who": "R",
+  "text": "Nel mal di schiena cronico, l'esercizio riduce dolore e limitazioni rispetto a nessun trattamento.",
+  "at": 24.35,
+  "speed": 1.1
+ },
+ {
+  "slot": "s08",
+  "id": "s08",
+  "who": "R",
+  "text": "La strada è il movimento graduale.",
+  "at": 29.5,
+  "speed": 1.1
+ },
+ {
+  "slot": "s09",
+  "id": "s09",
+  "who": "R",
+  "text": "Esercizi per glutei, schiena e addome, con carichi bassi all'inizio.",
+  "at": 31.86,
+  "speed": 1.1
+ },
+ {
+  "slot": "s10",
+  "id": "s10",
+  "who": "R",
+  "text": "E si aumenta quando il corpo risponde bene.",
+  "at": 35.93,
+  "speed": 1.1
+ },
+ {
+  "slot": "s11",
+  "id": "s11",
+  "who": "R",
+  "text": "Se il dolore è forte, improvviso o scende lungo la gamba, prima parla con il medico.",
+  "at": 38.33,
+  "speed": 1.1
+ },
+ {
+  "slot": "s12",
+  "id": "s12",
+  "who": "R",
+  "text": "Poi, nei miei programmi, scelgo esercizi e varianti seduta dopo seduta.",
+  "at": 42.93,
+  "speed": 1.1
+ },
+ {
+  "slot": "s13",
+  "id": "s13",
+  "who": "R",
+  "text": "Vuoi ripartire nel modo giusto? Scrivimi analisi in privato.",
+  "at": 47.37,
+  "speed": 1.1
+ }
+]

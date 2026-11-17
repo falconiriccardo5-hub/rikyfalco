@@ -123,7 +123,7 @@ const Curve: React.FC<{a: number; until: number; title: string; xLabel: string; 
 };
 
 /** numero grande che conta */
-const BigNum: React.FC<{a: number; from?: number; to: number; dur?: number; top?: number; label: string; col?: string; fmt?: (n: number) => string; strike?: number}> = ({a, from = 0, to, dur = 1.0, top = 420, label, col = C.blue, fmt = (n) => Math.round(n).toLocaleString('it-IT'), strike}) => {
+const BigNum: React.FC<{a: number; from?: number; to: number; dur?: number; top?: number; label: string; col?: string; fmt?: (n: number) => string; strike?: number}> = ({a, from = 0, to, dur = 1.0, top = 420, label, col = C.blue, fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'), strike}) => {
   const t = useT();
   const p = prog(t, a, a + dur, E.out);
   const s = strike ? prog(t, strike, strike + 0.3, E.back) : 0;
@@ -240,7 +240,7 @@ const ERm = eM as number[];
 const SCm: Record<string, SceneFC> = {
   m01: ({a, b}) => (
     <Gym a={a} b={b}>
-      <Burst t0={a + 0.2} x={830} y={430} text="30+" color={C.blue} size={90} rot={8} hold={30} />
+      <Burst t0={a + 0.2} x={830} y={760} text="30+" color={C.blue} size={90} rot={8} hold={30} />
     </Gym>
   ),
   m02: ({a}) => (
@@ -264,7 +264,7 @@ const SCm: Record<string, SceneFC> = {
       <Bars a={a} title="MUSCOLO SENZA ALLENAMENTO" max={1} bars={[{label: '30 ANNI', v: 1, val: '100%'}, {label: '40', v: 0.93, val: ''}, {label: '50', v: 0.86, val: ''}, {label: '60', v: 0.78, val: '↓', col: C.red}]} />
     </Paper>
   ),
-  m05: ({a}) => <Mirror a={a} eqAt={TM.wd('m05')[5]} labels={['ALLO SPECCHIO', 'NELLA VITA']} />,
+  m05: ({a}) => <Mirror a={a} eqAt={TM.wd('m05')[5]} labels={['SPECCHIO', 'VITA']} />,
   m06: ({a, b}) => {
     const w = TM.wd('m06');
     return (
@@ -368,7 +368,7 @@ const SCs: Record<string, SceneFC> = {
   s07: ({a}) => (
     <Paper>
       <Curve a={a} until={TS.en('s07')} title="DOLORE NEL TEMPO" xLabel="SETTIMANE DI ESERCIZIO" yLabel="DOLORE ↓" ref2 />
-      <Tag t0={TS.wd('s07')[6]} at={[540, 1180]} text="ESERCIZIO > NESSUN TRATTAMENTO" bg={C.blue} fg="#fff" size={40} />
+      <Tag t0={TS.wd('s07')[6]} at={[540, 1150]} text="ESERCIZIO > NESSUN TRATTAMENTO" bg={C.blue} fg="#fff" size={40} />
     </Paper>
   ),
   s08: ({a}) => (
@@ -425,8 +425,8 @@ const SCd: Record<string, SceneFC> = {
     const w = TD.wd('d01');
     return (
       <TwoGirls a={a} b={b} good={prog(useT(), w[6], w[9])}>
-        <Tag t0={a + 0.1} at={[290, 380]} text="STESSA DIETA" bg="#fff" size={40} />
-        <Tag t0={w[2]} at={[790, 380]} text="STESSE CALORIE" bg="#fff" size={40} />
+        <Tag t0={a + 0.1} at={[290, 600]} text="STESSA DIETA" bg="#fff" size={40} />
+        <Tag t0={w[2]} at={[790, 600]} text="STESSE CALORIE" bg="#fff" size={40} />
         <Tag t0={w[8]} at={[790, 1250]} text="MENO GRASSO PERSO" bg={C.red} fg="#fff" size={36} />
       </TwoGirls>
     );
@@ -448,7 +448,7 @@ const SCd: Record<string, SceneFC> = {
   },
   d04: ({a, b}) => (
     <Gym a={a} b={b} girl={{lid: 0.6, smile: -0.3}}>
-      <Tag t0={a + 0.1} at={[700, 420]} text="SOLO STANCHEZZA?" bg={C.ink} fg="#fff" size={50} />
+      <Tag t0={a + 0.1} at={[700, 300]} text="SOLO STANCHEZZA?" bg={C.ink} fg="#fff" size={50} />
     </Gym>
   ),
   d05: ({a}) => {
@@ -502,7 +502,7 @@ const SCd: Record<string, SceneFC> = {
   },
   d11: ({a}) => {
     const w = TD.wd('d11');
-    return <TrustChips env={ERd} a={a} title={['QUANDO IMPOSTO UN PERCORSO', 'GUARDO TUTTA LA GIORNATA']} chips={[{txt: 'Sonno', at: w[6]}, {txt: 'Passi', at: w[8]}, {txt: 'Allenamento', at: w[10]}]} />;
+    return <TrustChips env={ERd} a={a} title={['IMPOSTO IL PERCORSO', 'SU TUTTA LA GIORNATA']} chips={[{txt: 'Sonno', at: w[6]}, {txt: 'Passi', at: w[8]}, {txt: 'Allenamento', at: w[10]}]} />;
   },
   d12: ({a, b}) => (
     <Gym a={a} b={b} mode="squat" girl={{smile: 1, quads: 0.6}}>
@@ -521,8 +521,8 @@ const ERp = eP as number[];
 const SCp: Record<string, SceneFC> = {
   p01: ({a}) => (
     <Paper>
-      <BigNum a={a} to={10000} label="PASSI AL GIORNO" top={480} />
-      <Burst t0={TP.wd('p01')[4]} x={860} y={420} text="?" color={C.blue} size={110} hold={30} />
+      <BigNum a={a} to={10000} label="PASSI AL GIORNO" top={620} />
+      <Burst t0={TP.wd('p01')[4]} x={880} y={600} text="?" color={C.blue} size={110} hold={30} />
     </Paper>
   ),
   p02: ({a}) => (

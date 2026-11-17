@@ -1,0 +1,106 @@
+[
+ {
+  "slot": "d01",
+  "id": "d01",
+  "who": "R",
+  "text": "Stessa dieta, stesse calorie. Ma una persona perde molto meno grasso.",
+  "at": 0.3,
+  "speed": 1.1
+ },
+ {
+  "slot": "d02",
+  "id": "d02",
+  "who": "R",
+  "text": "Indovina perché.",
+  "at": 4.38,
+  "speed": 1.1
+ },
+ {
+  "slot": "d03",
+  "id": "d03",
+  "who": "R",
+  "text": "Lavoro, figli, telefono fino a tardi: alla fine si dorme cinque ore.",
+  "at": 5.54,
+  "speed": 1.1
+ },
+ {
+  "slot": "d04",
+  "id": "d04",
+  "who": "R",
+  "text": "Sembra solo stanchezza.",
+  "at": 9.62,
+  "speed": 1.1
+ },
+ {
+  "slot": "d05",
+  "id": "d05",
+  "who": "R",
+  "text": "In uno studio, persone a dieta hanno dormito prima otto ore e mezza, poi cinque ore e mezza.",
+  "at": 11.32,
+  "speed": 1.1
+ },
+ {
+  "slot": "d06",
+  "id": "d06",
+  "who": "R",
+  "text": "Due settimane per ciascuna condizione.",
+  "at": 16.46,
+  "speed": 1.1
+ },
+ {
+  "slot": "d07",
+  "id": "d07",
+  "who": "R",
+  "text": "Con meno sonno hanno perso circa il cinquantacinque per cento di grasso in meno.",
+  "at": 18.58,
+  "speed": 1.1
+ },
+ {
+  "slot": "d08",
+  "id": "d08",
+  "who": "R",
+  "text": "E una parte maggiore del peso perso era muscolo. In più, avevano più fame.",
+  "at": 22.7,
+  "speed": 1.1
+ },
+ {
+  "slot": "d09",
+  "id": "d09",
+  "who": "R",
+  "text": "Non serve essere perfetti.",
+  "at": 26.92,
+  "speed": 1.1
+ },
+ {
+  "slot": "d10",
+  "id": "d10",
+  "who": "R",
+  "text": "Orario fisso per andare a letto, schermi giù mezz'ora prima, e allenamenti non troppo tardi se ti agitano.",
+  "at": 28.53,
+  "speed": 1.1
+ },
+ {
+  "slot": "d11",
+  "id": "d11",
+  "who": "R",
+  "text": "Quando imposto un percorso guardo anche il sonno, non solo la scheda.",
+  "at": 34.94,
+  "speed": 1.1
+ },
+ {
+  "slot": "d12",
+  "id": "d12",
+  "who": "R",
+  "text": "Perché il dimagrimento si gioca anche fuori dalla palestra.",
+  "at": 38.28,
+  "speed": 1.1
+ },
+ {
+  "slot": "d13",
+  "id": "d13",
+  "who": "R",
+  "text": "Vuoi un piano che tenga conto di tutta la tua giornata? Scrivimi analisi in privato.",
+  "at": 40.97,
+  "speed": 1.1
+ }
+]

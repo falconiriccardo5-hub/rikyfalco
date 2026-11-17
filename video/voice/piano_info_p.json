@@ -1,0 +1,106 @@
+[
+ {
+  "slot": "p01",
+  "id": "p01",
+  "who": "R",
+  "text": "Diecimila passi al giorno. Sai da dove arriva questo numero?",
+  "at": 0.23,
+  "speed": 1.1
+ },
+ {
+  "slot": "p02",
+  "id": "p02",
+  "who": "R",
+  "text": "Non dalla ricerca scientifica.",
+  "at": 3.53,
+  "speed": 1.1
+ },
+ {
+  "slot": "p03",
+  "id": "p03",
+  "who": "R",
+  "text": "Arriva da un contapassi giapponese degli anni sessanta, lanciato con una campagna pubblicitaria.",
+  "at": 5.47,
+  "speed": 1.1
+ },
+ {
+  "slot": "p04",
+  "id": "p04",
+  "who": "R",
+  "text": "E così chi fa seimila passi pensa che non servano a niente.",
+  "at": 10.15,
+  "speed": 1.1
+ },
+ {
+  "slot": "p05",
+  "id": "p05",
+  "who": "R",
+  "text": "Invece una grande analisi su circa quarantasettemila adulti, pubblicata nel duemilaventidue, dice un'altra cosa.",
+  "at": 13.81,
+  "speed": 1.1
+ },
+ {
+  "slot": "p06",
+  "id": "p06",
+  "who": "R",
+  "text": "Ogni passo in più conta.",
+  "at": 19.47,
+  "speed": 1.1
+ },
+ {
+  "slot": "p07",
+  "id": "p07",
+  "who": "R",
+  "text": "Il rischio di mortalità scendeva con l'aumentare dei passi.",
+  "at": 20.94,
+  "speed": 1.1
+ },
+ {
+  "slot": "p08",
+  "id": "p08",
+  "who": "R",
+  "text": "Fino a stabilizzarsi intorno a seimila, ottomila passi al giorno per gli over sessanta, e ottomila, diecimila per i più giovani.",
+  "at": 24.2,
+  "speed": 1.1
+ },
+ {
+  "slot": "p09",
+  "id": "p09",
+  "who": "R",
+  "text": "Se oggi ne fai tremila, non puntare subito a diecimila.",
+  "at": 30.42,
+  "speed": 1.1
+ },
+ {
+  "slot": "p10",
+  "id": "p10",
+  "who": "R",
+  "text": "Aggiungine mille a settimana.",
+  "at": 33.52,
+  "speed": 1.1
+ },
+ {
+  "slot": "p11",
+  "id": "p11",
+  "who": "R",
+  "text": "Passi dopo pranzo, scale invece dell'ascensore, telefonate camminando.",
+  "at": 35.4,
+  "speed": 1.1
+ },
+ {
+  "slot": "p12",
+  "id": "p12",
+  "who": "R",
+  "text": "Nei miei percorsi i passi sono un obiettivo che facciamo salire insieme, accanto all'allenamento di forza.",
+  "at": 39.2,
+  "speed": 1.1
+ },
+ {
+  "slot": "p13",
+  "id": "p13",
+  "who": "R",
+  "text": "Vuoi sapere quanti passi e quanti allenamenti servono a te? Scrivimi analisi in privato.",
+  "at": 45.52,
+  "speed": 1.1
+ }
+]

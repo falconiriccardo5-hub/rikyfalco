@@ -1,0 +1,106 @@
+[
+ {
+  "slot": "m01",
+  "id": "m01",
+  "who": "R",
+  "text": "Dopo i trent'anni il tuo corpo inizia a perdere una cosa preziosa.",
+  "at": 0.24,
+  "speed": 1.1
+ },
+ {
+  "slot": "m02",
+  "id": "m02",
+  "who": "R",
+  "text": "E quasi nessuno se ne accorge.",
+  "at": 4.48,
+  "speed": 1.1
+ },
+ {
+  "slot": "m03",
+  "id": "m03",
+  "who": "R",
+  "text": "È il muscolo.",
+  "at": 6.17,
+  "speed": 1.1
+ },
+ {
+  "slot": "m04",
+  "id": "m04",
+  "who": "R",
+  "text": "Senza allenamento, la massa muscolare tende a calare un po' a ogni decennio.",
+  "at": 8.94,
+  "speed": 1.1
+ },
+ {
+  "slot": "m05",
+  "id": "m05",
+  "who": "R",
+  "text": "Non lo vedi subito allo specchio. Lo senti nella vita di tutti i giorni.",
+  "at": 12.71,
+  "speed": 1.1
+ },
+ {
+  "slot": "m06",
+  "id": "m06",
+  "who": "R",
+  "text": "Le scale pesano di più, le borse della spesa sembrano più pesanti, alzarsi da terra costa fatica.",
+  "at": 16.33,
+  "speed": 1.1
+ },
+ {
+  "slot": "m07",
+  "id": "m07",
+  "who": "R",
+  "text": "La buona notizia? Il muscolo risponde a ogni età.",
+  "at": 22.07,
+  "speed": 1.1
+ },
+ {
+  "slot": "m08",
+  "id": "m08",
+  "who": "R",
+  "text": "L'Organizzazione Mondiale della Sanità consiglia esercizi di forza almeno due giorni a settimana.",
+  "at": 25.08,
+  "speed": 1.1
+ },
+ {
+  "slot": "m09",
+  "id": "m09",
+  "who": "R",
+  "text": "Bastano esercizi semplici: squat, spinte e tirate.",
+  "at": 29.84,
+  "speed": 1.1
+ },
+ {
+  "slot": "m10",
+  "id": "m10",
+  "who": "R",
+  "text": "E un carico che aumenta un poco alla volta.",
+  "at": 33.46,
+  "speed": 1.1
+ },
+ {
+  "slot": "m11",
+  "id": "m11",
+  "who": "R",
+  "text": "Nei miei programmi misuriamo forza e carichi a ogni controllo.",
+  "at": 35.64,
+  "speed": 1.1
+ },
+ {
+  "slot": "m12",
+  "id": "m12",
+  "who": "R",
+  "text": "Così vedi il muscolo che lavora, non solo lo specchio.",
+  "at": 38.82,
+  "speed": 1.1
+ },
+ {
+  "slot": "m13",
+  "id": "m13",
+  "who": "R",
+  "text": "Vuoi sapere da dove partire? Scrivimi analisi in privato.",
+  "at": 41.83,
+  "speed": 1.1
+ }
+]

@@ -1,0 +1,23 @@
+[
+ {
+  "n": 2160,
+  "id": "m10",
+  "who": "R",
+  "text": "E un carico che aumenta un poco alla volta.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2356,
+  "id": "d06",
+  "who": "R",
+  "text": "Due settimane per ciascuna condizione.",
+  "cfg": 0.4
+ },
+ {
+  "n": 2456,
+  "id": "p06",
+  "who": "R",
+  "text": "Ogni passo in più conta.",
+  "cfg": 0.4
+ }
+]

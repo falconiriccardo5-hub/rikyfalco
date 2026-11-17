@@ -8,6 +8,7 @@ import {Video11, DURATION} from './Video11';
 import {Video12, DURATION12} from './v12/Video12';
 import {Video13, Video13Solo, DURATION13, VW, VH} from './v13/Video13';
 import {Video13Clone, DURATION13C} from './v13/Video13Clone';
+import {InfoMuscolo, InfoSchiena, InfoSonno, InfoPassi, DUR_INFO} from './v13/Info';
 import {Video14, DURATION14} from './v13/Video14';
 import {Video15, DURATION15} from './v13/Video15';
 import {Video16, DURATION16} from './v13/Video16';
@@ -32,6 +33,10 @@ export const Root: React.FC = () => (
   <Composition id="Slide2" component={Mese2Slide} durationInFrames={1} fps={30} width={SW2} height={SH2} defaultProps={{deck: "postura", index: 0}} />
   <Composition id="Video13" component={Video13} durationInFrames={DURATION13} fps={30} width={VW} height={VH} />
   <Composition id="Video13Solo" component={Video13Solo} durationInFrames={DURATION13} fps={30} width={VW} height={VH} />
+  <Composition id="InfoMuscolo" component={InfoMuscolo} durationInFrames={DUR_INFO.m} fps={30} width={VW} height={VH} />
+  <Composition id="InfoSchiena" component={InfoSchiena} durationInFrames={DUR_INFO.s} fps={30} width={VW} height={VH} />
+  <Composition id="InfoSonno" component={InfoSonno} durationInFrames={DUR_INFO.d} fps={30} width={VW} height={VH} />
+  <Composition id="InfoPassi" component={InfoPassi} durationInFrames={DUR_INFO.p} fps={30} width={VW} height={VH} />
   <Composition id="Video13Clone" component={Video13Clone} durationInFrames={DURATION13C} fps={30} width={VW} height={VH} />
   <Composition id="Video14" component={Video14} durationInFrames={DURATION14} fps={30} width={VW} height={VH} />
   <Composition id="Video15" component={Video15} durationInFrames={DURATION15} fps={30} width={VW} height={VH} />
