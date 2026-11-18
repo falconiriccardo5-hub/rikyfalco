@@ -9,6 +9,7 @@ import {ik2, Pt} from './Girl';
 import {Tag, StepCard, Burst, Sparkles, KeywordCTA, Handle} from './kit';
 import {Paper, BigSign, RiseChart, LogTable} from './common';
 import {ChipList, BigNum, Week, Duo2, Clock, Gym} from './Info';
+import {TimeLapse, ChairLoop, Aging, Stairs, Training, Compare, HoursBar} from './Broll';
 import c1 from '../clone/c1_schiena.json';
 import c2 from '../clone/c2_hip_thrust.json';
 import c3 from '../clone/c3_impiegato.json';
@@ -497,33 +498,53 @@ const S4: Sc[] = [
 const W6 = wordsOf(c6 as Data);
 const f6 = finder(W6);
 const S6: Sc[] = [
-  ({a}) => (
-    <Paper>
-      <BigNum a={a + 0.3} from={2026} to={2031} dur={1.5} label="IN CHE FORMA?" top={380} fmt={(n) => String(Math.round(n))} />
-    </Paper>
-  ),
+  // 0 · hook: gli anni scorrono
+  ({a}) => <TimeLapse a={a} askAt={f6('in che forma', a)} />,
+  // 1 · scenario 1: sedia e rimandi
   ({a, b}) => (
-    <Gym a={a} b={b} mode="hurt" girl={{lumbar: 0.6}}>
+    <ChairLoop a={a} b={b}>
       <StepCard n="1" title="Continui così" t0={a + 0.05} bad />
-      <Tag t0={f6('comincio', a)} at={[740, 330]} text="«COMINCIO LUNEDÌ»" bg="#fff" size={44} />
-      <Tag t0={f6('la schiena', a)} at={[740, 440]} text="SCHIENA RIGIDA" bg={C.red} fg="#fff" size={44} />
-      <Tag t0={f6('i jeans', a)} at={[740, 550]} text="JEANS STRETTI" bg={C.red} fg="#fff" size={44} />
-      <Tag t0={f6('fiatone', a)} at={[740, 660]} text="FIATONE" bg={C.red} fg="#fff" size={44} />
-    </Gym>
+      <Tag t0={f6('sedia', a)} at={[300, 1150]} text="STESSA SEDIA" bg="#fff" size={44} />
+      <Tag t0={f6('comincio', a)} at={[790, 640]} text="«COMINCIO LUNEDÌ»" bg={C.red} fg="#fff" size={40} />
+    </ChairLoop>
   ),
+  // 2 · invecchiamento: schiena rigida, jeans stretti
   ({a, b}) => (
-    <Gym a={a} b={b} mode="squat" girl={{quads: 0.9, smile: 1}}>
-      <StepCard n="2" title="Inizi questa settimana" t0={a + 0.05} />
-      <Tag t0={f6('2', a)} at={[760, 360]} text="2–3 VOLTE" bg={C.blue} fg="#fff" size={46} />
-      <Tag t0={f6('piano chiaro', a)} at={[760, 470]} text="PIANO CHIARO" bg={C.blue} fg="#fff" size={46} />
-      <Tag t0={f6('più forte', a)} at={[760, 580]} text="OGNI MESE PIÙ FORTE ↑" bg={C.ink} fg="#fff" size={40} />
-    </Gym>
+    <AbsoluteFill>
+      <Aging a={a} b={b} stiffAt={f6('irrigidisce', a)} jeansAt={f6('jeans', a)} />
+      <Tag t0={f6('irrigidisce', a)} at={[300, 300]} text="SCHIENA RIGIDA" bg={C.red} fg="#fff" size={46} />
+      <Tag t0={f6('jeans', a)} at={[330, 1050]} text="JEANS STRETTI" bg={C.red} fg="#fff" size={46} />
+    </AbsoluteFill>
   ),
+  // 3 · scale col fiatone
   ({a}) => (
-    <Paper>
-      <BigSign t0={a + 0.05} top={260} size={60}>NON È IL TEMPO<br />CHE HAI</BigSign>
-      <BigNum a={f6('sono due', a)} to={3} dur={0.4} label="ORE A SETTIMANA USATE BENE" top={620} fmt={(n) => `2–${Math.round(n)}`} />
-    </Paper>
+    <Stairs a={a} heavy>
+      <Tag t0={f6('scale', a)} at={[260, 170]} text="SCALE PESANTI" bg={C.red} fg="#fff" size={46} />
+      <Tag t0={f6('fiatone', a)} at={[790, 420]} text="FIATONE" bg={C.red} fg="#fff" size={56} />
+    </Stairs>
+  ),
+  // 4 · scenario 2: allenamento
+  ({a, b}) => (
+    <Training a={a} b={b}>
+      <StepCard n="2" title="Inizi questa settimana" t0={a + 0.05} />
+      <Tag t0={f6('2', a)} at={[300, 300]} text="2–3 VOLTE" bg={C.blue} fg="#fff" size={46} />
+      <Tag t0={f6('piano chiaro', a)} at={[330, 400]} text="PIANO CHIARO" bg={C.blue} fg="#fff" size={46} />
+      <Tag t0={f6('non cambia', a)} at={[320, 1160]} text="NON TUTTO SUBITO" bg="#fff" size={40} />
+    </Training>
+  ),
+  // 5 · scale leggere
+  ({a}) => (
+    <Stairs a={a}>
+      <Tag t0={a + 0.1} at={[290, 170]} text="OGNI MESE PIÙ FORTE ↑" bg={C.blue} fg="#fff" size={44} />
+      <Tag t0={f6('muovi meglio', a)} at={[780, 440]} text="TI MUOVI MEGLIO" bg={C.ink} fg="#fff" size={44} />
+    </Stairs>
+  ),
+  // 6 · confronto + 3 ore su 168
+  ({a}) => (
+    <AbsoluteFill>
+      <Compare a={a} />
+      <HoursBar a={f6('sono due', a)} />
+    </AbsoluteFill>
   ),
   ({a}) => (
     <Paper>

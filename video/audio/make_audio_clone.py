@@ -77,6 +77,14 @@ def build_sfx():
     tc = W[SL[-1]][0]
     S.add(M.impact(0.9, 54, 0.9), tc + 0.3, 0.7); S.add(M.sparkle(1318.5, 6), tc + 0.5, 0.6); S.add(M.chime(523.25, 2.0), tc + 0.5, 0.3)
 
+    if K == 'c6_cinque_anni':  # suoni dei b-roll illustrati
+        for i in range(14):
+            S.add(M.tick(2400 if i % 2 else 1900), 0.4 + i * 0.22, 0.35)
+        S.add(M.tick(900), 11.45, 0.6); S.add(M.tick(700), 11.6, 0.6)
+        S.add(M.pop(420, 0.2, 1.4), 13.62, 0.5)
+        for i in range(9):
+            S.add(M.thud(0.18, 70), 15.2 + i * 0.36, 0.55); S.add(M.thud(0.14, 62), 15.33 + i * 0.36, 0.4)
+        S.add(M.chime(1046.5, 0.8), 30.8, 0.3)
     ir = M.reverb_ir()
     S.L += M.fftconv(S.L, ir)[:TOTAL] * 0.14
     S.R += M.fftconv(S.R, np.roll(ir, 211))[:TOTAL] * 0.14
