@@ -21,7 +21,7 @@ const slots = (k: string) => Array.from({length: 13}, (_, i) => `${k}${String(i 
 
 /* ------------------------------------------------------------------ componenti */
 /** elenco di voci che entrano sulle parole */
-const ChipList: React.FC<{items: {txt: string; at: number}[]; top?: number; bad?: boolean; left?: number}> = ({items, top = 520, bad, left = 70}) => {
+export const ChipList: React.FC<{items: {txt: string; at: number}[]; top?: number; bad?: boolean; left?: number}> = ({items, top = 520, bad, left = 70}) => {
   const t = useT();
   return (
     <div style={{position: 'absolute', left, right: 70, top, display: 'flex', flexDirection: 'column', gap: 26}}>
@@ -39,7 +39,7 @@ const ChipList: React.FC<{items: {txt: string; at: number}[]; top?: number; bad?
 };
 
 /** barre verticali con etichette (confronti, cali, crescite) */
-const Bars: React.FC<{a: number; title: string; bars: {label: string; v: number; val?: string; col?: string; at?: number}[]; top?: number; max?: number}> = ({a, title, bars, top = 330, max = 1}) => {
+export const Bars: React.FC<{a: number; title: string; bars: {label: string; v: number; val?: string; col?: string; at?: number}[]; top?: number; max?: number}> = ({a, title, bars, top = 330, max = 1}) => {
   const t = useT();
   const H = 620;
   return (
@@ -67,7 +67,7 @@ const Bars: React.FC<{a: number; title: string; bars: {label: string; v: number;
 };
 
 /** griglia di "studi" che si riempie */
-const StudyGrid: React.FC<{a: number; n?: number; title: string; sub: string; until: number}> = ({a, n = 48, title, sub, until}) => {
+export const StudyGrid: React.FC<{a: number; n?: number; title: string; sub: string; until: number}> = ({a, n = 48, title, sub, until}) => {
   const t = useT();
   const k = Math.floor(prog(t, a + 0.3, until, E.inOut) * n);
   return (
@@ -88,7 +88,7 @@ const StudyGrid: React.FC<{a: number; n?: number; title: string; sub: string; un
 };
 
 /** grafico a linee: curva che scende e si appiattisce (con fasce opzionali) */
-const Curve: React.FC<{a: number; until: number; title: string; xLabel: string; yLabel: string; ref2?: boolean; bands?: {x0: number; x1: number; label: string; col: string; at: number}[]}> = ({a, until, title, xLabel, yLabel, ref2, bands = []}) => {
+export const Curve: React.FC<{a: number; until: number; title: string; xLabel: string; yLabel: string; ref2?: boolean; bands?: {x0: number; x1: number; label: string; col: string; at: number}[]}> = ({a, until, title, xLabel, yLabel, ref2, bands = []}) => {
   const t = useT();
   const p = prog(t, a + 0.2, until, E.inOut);
   const N = 40;
@@ -123,7 +123,7 @@ const Curve: React.FC<{a: number; until: number; title: string; xLabel: string; 
 };
 
 /** numero grande che conta */
-const BigNum: React.FC<{a: number; from?: number; to: number; dur?: number; top?: number; label: string; col?: string; fmt?: (n: number) => string; strike?: number}> = ({a, from = 0, to, dur = 1.0, top = 420, label, col = C.blue, fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'), strike}) => {
+export const BigNum: React.FC<{a: number; from?: number; to: number; dur?: number; top?: number; label: string; col?: string; fmt?: (n: number) => string; strike?: number}> = ({a, from = 0, to, dur = 1.0, top = 420, label, col = C.blue, fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'), strike}) => {
   const t = useT();
   const p = prog(t, a, a + dur, E.out);
   const s = strike ? prog(t, strike, strike + 0.3, E.back) : 0;
@@ -139,7 +139,7 @@ const BigNum: React.FC<{a: number; from?: number; to: number; dur?: number; top?
 };
 
 /** calendario a settimana con giorni evidenziati */
-const Week: React.FC<{a: number; on: number[]; title: string; top?: number}> = ({a, on, title, top = 420}) => {
+export const Week: React.FC<{a: number; on: number[]; title: string; top?: number}> = ({a, on, title, top = 420}) => {
   const t = useT();
   const D = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
   return (
@@ -162,7 +162,7 @@ const Week: React.FC<{a: number; on: number[]; title: string; top?: number}> = (
 };
 
 /** due card affiancate (es. 8,5 h vs 5,5 h) */
-const Duo2: React.FC<{a: number; items: {big: string; small: string; col: string; at: number; icon?: string}[]; top?: number}> = ({a, items, top = 470}) => {
+export const Duo2: React.FC<{a: number; items: {big: string; small: string; col: string; at: number; icon?: string}[]; top?: number}> = ({a, items, top = 470}) => {
   const t = useT();
   return (
     <div style={{position: 'absolute', left: 0, right: 0, top, display: 'flex', justifyContent: 'center', gap: 40}}>
@@ -170,7 +170,7 @@ const Duo2: React.FC<{a: number; items: {big: string; small: string; col: string
         <div key={i} style={{width: 440, transform: `scale(${prog(t, c.at - 0.1, c.at + 0.25, E.back)})`, ...cardStyle('#fff', 10), overflow: 'hidden', textAlign: 'center', fontFamily: FONT, fontWeight: 900}}>
           <div style={{background: c.col, color: '#fff', fontSize: 40, padding: '10px 0'}}>{c.small}</div>
           {c.icon && <div style={{fontSize: 110, marginTop: 20}}>{c.icon}</div>}
-          <div style={{fontSize: 120, color: C.ink, padding: '10px 0 26px', letterSpacing: -3}}>{c.big}</div>
+          <div style={{fontSize: c.big.length > 5 ? 84 : 120, color: C.ink, padding: '10px 0 26px', letterSpacing: -3}}>{c.big}</div>
         </div>
       ))}
     </div>
@@ -178,7 +178,7 @@ const Duo2: React.FC<{a: number; items: {big: string; small: string; col: string
 };
 
 /** cartello "nota medica" */
-const MedNote: React.FC<{a: number; lines: string[]}> = ({a, lines}) => {
+export const MedNote: React.FC<{a: number; lines: string[]}> = ({a, lines}) => {
   const t = useT();
   return (
     <div style={{position: 'absolute', left: 70, right: 70, top: 380, transform: `scale(${enter(t, a)}) rotate(-1.5deg)`, ...cardStyle('#fff', 12), border: `${OUT + 4}px solid ${C.red}`, padding: '30px 36px 40px'}}>
@@ -196,7 +196,7 @@ const MedNote: React.FC<{a: number; lines: string[]}> = ({a, lines}) => {
 };
 
 /** orologio */
-const Clock: React.FC<{a: number; hour: number; top?: number; label: string}> = ({a, hour, top = 380, label}) => {
+export const Clock: React.FC<{a: number; hour: number; top?: number; label: string}> = ({a, hour, top = 380, label}) => {
   const t = useT();
   const sp = prog(t, a, a + 1.2, E.inOut);
   const h = mix(hour - 4, hour, sp);
@@ -219,7 +219,7 @@ const Clock: React.FC<{a: number; hour: number; top?: number; label: string}> = 
 };
 
 /** ragazza in palestra (camera lenta) */
-const Gym: React.FC<{a: number; b: number; girl?: Partial<React.ComponentProps<typeof GirlSide>>; mode?: 'stand' | 'squat' | 'hinge' | 'hurt'; children?: React.ReactNode; cx?: number}> = ({a, b, girl = {}, mode = 'stand', children, cx = 470}) => {
+export const Gym: React.FC<{a: number; b: number; girl?: Partial<React.ComponentProps<typeof GirlSide>>; mode?: 'stand' | 'squat' | 'hinge' | 'hurt'; children?: React.ReactNode; cx?: number}> = ({a, b, girl = {}, mode = 'stand', children, cx = 470}) => {
   const t = useT();
   const sq = mode === 'squat' ? repH(t, a, 2.0, 0.03, 0.85) : 0;
   const h = mode === 'hinge' ? repH(t, a, 2.6, 0.04, 0.8) : 0.02;
