@@ -9,7 +9,7 @@ import {ik2, Pt} from './Girl';
 import {Tag, StepCard, Burst, Sparkles, KeywordCTA, Handle} from './kit';
 import {Paper, BigSign, RiseChart, LogTable} from './common';
 import {ChipList, BigNum, Week, Duo2, Clock, Gym} from './Info';
-import {TimeLapse, ChairLoop, Aging, Stairs, Training, Compare, HoursBar} from './Broll';
+import {TimeLapse, ChairLoop, Aging, Stairs, Training, Compare, HoursBar, DeskDay, StandUp, ChairShape, Morning, Car, Quit, Shuffle, Straighten, CrunchDays, Layers, WholeBody, Pillars, Leve, Stand} from './Broll';
 import c1 from '../clone/c1_schiena.json';
 import c2 from '../clone/c2_hip_thrust.json';
 import c3 from '../clone/c3_impiegato.json';
@@ -253,35 +253,36 @@ const W1 = wordsOf(c1 as Data, [[['lavoro', 'in'], ['Lavori']], [['alla', 'schie
 const f1 = finder(W1);
 const S1: Sc[] = [
   ({a, b}) => (
-    <Gym a={a} b={b} mode="hurt" girl={{lumbar: 0.8}}>
-      <Burst t0={a + 0.3} x={800} y={520} text="9 ORE" color={C.ink} size={70} hold={30} />
-      <BigSign t0={f1('non è l')} top={250} size={88} bg={C.blue}>NON È L'ETÀ</BigSign>
-    </Gym>
+    <DeskDay a={a} b={b} label="9 ORE SEDUTO">
+      <BigSign t0={f1('non è l')} top={420} size={80} bg={C.blue}>NON È L'ETÀ</BigSign>
+    </DeskDay>
   ),
   ({a, b}) => (
-    <Gym a={a} b={b} mode="hurt">
-      <Tag t0={f1('collo', a)} at={[740, 330]} text="COLLO RIGIDO" bg={C.red} fg="#fff" size={46} />
-      <Tag t0={f1('spalle', a)} at={[740, 450]} text="SPALLE IN AVANTI" bg={C.red} fg="#fff" size={46} />
-      <Tag t0={f1('è normale', a)} at={[540, 230]} text="«È NORMALE…»" bg="#fff" size={52} />
-    </Gym>
+    <StandUp a={a} b={b}>
+      <Tag t0={f1('raddrizzarti', a)} at={[760, 260]} text="RADDRIZZARSI…" bg="#fff" size={46} />
+      <Tag t0={f1('collo', a)} at={[760, 370]} text="COLLO RIGIDO" bg={C.red} fg="#fff" size={46} />
+      <Tag t0={f1('spalle', a)} at={[760, 480]} text="SPALLE IN AVANTI" bg={C.red} fg="#fff" size={46} />
+      <Tag t0={f1('è normale', a)} at={[760, 620]} text="«È NORMALE…»" bg="#fff" size={52} />
+    </StandUp>
   ),
   ({a}) => (
-    <Paper>
-      <BigSign t0={a + 0.05} top={220} size={74}>IL CORPO<br /><span style={{color: C.blue}}>SI ADATTA</span></BigSign>
-      <Clock a={f1('nove ore', a)} hour={6} label="9 ORE SEDUTO" top={560} />
-    </Paper>
+    <ChairShape a={a}>
+      <BigSign t0={a + 0.05} top={180} size={70}>IL CORPO<br /><span style={{color: C.blue}}>SI ADATTA</span></BigSign>
+      <Tag t0={f1('nove ore', a)} at={[760, 620]} text="9 ORE = STESSA FORMA" bg={C.ink} fg="#fff" size={42} />
+    </ChairShape>
   ),
   ({a}) => (
-    <Paper>
-      <Duo2 a={a} top={380} items={[{big: 'SERA', small: 'OGGI IL FASTIDIO', col: C.ink, at: a + 0.2}, {big: 'MATTINO', small: 'DOMANI?', col: C.red, at: f1('mattino', a)}]} />
-      <Tag t0={f1('ogni mese', a)} at={[540, 1000]} text="RIPARTIRE COSTA DI PIÙ" bg={C.red} fg="#fff" size={48} />
-    </Paper>
+    <Morning a={a}>
+      <Tag t0={a + 0.3} at={[300, 220]} text="FASTIDIO DELLA SERA" bg="#fff" size={44} />
+      <Tag t0={f1('mattino', a)} at={[330, 330]} text="→ DEL MATTINO" bg={C.red} fg="#fff" size={50} />
+      <Tag t0={f1('ogni mese', a)} at={[540, 1150]} text="RIPARTIRE COSTA DI PIÙ" bg={C.red} fg="#fff" size={46} />
+    </Morning>
   ),
-  ({a}) => (
-    <Paper>
+  ({a, b}) => (
+    <Training a={a} b={b}>
       <StepCard n="✓" title="La buona notizia" t0={a + 0.05} sub="non servono 2 ore al giorno" />
-      <Week a={a + 0.3} on={[1, 3, 5]} title="2–3 SEDUTE A SETTIMANA" top={430} />
-    </Paper>
+      <Tag t0={f1('due o tre', a)} at={[330, 1160]} text="2–3 SEDUTE A SETTIMANA" bg={C.blue} fg="#fff" size={42} />
+    </Training>
   ),
   ({a, b}) => (
     <Gym a={a} b={b} mode="hinge" girl={{glute: 0.8, lumbarOk: 0.7, plate: 26}}>
@@ -361,10 +362,12 @@ const S2: Sc[] = [
     </HT>
   ),
   ({a}) => (
-    <Paper>
+    <Leve a={a}>
       <StepCard n="RF" title="Nei miei programmi" t0={a + 0.05} />
-      <ChipList top={330} items={[{txt: 'Varianti su misura', at: f2('varianti', a)}, {txt: 'Carichi su come ti muovi', at: f2('carichi', a)}, {txt: 'Ogni corpo ha le sue leve', at: f2('perché ogni', a)}]} />
-    </Paper>
+      <Tag t0={f2('varianti', a)} at={[300, 1100]} text="VARIANTI SU MISURA" bg={C.blue} fg="#fff" size={40} />
+      <Tag t0={f2('carichi', a)} at={[780, 1100]} text="CARICHI SU DI TE" bg={C.ink} fg="#fff" size={40} />
+      <Tag t0={f2('perché ogni', a)} at={[540, 1200]} text="OGNI CORPO HA LE SUE LEVE" bg="#fff" size={42} />
+    </Leve>
   ),
   ({a}) => <Cta a={a} word={f2('scrivimi', a)} />,
 ];
@@ -392,10 +395,10 @@ const Profile: React.FC<{a: number}> = ({a}) => {
 };
 const S3: Sc[] = [
   ({a}) => (
-    <Paper>
+    <Stand x={400} y={540} s={0.72} pose={{hunch: 0.5, belly: 0.4, pain: 1, smile: -0.4, handA: [150, 640]}}>
       <Profile a={a} />
-      <Tag t0={f3('prime 4')} at={[540, 760]} text="LE PRIME 4 SETTIMANE" bg={C.blue} fg="#fff" size={54} />
-    </Paper>
+      <Tag t0={f3('prime 4')} at={[540, 1160]} text="LE PRIME 4 SETTIMANE" bg={C.blue} fg="#fff" size={54} />
+    </Stand>
   ),
   ({a}) => (
     <Paper>
@@ -404,17 +407,30 @@ const S3: Sc[] = [
       <Tag t0={f3('storia', a)} at={[540, 1050]} text="NON UN CLIENTE REALE" bg="#fff" size={42} />
     </Paper>
   ),
+  ({a}) => {
+    const t = useT();
+    const car = f3('1 ora', a);
+    return t < car - 0.1 ? (
+      <DeskDay a={a - 0.6} b={car} from={9} to={17} label="8 ORE IN UFFICIO" />
+    ) : (
+      <Car a={car}>
+        <Tag t0={car} at={[540, 220]} text="1 ORA DI MACCHINA" bg={C.ink} fg="#fff" size={52} />
+      </Car>
+    );
+  },
   ({a}) => (
-    <Paper>
-      <ChipList bad top={300} items={[{txt: '8 ore in ufficio', at: a + 0.1}, {txt: "1 ora di macchina", at: f3('1 ora', a)}, {txt: 'Palestra mollata 3 volte', at: f3('palestra', a)}]} />
-      <BigSign t0={f3('il problema', a)} top={880} size={58}>IL PROBLEMA<br /><span style={{color: C.blue}}>NON ERA LA VOGLIA</span></BigSign>
-    </Paper>
+    <Quit a={a}>
+      <Tag t0={a + 0.1} at={[540, 200]} text="PROVATA E MOLLATA 3 VOLTE" bg={C.red} fg="#fff" size={44} />
+      <BigSign t0={f3('il problema', a)} top={1000} size={52}>IL PROBLEMA <span style={{color: C.blue}}>NON ERA LA VOGLIA</span></BigSign>
+    </Quit>
   ),
   ({a}) => (
-    <Paper>
+    <Shuffle a={a}>
       <StepCard n="✕" title="Era il programma" t0={a + 0.05} bad />
-      <ChipList bad top={330} items={[{txt: '6 esercizi a caso', at: f3('6 esercizi', a)}, {txt: 'Carichi a sensazione', at: f3('carichi', a)}, {txt: 'Nessun giorno di riserva', at: f3('nessun', a)}]} />
-    </Paper>
+      <Tag t0={f3('6 esercizi', a)} at={[540, 960]} text="6 ESERCIZI A CASO" bg={C.red} fg="#fff" size={42} />
+      <Tag t0={f3('carichi', a)} at={[540, 1060]} text="CARICHI A SENSAZIONE" bg={C.red} fg="#fff" size={42} />
+      <Tag t0={f3('nessun', a)} at={[540, 1160]} text="NESSUN GIORNO DI RISERVA" bg={C.red} fg="#fff" size={42} />
+    </Shuffle>
   ),
   ({a}) => (
     <Paper>
@@ -436,11 +452,12 @@ const S3: Sc[] = [
       <LogTable a={a} showAt={f3('carichi', a)} beatAt={f3('così sappiamo', a)} />
     </Paper>
   ),
-  ({a}) => (
-    <Paper>
-      <Duo2 a={a} top={380} items={[{big: '↓', small: 'RIGIDITÀ', col: C.blue, at: f3('meno rigidità', a)}, {big: '0', small: 'SEDUTE SALTATE', col: C.blue, at: f3('non saltare', a)}]} />
-      <Tag t0={a + 0.2} at={[540, 280]} text="OBIETTIVO DEL 1° MESE" bg={C.ink} fg="#fff" size={50} />
-    </Paper>
+  ({a, b}) => (
+    <Straighten a={a} b={b}>
+      <Tag t0={a + 0.2} at={[540, 200]} text="OBIETTIVO DEL 1° MESE" bg={C.ink} fg="#fff" size={50} />
+      <Tag t0={f3('meno rigidità', a)} at={[300, 1120]} text="MENO RIGIDITÀ" bg={C.blue} fg="#fff" size={44} />
+      <Tag t0={f3('non saltare', a)} at={[780, 1120]} text="0 SEDUTE SALTATE" bg={C.blue} fg="#fff" size={44} />
+    </Straighten>
   ),
   ({a}) => <Cta a={a} word={f3('scrivimi', a)} />,
 ];
@@ -450,23 +467,22 @@ const W4 = wordsOf(c4 as Data);
 const f4 = finder(W4);
 const S4: Sc[] = [
   ({a}) => (
-    <Paper>
-      <BigSign t0={a + 0.1} top={300} size={80}>ADDOMINALI<br /><span style={{color: C.blue}}>OGNI GIORNO</span></BigSign>
-      <Burst t0={f4('sempre lì')} x={540} y={900} text="PANCIA UGUALE" color={C.red} size={56} hold={30} />
-      <Stamp t0={f4('è la strategia')} text="STRATEGIA" y={1120} color={C.blue} />
-    </Paper>
+    <CrunchDays a={a}>
+      <BigSign t0={a + 0.1} top={360} size={60} rot={-3}>ADDOMINALI<br /><span style={{color: C.blue}}>OGNI GIORNO</span></BigSign>
+      <Burst t0={f4('sempre lì')} x={400} y={600} text="PANCIA UGUALE" color={C.red} size={40} hold={30} />
+      <Stamp t0={f4('è la strategia')} text="STRATEGIA" x={540} y={1150} color={C.blue} />
+    </CrunchDays>
+  ),
+  ({a}) => (
+    <Layers a={a} fatAt={f4('il grasso', a)}>
+      <Tag t0={f4('non si consuma', a)} at={[540, 1130]} text="NON SI CONSUMA IN QUEL PUNTO" bg={C.red} fg="#fff" size={40} />
+    </Layers>
   ),
   ({a, b}) => (
-    <Gym a={a} b={b} girl={{brace: 1}}>
-      <Tag t0={a + 0.2} at={[740, 330]} text="MUSCOLO ✓" bg={C.blue} fg="#fff" size={50} />
-      <Tag t0={f4('il grasso', a)} at={[740, 450]} text="GRASSO SOPRA ✕" bg={C.red} fg="#fff" size={46} />
-    </Gym>
-  ),
-  ({a, b}) => (
-    <Gym a={a} b={b} girl={{brace: 0.5, glute: 0.5, quads: 0.5}}>
-      <Tag t0={a + 0.2} at={[700, 320]} text="DA TUTTO IL CORPO" bg={C.blue} fg="#fff" size={48} />
-      <Tag t0={f4('pancia e fianchi', a)} at={[700, 440]} text="PANCIA E FIANCHI: PER ULTIMI" bg={C.ink} fg="#fff" size={38} />
-    </Gym>
+    <WholeBody a={a} b={b} lastAt={f4('pancia e fianchi', a)}>
+      <Tag t0={a + 0.2} at={[540, 160]} text="DA TUTTO IL CORPO" bg={C.blue} fg="#fff" size={50} />
+      <Tag t0={f4('pancia e fianchi', a)} at={[780, 1080]} text="PANCIA E FIANCHI: PER ULTIMI" bg={C.ink} fg="#fff" size={36} />
+    </WholeBody>
   ),
   ({a}) => (
     <Paper>
@@ -477,7 +493,7 @@ const S4: Sc[] = [
   ({a}) => (
     <Paper>
       <StepCard n="✓" title="Cosa funziona" t0={a + 0.05} sub="meno spettacolare, ma funziona" />
-      <ChipList top={330} items={[{txt: 'Piccolo deficit calorico', at: f4('piccolo', a)}, {txt: 'Forza per tutto il corpo', at: f4('allenamento di forza', a)}, {txt: 'Abbastanza proteine', at: f4('proteine', a)}, {txt: 'Più passi ogni giorno', at: f4('più passi', a)}]} />
+      <Pillars top={300} items={[{txt: 'Piccolo deficit', at: f4('piccolo', a), icon: 'plate'}, {txt: 'Forza total body', at: f4('allenamento di forza', a), icon: 'db'}, {txt: 'Abbastanza proteine', at: f4('proteine', a), icon: 'egg'}, {txt: 'Più passi', at: f4('più passi', a), icon: 'shoe'}]} />
     </Paper>
   ),
   ({a}) => (

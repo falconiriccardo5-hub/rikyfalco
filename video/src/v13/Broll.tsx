@@ -50,16 +50,19 @@ export type ManPose = {
   smile?: number; // -1..1
   phase?: number; // per animare sudore/fiato
   kb?: boolean; // kettlebell al petto
+  legK?: number; // proporzione gambe (leve)
+  torsoK?: number;
+  neck?: number; // 0..1 alone rosso collo/spalle
 };
 
 /** l'impiegato visto di profilo, rivolto a destra. Piedi a terra ~ y 880 nelle coordinate locali. */
-export const Man: React.FC<ManPose> = ({hip, footA, footB, handA, handB, lean = 0, hunch = 0, belly = 0, gray = 0, pain = 0, sweat = 0, puff = 0, smile = 0.4, phase = 0, kb}) => {
-  const TH = 200;
-  const SH = 196;
+export const Man: React.FC<ManPose> = ({hip, footA, footB, handA, handB, lean = 0, hunch = 0, belly = 0, gray = 0, pain = 0, sweat = 0, puff = 0, smile = 0.4, phase = 0, kb, legK = 1, torsoK = 1, neck = 0}) => {
+  const TH = 200 * legK;
+  const SH = 196 * legK;
   const ang = ((lean + hunch * 26) * Math.PI) / 180;
   const u: Pt = [Math.sin(ang), -Math.cos(ang)]; // anca → spalla
   const n: Pt = [Math.cos(ang), Math.sin(ang)]; // avanti
-  const torso = 250 - hunch * 18;
+  const torso = (250 - hunch * 18) * torsoK;
   const sh = add(hip, u, torso);
   const mid = add(hip, u, torso * 0.55);
   // schiena e pancia
@@ -115,6 +118,7 @@ export const Man: React.FC<ManPose> = ({hip, footA, footB, handA, handB, lean = 
       {pain > 0 && (
         <circle cx={add(add(hip, u, 70), n, -40)[0]} cy={add(add(hip, u, 70), n, -40)[1]} r={50 + 10 * Math.sin(t * 6)} fill={C.red} opacity={0.45 * pain} style={{filter: 'blur(8px)'}} />
       )}
+      {neck > 0 && <circle cx={sh[0] - 10} cy={sh[1] - 10} r={46 + 8 * Math.sin(t * 6)} fill={C.red} opacity={0.45 * neck} style={{filter: 'blur(8px)'}} />}
       {/* gamba davanti */}
       <Limb pts={[add(hip, n, 8), kB, footB]} w={66} col={PANTS} />
       <Shoe f={footB} />
@@ -518,5 +522,494 @@ export const HoursBar: React.FC<{a: number; top?: number}> = ({a, top = 1010}) =
         <span style={{color: C.blue}}>3 ore</span> su 168 a settimana</span>
       </div>
     </div>
+  );
+};
+
+/* ================================================================== b-roll per i reel 1–4 */
+const mixPt = (a: Pt, b: Pt, k: number): Pt => [mix(a[0], b[0], k), mix(a[1], b[1], k)];
+export const mixPose = (A: ManPose, B: ManPose, k: number): ManPose => ({
+  ...B,
+  hip: mixPt(A.hip, B.hip, k),
+  footA: mixPt(A.footA, B.footA, k),
+  footB: mixPt(A.footB, B.footB, k),
+  handA: A.handA && B.handA ? mixPt(A.handA, B.handA, k) : k < 0.5 ? A.handA : B.handA,
+  handB: A.handB && B.handB ? mixPt(A.handB, B.handB, k) : k < 0.5 ? A.handB : B.handB,
+  lean: mix(A.lean ?? 0, B.lean ?? 0, k),
+});
+
+const WallClock: React.FC<{x: number; y: number; h: number; r?: number}> = ({x, y, h, r = 70}) => (
+  <g transform={`translate(${x},${y})`}>
+    <circle r={r} fill="#fff" stroke="#8A5A33" strokeWidth={12} />
+    {Array.from({length: 12}).map((_, i) => (
+      <line key={i} x1={0} y1={-r + 12} x2={0} y2={-r + 22} stroke={C.ink} strokeWidth={4} transform={`rotate(${i * 30})`} />
+    ))}
+    <line x1={0} y1={0} x2={0} y2={-r * 0.48} stroke={C.ink} strokeWidth={8} strokeLinecap="round" transform={`rotate(${h * 30})`} />
+    <line x1={0} y1={0} x2={0} y2={-r * 0.72} stroke={C.ink} strokeWidth={6} strokeLinecap="round" transform={`rotate(${(h % 1) * 360})`} />
+    <circle r={7} fill={C.ink} />
+  </g>
+);
+
+const Desk: React.FC = () => (
+  <g>
+    <rect x={360} y={600} width={520} height={26} rx={8} fill="#C9A47A" stroke={C.ink} strokeWidth={OUT} />
+    <rect x={820} y={626} width={22} height={370} fill="#A5774D" stroke={C.ink} strokeWidth={OUT - 2} />
+    <path d="M 470 598 L 560 470 L 600 470 L 520 598 Z" fill="#5B5F66" stroke={C.ink} strokeWidth={OUT} strokeLinejoin="round" />
+    <rect x={430} y={588} width={190} height={14} rx={5} fill="#7A7F87" stroke={C.ink} strokeWidth={4} />
+    <rect x={700} y={556} width={46} height={44} rx={6} fill="#fff" stroke={C.ink} strokeWidth={4} />
+    <path d="M 746 566 q 18 0 18 14 q 0 12 -18 12" fill="none" stroke={C.ink} strokeWidth={4} />
+  </g>
+);
+const Chair: React.FC<{x?: number}> = ({x = 0}) => (
+  <g transform={`translate(${x},0)`}>
+    <rect x={60} y={340} width={34} height={330} rx={14} fill="#2B2E33" stroke={C.ink} strokeWidth={OUT} transform="rotate(-6 77 670)" />
+    <rect x={70} y={660} width={240} height={34} rx={14} fill="#2B2E33" stroke={C.ink} strokeWidth={OUT} />
+    <rect x={180} y={694} width={20} height={200} fill="#5B5F66" stroke={C.ink} strokeWidth={4} />
+    <path d="M 90 960 L 290 960" stroke={C.ink} strokeWidth={14} strokeLinecap="round" />
+  </g>
+);
+
+const Clock24: React.FC<{h: number; x?: number; top?: number; col?: string; label?: string}> = ({h, x = 800, top = 150, col = C.ink, label}) => {
+  const hh = Math.floor(h);
+  const mm = Math.floor((h - hh) * 60);
+  return <Year y={`${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}` as unknown as number} x={x} top={top} col={col} label={label} />;
+};
+
+/** giornata alla scrivania: l'orologio corre dalle 9 alle 18, fuori si fa sera, la schiena cede */
+export const DeskDay: React.FC<{a: number; b: number; from?: number; to?: number; label?: string; children?: React.ReactNode}> = ({a, b, from = 9, to = 18, label, children}) => {
+  const t = useT();
+  const p = prog(t, a + 0.2, b - 0.4, E.inOut);
+  const h = mix(from, to, p);
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall window={false} />
+        <g transform="translate(560,140)">
+          <rect width={300} height={300} rx={16} fill={lerpCol('#CFE6F5', '#F2B27A', Math.max(0, p * 1.4 - 0.4))} stroke={C.ink} strokeWidth={OUT} />
+          <circle cx={mix(60, 240, p)} cy={mix(70, 230, p)} r={34} fill="#FFE9A8" stroke={C.ink} strokeWidth={4} />
+          <path d="M 0 220 Q 70 186 150 220 T 300 210 L 300 300 L 0 300 Z" fill="#8CC07A" />
+          <line x1={150} y1={0} x2={150} y2={300} stroke={C.ink} strokeWidth={OUT} />
+          <rect x={-14} y={300} width={328} height={22} rx={8} fill="#C9A47A" stroke={C.ink} strokeWidth={OUT} />
+        </g>
+        <WallClock x={420} y={200} h={h} />
+        <Desk />
+        <Chair />
+        <g transform="translate(-10,40)">
+          <Man {...sitPose(t, {hunch: mix(0.15, 0.95, p), belly: 0.35, smile: mix(0.2, -0.6, p), pain: prog(t, b - 1.6, b - 0.8), neck: prog(t, b - 1.4, b - 0.6), handA: [450 + 8 * Math.sin(t * 20), 525], handB: [480 + 8 * Math.cos(t * 22), 528]})} />
+        </g>
+      </SvgFull>
+      <Clock24 h={h} x={830} top={1110} col={p >= 1 ? C.red : C.ink} label={label} />
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** si alza dalla sedia e ci mette un attimo a raddrizzarsi */
+export const StandUp: React.FC<{a: number; b: number; children?: React.ReactNode}> = ({a, b, children}) => {
+  const t = useT();
+  const up = prog(t, a + 0.3, a + 1.4, E.inOut);
+  const straight = prog(t, a + 1.8, b - 1, E.inOut);
+  const sit = sitPose(t, {hunch: 0.9, handA: [300, 640], handB: [330, 650]});
+  const stand = standPose(t, {hunch: mix(0.95, 0.25, straight * 0.8), handA: [150, 650], handB: undefined});
+  const pose = mixPose(sit, {...stand, hip: [330, stand.hip[1]], footA: [310, 880], footB: [354, 880]}, up);
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall />
+        <Chair />
+        <g transform="translate(60,90)">
+          <Man {...pose} belly={0.35} pain={0.9 - straight * 0.4} neck={0.9 - straight * 0.4} smile={-0.6} phase={t} hunch={up < 1 ? 0.9 : pose.hunch} />
+        </g>
+        {/* freccia spalle in avanti */}
+        <g transform="translate(560,480)" opacity={prog(t, a + 1.5, a + 1.9)}>
+          <path d="M 0 0 L 90 0" stroke={C.red} strokeWidth={14} strokeLinecap="round" />
+          <path d="M 70 -22 L 100 0 L 70 22" fill="none" stroke={C.red} strokeWidth={14} strokeLinecap="round" strokeLinejoin="round" />
+        </g>
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** il corpo si adatta: in piedi ma ancora con la "forma della sedia" */
+export const ChairShape: React.FC<{a: number; children?: React.ReactNode}> = ({a, children}) => {
+  const t = useT();
+  const p = prog(t, a + 0.3, a + 1.2, E.out);
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall />
+        {/* sagoma della sedia tratteggiata dietro di lui */}
+        <g opacity={p} transform="translate(140,40)">
+          <path d="M 70 340 L 50 690 L 310 690" fill="none" stroke={C.blue} strokeWidth={10} strokeDasharray="22 16" strokeLinecap="round" />
+        </g>
+        <g transform="translate(150,90)">
+          <Man {...standPose(t, {hunch: 0.85, belly: 0.35, smile: -0.4, neck: 0.6, pain: 0.6})} />
+        </g>
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** risveglio: sveglia, seduto sul letto con la mano sulla schiena */
+export const Morning: React.FC<{a: number; children?: React.ReactNode}> = ({a, children}) => {
+  const t = useT();
+  const ring = Math.sin(t * 50) * 6 * (t - a < 1.4 ? 1 : 0);
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall sky={0} />
+        {/* letto */}
+        <rect x={40} y={700} width={560} height={150} rx={20} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
+        <rect x={40} y={660} width={560} height={60} rx={20} fill="#B79BF2" stroke={C.ink} strokeWidth={OUT} />
+        <rect x={20} y={520} width={40} height={460} rx={12} fill="#A5774D" stroke={C.ink} strokeWidth={OUT} />
+        <rect x={60} y={600} width={150} height={70} rx={30} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
+        <rect x={60} y={850} width={20} height={130} fill="#A5774D" stroke={C.ink} strokeWidth={4} />
+        <rect x={560} y={850} width={20} height={130} fill="#A5774D" stroke={C.ink} strokeWidth={4} />
+        {/* comodino e sveglia */}
+        <rect x={830} y={720} width={190} height={260} rx={10} fill="#C9A47A" stroke={C.ink} strokeWidth={OUT} />
+        <g transform={`translate(925,650) rotate(${ring})`}>
+          <circle r={60} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
+          <text y={16} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={40} fill={C.red}>7:00</text>
+          <circle cx={-44} cy={-52} r={16} fill={C.red} stroke={C.ink} strokeWidth={4} />
+          <circle cx={44} cy={-52} r={16} fill={C.red} stroke={C.ink} strokeWidth={4} />
+        </g>
+        <g transform="translate(300,40)">
+          <Man hip={[200, 650]} footA={[400, 880]} footB={[420, 880]} lean={10} hunch={0.8} belly={0.35} pain={1} neck={0.5} smile={-0.7} handA={[150, 600]} handB={[330, 640]} phase={t} />
+        </g>
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** in macchina nel traffico */
+export const Car: React.FC<{a: number; children?: React.ReactNode}> = ({a, children}) => {
+  const t = useT();
+  const d = t - a;
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <rect x={0} y={0} width={1080} height={1300} fill="#CFE6F5" />
+        <path d={`M ${-200 - (d * 40) % 400} 760 q 200 -120 400 0 t 400 0 t 400 0 t 400 0 t 400 0 L 1600 900 L -200 900 Z`} fill="#8CC07A" />
+        <rect x={0} y={880} width={1080} height={420} fill="#4A4D52" />
+        {Array.from({length: 8}).map((_, i) => (
+          <rect key={i} x={((i * 220 - d * 60) % 1760 + 1760) % 1760 - 200} y={1080} width={120} height={16} fill="#fff" />
+        ))}
+        {/* auto davanti in coda */}
+        <rect x={760} y={760} width={360} height={150} rx={40} fill="#C9C3B8" stroke={C.ink} strokeWidth={OUT} />
+        <circle cx={1000} cy={760} r={22} fill={C.red} opacity={0.6 + 0.4 * Math.sin(t * 8)} stroke={C.ink} strokeWidth={4} />
+        {/* l'impiegato al volante */}
+        <g transform="translate(70,90) scale(0.95)">
+          <Man hip={[260, 700]} footA={[480, 880]} footB={[500, 880]} lean={-12} hunch={0.5} belly={0.35} smile={-0.5} handA={[470, 560]} handB={[490, 570]} phase={t} neck={0.4} />
+        </g>
+        {/* carrozzeria */}
+        <path d="M 30 1000 L 30 760 Q 40 700 120 690 L 200 690 L 260 520 Q 280 470 340 470 L 520 470 Q 570 470 600 520 L 680 690 L 720 700 L 720 1000 Z" fill="none" stroke={C.ink} strokeWidth={OUT} />
+        <path d="M 30 1000 L 30 760 Q 40 700 120 690 L 720 700 L 720 1000 Z" fill={C.blue} stroke={C.ink} strokeWidth={OUT} />
+        <circle cx={500} cy={540} r={60} fill="none" stroke={C.ink} strokeWidth={14} transform="rotate(-20 500 540)" />
+        <circle cx={170} cy={1000} r={78} fill="#2B2E33" stroke={C.ink} strokeWidth={OUT} />
+        <circle cx={590} cy={1000} r={78} fill="#2B2E33" stroke={C.ink} strokeWidth={OUT} />
+        <circle cx={170} cy={1000} r={30} fill={C.steel} />
+        <circle cx={590} cy={1000} r={30} fill={C.steel} />
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** palestra provata e mollata tre volte: settimana 1 ✓ 2 ✓ 3 ✕ */
+export const Quit: React.FC<{a: number; children?: React.ReactNode}> = ({a, children}) => {
+  const t = useT();
+  return (
+    <AbsoluteFill style={{background: '#F6F0E6'}}>
+      <div style={{position: 'absolute', left: 60, right: 60, top: 300, display: 'flex', flexDirection: 'column', gap: 26}}>
+        {[0, 1, 2].map((r) => {
+          const r0 = a + 0.2 + r * 0.9;
+          return (
+            <div key={r} style={{display: 'flex', alignItems: 'center', gap: 18, opacity: prog(t, r0, r0 + 0.2), transform: `translateX(${(1 - prog(t, r0, r0 + 0.3, E.back)) * -80}px)`}}>
+              <div style={{width: 250, fontFamily: FONT, fontWeight: 900, fontSize: 38, color: C.ink}}>PALESTRA #{r + 1}</div>
+              {['SETT 1', 'SETT 2', 'SETT 3'].map((w, i) => {
+                const on = prog(t, r0 + 0.15 + i * 0.2, r0 + 0.35 + i * 0.2, E.back);
+                const bad = i === 2;
+                return (
+                  <div key={i} style={{transform: `scale(${on})`, width: 200, padding: '14px 0', textAlign: 'center', borderRadius: 18, border: `${OUT}px solid ${C.ink}`, background: bad ? C.red : '#fff', color: bad ? '#fff' : C.ink, fontFamily: FONT, fontWeight: 900, fontSize: 34, boxShadow: `6px 6px 0 ${C.ink}`}}>
+                    {w} {bad ? '✕' : '✓'}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+      <SvgFull>
+        <g transform="translate(380,520) scale(0.74)">
+          <Man {...standPose(t, {hunch: 0.3, belly: 0.4, smile: -0.5})} />
+        </g>
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** esercizi a caso: carte che girano attorno all'impiegato confuso */
+export const Shuffle: React.FC<{a: number; children?: React.ReactNode}> = ({a, children}) => {
+  const t = useT();
+  const cards = ['SQUAT?', 'CRUNCH?', 'PANCA?', 'LEG EXT?', 'CURL?', 'TAPIS?'];
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall />
+        <g transform="translate(330,150)">
+          <Man {...standPose(t, {hunch: 0.25, belly: 0.4, smile: -0.3, handB: [330, 310]})} />
+        </g>
+        {cards.map((c, i) => {
+          const ang = (i / cards.length) * Math.PI * 2 + (t - a) * 1.2;
+          const p = prog(t, a + 0.1 + i * 0.12, a + 0.4 + i * 0.12, E.back);
+          const x = 560 + Math.cos(ang) * 400;
+          const y = 560 + Math.sin(ang) * 260;
+          return (
+            <g key={i} transform={`translate(${x},${y}) rotate(${Math.sin(t * 2 + i) * 12}) scale(${p})`}>
+              <rect x={-110} y={-44} width={220} height={88} rx={16} fill={i % 2 ? '#fff' : C.ink} stroke={C.ink} strokeWidth={OUT} />
+              <text y={14} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={36} fill={i % 2 ? C.ink : '#fff'}>{c}</text>
+            </g>
+          );
+        })}
+        {/* dado */}
+        <g transform={`translate(840,880) rotate(${(t - a) * 200})`}>
+          <rect x={-50} y={-50} width={100} height={100} rx={18} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
+          {[[-22, -22], [22, 22], [0, 0], [22, -22], [-22, 22]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={9} fill={C.ink} />)}
+        </g>
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** obiettivo del primo mese: da curvo a dritto, calendario senza buchi */
+export const Straighten: React.FC<{a: number; b: number; children?: React.ReactNode}> = ({a, b, children}) => {
+  const t = useT();
+  const p = prog(t, a + 0.3, a + 2.5, E.inOut);
+  const days = Math.floor(prog(t, a + 0.5, b - 0.5, E.lin) * 12);
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall />
+        <line x1={420} y1={180} x2={420} y2={1000} stroke={C.blue} strokeWidth={8} strokeDasharray="20 14" opacity={p} />
+        <g transform="translate(200,120)">
+          <Man {...standPose(t, {hunch: mix(0.85, 0, p), belly: 0.3, smile: mix(-0.5, 1, p), pain: 1 - p})} />
+        </g>
+        {/* 12 sedute del mese, tutte fatte */}
+        <g transform="translate(640,600)">
+          <rect x={-20} y={-80} width={400} height={360} rx={18} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
+          <text x={180} y={-28} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={34} fill={C.ink}>MESE 1</text>
+          {Array.from({length: 12}).map((_, i) => (
+            <g key={i} transform={`translate(${20 + (i % 4) * 90},${10 + Math.floor(i / 4) * 80})`}>
+              <rect width={66} height={60} rx={12} fill={i < days ? C.blue : '#EEE'} stroke={C.ink} strokeWidth={4} />
+              {i < days && <path d="M 16 30 L 29 42 L 50 18" fill="none" stroke="#fff" strokeWidth={8} strokeLinecap="round" strokeLinejoin="round" />}
+            </g>
+          ))}
+        </g>
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** crunch tutti i giorni, pancia sempre lì: contatore giorni + crunch */
+export const CrunchDays: React.FC<{a: number; children?: React.ReactNode}> = ({a, children}) => {
+  const t = useT();
+  const d = Math.max(0, t - a);
+  const day = Math.min(90, 1 + Math.floor(d * 22));
+  const up = 0.5 - 0.5 * Math.cos(d * Math.PI * 2.4);
+  // crunch: uomo sdraiato (gruppo ruotato) con busto che si solleva
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall />
+        <rect x={140} y={1000} width={800} height={30} rx={12} fill="#2F6F73" stroke={C.ink} strokeWidth={OUT} />
+        <g transform={`translate(560,1000)`}>
+          {/* gambe piegate (sdraiato su un fianco della vista) */}
+          <g transform="translate(-40,0)">
+            <Man
+              hip={[0, -60]}
+              footA={[300, -30]}
+              footB={[320, -30]}
+              lean={mix(-82, -40, up)}
+              hunch={0.4}
+              belly={0.8}
+              smile={-0.4}
+              sweat={0.7}
+              handA={undefined}
+              handB={undefined}
+              phase={t}
+            />
+          </g>
+        </g>
+      </SvgFull>
+      <div style={{position: 'absolute', right: 70, top: 160, textAlign: 'right'}}>
+        <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 40, color: '#fff', background: C.ink, borderRadius: 14, padding: '6px 18px', display: 'inline-block'}}>GIORNO</div>
+        <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 150, color: C.ink, lineHeight: 1}}>{day}</div>
+      </div>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** sezione: pelle / grasso / muscolo — il muscolo cresce, il grasso resta */
+export const Layers: React.FC<{a: number; fatAt: number; children?: React.ReactNode}> = ({a, fatAt, children}) => {
+  const t = useT();
+  const grow = prog(t, a + 0.3, a + 2.2, E.inOut);
+  const hl = prog(t, fatAt, fatAt + 0.4, E.back);
+  const W0 = 860;
+  const X0 = 110;
+  const top = 360;
+  const fatH = 210;
+  const musH = mix(110, 190, grow);
+  return (
+    <AbsoluteFill style={{background: '#F6F0E6'}}>
+      <SvgFull>
+        <rect x={X0} y={top} width={W0} height={40} rx={10} fill="#F3D6BE" stroke={C.ink} strokeWidth={OUT} />
+        <rect x={X0} y={top + 40} width={W0} height={fatH} fill="#F6D57A" stroke={C.ink} strokeWidth={OUT} />
+        {Array.from({length: 22}).map((_, i) => (
+          <circle key={i} cx={X0 + 40 + (i % 11) * 78} cy={top + 95 + Math.floor(i / 11) * 90} r={30} fill="#FBE3A0" stroke="#D9B04E" strokeWidth={3} />
+        ))}
+        <rect x={X0} y={top + 40 + fatH} width={W0} height={musH} fill="#D9645E" stroke={C.ink} strokeWidth={OUT} />
+        {Array.from({length: 9}).map((_, i) => (
+          <line key={i} x1={X0 + 20} y1={top + 40 + fatH + 14 + i * (musH - 28) / 8} x2={X0 + W0 - 20} y2={top + 40 + fatH + 14 + i * (musH - 28) / 8} stroke="#B84A45" strokeWidth={4} />
+        ))}
+        {/* evidenza grasso che resta */}
+        <rect x={X0 - 14} y={top + 26} width={W0 + 28} height={fatH + 28} rx={18} fill="none" stroke={C.red} strokeWidth={10} strokeDasharray="26 16" opacity={hl} />
+      </SvgFull>
+      <div style={{position: 'absolute', left: X0, top: top + 40 + fatH + musH + 30, fontFamily: FONT, fontWeight: 900, fontSize: 44, color: C.ink}}>
+        MUSCOLO <span style={{color: '#fff', background: C.blue, borderRadius: 10, padding: '2px 12px'}}>↑ {Math.round(mix(0, 30, grow))}%</span>
+      </div>
+      <div style={{position: 'absolute', left: X0, top: top - 80, fontFamily: FONT, fontWeight: 900, fontSize: 44, color: C.ink, opacity: hl}}>
+        GRASSO SOPRA <span style={{color: '#fff', background: C.red, borderRadius: 10, padding: '2px 12px'}}>= UGUALE</span>
+      </div>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** il grasso si consuma da tutto il corpo, pancia per ultima */
+export const WholeBody: React.FC<{a: number; b: number; lastAt: number; children?: React.ReactNode}> = ({a, b, lastAt, children}) => {
+  const t = useT();
+  const d = t - a;
+  const belly = mix(1, 0.75, prog(t, lastAt + 0.5, b, E.inOut));
+  const spots: Pt[] = [[270, 330], [330, 560], [250, 700], [280, 860], [330, 1000], [390, 420], [180, 760]];
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall />
+        <g transform="translate(200,140)">
+          <Man {...standPose(t, {belly, smile: 0.3})} />
+        </g>
+        {spots.map((s, i) => {
+          const k = ((d * 0.8 + i / spots.length) % 1 + 1) % 1;
+          return <circle key={i} cx={s[0] + 200 + k * 140 * (i % 2 ? 1 : -1)} cy={s[1] - k * 160} r={18 * (1 - k) + 4} fill="#F6D57A" stroke={C.ink} strokeWidth={3} opacity={(1 - k) * prog(t, a + 0.2, a + 0.6)} />;
+        })}
+        {/* pancia evidenziata: ultima */}
+        <g opacity={prog(t, lastAt, lastAt + 0.4)}>
+          <circle cx={520} cy={640} r={110} fill="none" stroke={C.red} strokeWidth={10} strokeDasharray="22 14" />
+        </g>
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** quattro pilastri: deficit, forza, proteine, passi */
+export const Pillars: React.FC<{items: {at: number; txt: string; icon: 'plate' | 'db' | 'egg' | 'shoe'}[]; top?: number}> = ({items, top = 330}) => {
+  const t = useT();
+  const Icon: React.FC<{k: string}> = ({k}) => (
+    <svg width={150} height={150} viewBox="-75 -75 150 150">
+      {k === 'plate' && (
+        <g>
+          <circle r={62} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
+          <circle r={40} fill="none" stroke={C.ink} strokeWidth={4} />
+          <path d="M -12 -30 a 30 30 0 0 1 40 26" fill="none" stroke={C.blue} strokeWidth={10} strokeLinecap="round" />
+          <text y={70} textAnchor="middle" fontFamily="Inter" fontWeight={900} fontSize={22} fill={C.red}>-300 kcal</text>
+        </g>
+      )}
+      {k === 'db' && (
+        <g transform="rotate(-20)">
+          <rect x={-46} y={-8} width={92} height={16} rx={6} fill={C.steel} stroke={C.ink} strokeWidth={4} />
+          <rect x={-66} y={-34} width={24} height={68} rx={8} fill={C.ink} />
+          <rect x={42} y={-34} width={24} height={68} rx={8} fill={C.ink} />
+        </g>
+      )}
+      {k === 'egg' && (
+        <g>
+          <ellipse cx={-18} cy={4} rx={36} ry={46} fill="#fff" stroke={C.ink} strokeWidth={OUT} />
+          <circle cx={-18} cy={10} r={18} fill="#F6C343" stroke={C.ink} strokeWidth={3} />
+          <path d="M 18 30 Q 40 -40 62 -10 Q 64 20 30 40 Z" fill="#E7A86B" stroke={C.ink} strokeWidth={4} />
+        </g>
+      )}
+      {k === 'shoe' && (
+        <g>
+          <path d="M -60 20 Q -60 -20 -30 -24 L 0 -10 Q 30 0 56 10 Q 66 30 50 36 L -56 36 Z" fill="#fff" stroke={C.ink} strokeWidth={OUT} strokeLinejoin="round" />
+          <path d="M -60 30 L 56 30" stroke={C.blue} strokeWidth={8} />
+        </g>
+      )}
+    </svg>
+  );
+  return (
+    <div style={{position: 'absolute', left: 50, right: 50, top, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 26}}>
+      {items.map((c, i) => {
+        const p = prog(t, c.at - 0.1, c.at + 0.3, E.back);
+        return (
+          <div key={i} style={{transform: `scale(${p})`, opacity: Math.min(1, p * 2), background: '#fff', border: `${OUT}px solid ${C.ink}`, borderRadius: 26, boxShadow: `8px 8px 0 ${C.ink}`, padding: '20px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6}}>
+            <Icon k={c.icon} />
+            <div style={{fontFamily: FONT, fontWeight: 900, fontSize: 36, color: C.ink, textAlign: 'center', lineHeight: 1.1}}>{c.txt}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+/** ogni corpo ha le sue leve: tre proporzioni diverse */
+export const Leve: React.FC<{a: number; children?: React.ReactNode}> = ({a, children}) => {
+  const t = useT();
+  const bodies = [
+    {legK: 1.12, torsoK: 0.9, x: 40},
+    {legK: 0.9, torsoK: 1.08, x: 360},
+    {legK: 1.0, torsoK: 1.0, x: 680},
+  ];
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall window={false} />
+        {bodies.map((bd, i) => {
+          const p = prog(t, a + 0.2 + i * 0.25, a + 0.6 + i * 0.25, E.back);
+          const hipY = 880 - 392 * bd.legK + 6;
+          return (
+            <g key={i} transform={`translate(${bd.x},${230 + (1 - p) * 80}) scale(0.82)`} opacity={p}>
+              <Man hip={[200, hipY]} footA={[180, 880]} footB={[224, 880]} legK={bd.legK} torsoK={bd.torsoK} belly={0.2} gray={0.1} smile={0.6} phase={t} />
+              {/* femore evidenziato */}
+              <line x1={200} y1={hipY} x2={210} y2={hipY + 200 * bd.legK} stroke={C.blue} strokeWidth={12} strokeLinecap="round" opacity={0.85} />
+              <text x={200} y={hipY + 120 * bd.legK} dx={50} fontFamily="Inter" fontWeight={900} fontSize={40} fill={C.blue}>{['LUNGO', 'CORTO', 'MEDIO'][i]}</text>
+            </g>
+          );
+        })}
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** l'impiegato in piedi nello studio, con parametri liberi */
+export const Stand: React.FC<{x?: number; y?: number; s?: number; pose?: Partial<ManPose>; children?: React.ReactNode}> = ({x = 200, y = 140, s = 1, pose = {}, children}) => {
+  const t = useT();
+  return (
+    <AbsoluteFill>
+      <SvgFull>
+        <Wall />
+        <g transform={`translate(${x},${y}) scale(${s})`}>
+          <Man {...standPose(t, pose)} />
+        </g>
+      </SvgFull>
+      {children}
+    </AbsoluteFill>
   );
 };
