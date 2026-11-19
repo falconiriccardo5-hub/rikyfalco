@@ -37,7 +37,8 @@ Non inventare testimonianze, risultati di clienti, prezzi o collaborazioni.
 ## Audio
 - Voce di Riccardo: clonata (Chatterbox, `voice/riferimento.wav`, script `voice/genera_voce13.py`).
 - Voce della ragazza: femminile, giovane, dolce e melodica (Kokoro `if_sara`, vedi `voice/kokoro_tts.py`).
-- Musica **assente o molto bassa**; effetti sonori discreti. Flag "contenuto AI" sui reel con voci sintetiche.
+- **Niente musica di sottofondo** (richiesta del cliente, dal 19/11/2026): solo voce + effetti sonori discreti sulle transizioni.
+  `make_audio_clone.py` ha la musica spenta di default (`MUSIC=1` solo se richiesta esplicitamente). Flag "contenuto AI" sui reel con voci sintetiche.
 
 ## Produzione
 - Render: `npx remotion render src/index.ts <Comp> out/x.mp4 --codec=h264 --crf=17`, poi ffmpeg crf 24 → `video/export/`.

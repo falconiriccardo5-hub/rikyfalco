@@ -218,8 +218,12 @@ def load_voice():
 def main():
     out = os.path.join(ROOT, 'public', 'clone', f'{K}_mix.wav')
     S = build_sfx()
-    mL, mR = build_music()
-    mL = M.hp(mL, 35); mR = M.hp(mR, 35)
+    # Musica di sottofondo DISATTIVATA per scelta del cliente (solo voce + SFX). MUSIC=1 per riattivarla.
+    if os.environ.get('MUSIC') == '1':
+        mL, mR = build_music()
+        mL = M.hp(mL, 35); mR = M.hp(mR, 35)
+    else:
+        mL = mR = np.zeros(TOTAL)
     vo = load_voice()
     if vo is None:
         sfx_g, mus_g, d_s, d_m, vo = 0.9, 0.42, np.ones(TOTAL), np.ones(TOTAL), np.zeros(TOTAL)
